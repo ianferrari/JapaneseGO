@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>JapaneseGO</title>
+    <style>
+        :root {
+            --bg-color: #000000;
+            --card-bg: rgba(28, 28, 30, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --accent-color: #0A84FF;
+            --text-primary: #FFFFFF;
+            --text-secondary: #8E8E93;
+            --text-romaji: #FFD60A; /* 亮黃色讓拼音更顯眼 */
+            --danger: #FF453A;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1c1c1e 0%, #000000 100%);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+            padding-bottom: 80px; /* 底部留白給選單 */
+        }
+
+        /* Header Area */
+        header {
+            padding: 40px 20px 20px;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(90deg, #fff, #8E8E93);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 4px;
+        }
+
+        /* Category Tabs */
+        .tabs {
+            display: flex;
+            overflow-x: auto;
+            padding: 15px 20px;
+            gap: 12px;
+            scrollbar-width: none; /* Hide scrollbar */
+        }
+        .tabs::-webkit-scrollbar { display: none; }
+
+        .tab {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            white-space: nowrap;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid transparent;
+        }
+
+        .tab.active {
+            background: var(--accent-color);
+            color: white;
+            box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3);
+        }
+
+        /* Content Grid */
+        .container {
+            padding: 10px 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 20px;
+            margin-bottom: 16px;
+            position: relative;
+            transition: transform 0.2s, background 0.2s;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .card:active {
+            transform: scale(0.98);
+            background: rgba(44, 44, 46, 0.8);
+        }
+
+        /* Card Content Layout */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 8px;
+        }
+
+        .jp-text {
+            font-size: 22px;
+            font-weight: 700;
+            line-height: 1.4;
+            margin-bottom: 4px;
+        }
+
+        .speaker-icon {
+            font-size: 20px;
+            opacity: 0.7;
+            background: rgba(255,255,255,0.1);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .romaji {
+            font-family: 'Courier New', Courier, monospace;
+            color: var(--text-romaji);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .divider {
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+            margin: 10px 0;
+        }
+
+        .cn-text {
+            font-size: 16px;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+
+        .en-text {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        /* Tag for categories */
+        .tag {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.1);
+            color: var(--text-secondary);
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+        }
+        
+        /* Emergency Highlight */
+        .card.emergency {
+            border: 1px solid rgba(255, 69, 58, 0.3);
+            background: rgba(50, 20, 20, 0.6);
+        }
+        .card.emergency .romaji { color: #FF9F0A; }
+
+        /* Floating Info */
+        .info-bubble {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(20,20,20,0.9);
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 12px;
+            color: #888;
+            backdrop-filter: blur(10px);
+            border: 1px solid #333;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .info-bubble.show { opacity: 1; }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <div>
+        <h1>JapaneseGO</h1>
+        <div class="subtitle">沖繩親子遊特訓 V1.0</div>
+    </div>
+    <div style="font-size:24px;">🇯🇵</div>
+</header>
+
+<div class="tabs" id="categoryTabs">
+    <div class="tab active" onclick="filterCards('all', this)">全部 All</div>
+    <div class="tab" onclick="filterCards('survival', this)">生存 Survival</div>
+    <div class="tab" onclick="filterCards('dining', this)">美食 Dining</div>
+    <div class="tab" onclick="filterCards('kids', this)">親子 Kids</div>
+    <div class="tab" onclick="filterCards('emergency', this)">緊急 Help</div>
+</div>
+
+<div class="container" id="cardContainer">
+    </div>
+
+<div class="info-bubble" id="toast">🔊 已播放發音</div>
+
+<script>
+    // Data Source: 包含日文、羅馬拼音、中文、英文、分類
+    const phrases = [
+        // --- Survival / Basic ---
+        {
+            jp: "すみません",
+            romaji: "Su-mi-ma-sen",
+            cn: "不好意思 / 請問",
+            en: "Excuse me",
+            category: "survival"
+        },
+        {
+            jp: "ありがとうございます",
+            romaji: "A-ri-ga-tou Go-zai-ma-su",
+            cn: "謝謝 (禮貌)",
+            en: "Thank you very much",
+            category: "survival"
+        },
+        {
+            jp: "これはいくらですか？",
+            romaji: "Ko-re wa i-ku-ra de-su ka?",
+            cn: "請問這個多少錢？",
+            en: "How much is this?",
+            category: "survival"
+        },
+        {
+            jp: "トイレはどこですか？",
+            romaji: "To-i-re wa do-ko de-su ka?",
+            cn: "廁所在哪裡？",
+            en: "Where is the restroom?",
+            category: "survival"
+        },
+        {
+            jp: "大丈夫です",
+            romaji: "Dai-jou-bu de-su",
+            cn: "沒關係 / 不用了 / 沒問題",
+            en: "It's okay / No thank you",
+            category: "survival"
+        },
+
+        // --- Dining ---
+        {
+            jp: "メニューをください",
+            romaji: "Me-nyuu o ku-da-sai",
+            cn: "請給我菜單",
+            en: "Menu, please",
+            category: "dining"
+        },
+        {
+            jp: "これをください",
+            romaji: "Ko-re o ku-da-sai",
+            cn: "我要點這個 (指著圖片)",
+            en: "I'll have this one",
+            category: "dining"
+        },
+        {
+            jp: "お水ください",
+            romaji: "O-mi-zu ku-da-sai",
+            cn: "請給我水",
+            en: "Water, please",
+            category: "dining"
+        },
+        {
+            jp: "お会計お願いします",
+            romaji: "O-kai-kei o-ne-gai shi-ma-su",
+            cn: "麻煩結帳",
+            en: "Check, please",
+            category: "dining"
+        },
+        {
+            jp: "美味しいです！",
+            romaji: "Oi-shii de-su!",
+            cn: "很好吃！",
+            en: "It's delicious!",
+            category: "dining"
+        },
+
+        // --- Kids / Parenting (Crucial) ---
+        {
+            jp: "子供用の椅子はありますか？",
+            romaji: "Ko-do-mo you-no i-su wa a-ri-ma-su ka?",
+            cn: "請問有兒童椅嗎？",
+            en: "Do you have a high chair?",
+            category: "kids"
+        },
+        {
+            jp: "子供用の食器はありますか？",
+            romaji: "Ko-do-mo you-no shok-ki wa a-ri-ma-su ka?",
+            cn: "請問有兒童餐具嗎？",
+            en: "Do you have children's cutlery?",
+            category: "kids"
+        },
+        {
+            jp: "辛くないですか？",
+            romaji: "Ka-ra-ku nai de-su ka?",
+            cn: "這個會辣嗎？ (為小孩問)",
+            en: "Is this spicy?",
+            category: "kids"
+        },
+        {
+            jp: "ベビーカーは入れますか？",
+            romaji: "Be-bii-kaa wa hai-re-ma-su ka?",
+            cn: "嬰兒車可以直接進去嗎？",
+            en: "Can we enter with a stroller?",
+            category: "kids"
+        },
+        {
+            jp: "オムツ交換台はありますか？",
+            romaji: "O-mu-tsu kou-kan-dai wa a-ri-ma-su ka?",
+            cn: "有換尿布的地方嗎？",
+            en: "Is there a diaper changing station?",
+            category: "kids"
+        },
+
+        // --- Emergency / Medical ---
+        {
+            jp: "子供がお腹痛いです",
+            romaji: "Ko-do-mo ga o-na-ka i-tai de-su",
+            cn: "小孩肚子痛",
+            en: "My child has a stomachache",
+            category: "emergency"
+        },
+        {
+            jp: "熱があります",
+            romaji: "Ne-tsu ga a-ri-ma-su",
+            cn: "發燒了",
+            en: "Has a fever",
+            category: "emergency"
+        },
+        {
+            jp: "薬局はどこですか？",
+            romaji: "Yak-kyo-ku wa do-ko de-su ka?",
+            cn: "請問藥局在哪裡？",
+            en: "Where is a pharmacy?",
+            category: "emergency"
+        },
+        {
+            jp: "病院に行きたいです",
+            romaji: "Byou-in ni i-ki-tai de-su",
+            cn: "我想去醫院",
+            en: "I want to go to a hospital",
+            category: "emergency"
+        },
+        {
+            jp: "助けてください！",
+            romaji: "Ta-su-ke-te ku-da-sai!",
+            cn: "請幫幫我！",
+            en: "Please help me!",
+            category: "emergency"
+        }
+    ];
+
+    const container = document.getElementById('cardContainer');
+    const toast = document.getElementById('toast');
+
+    // Function to render cards
+    function renderCards(filter = 'all') {
+        container.innerHTML = '';
+        const filteredData = filter === 'all' ? phrases : phrases.filter(p => p.category === filter);
+
+        filteredData.forEach(item => {
+            const card = document.createElement('div');
+            card.className = `card ${item.category === 'emergency' ? 'emergency' : ''}`;
+            card.onclick = () => speak(item.jp);
+
+            card.innerHTML = `
+                <div class="card-header">
+                    <div class="jp-text">${item.jp}</div>
+                    <div class="speaker-icon">🔊</div>
+                </div>
+                <span class="romaji">${item.romaji}</span>
+                <div class="divider"></div>
+                <div class="cn-text">${item.cn}</div>
+                <div class="en-text">${item.en}</div>
+            `;
+            container.appendChild(card);
+        });
+    }
+
+    // Tab Switching Logic
+    function filterCards(category, element) {
+        // Update active tab visual
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        element.classList.add('active');
+        
+        // Render content
+        renderCards(category);
+    }
+
+    // Text to Speech Function
+    function speak(text) {
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ja-JP'; // Set language to Japanese
+            utterance.rate = 0.9; // Slightly slower for learning
+            window.speechSynthesis.speak(utterance);
+            
+            // Show toast
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 1500);
+        } else {
+            alert("您的瀏覽器不支援發音功能 / Browser does not support speech synthesis");
+        }
+    }
+
+    // Initial Render
+    renderCards();
+
+</script>
+
+</body>
+</html>
