@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>JapaneseGO V3.0</title>
+    <title>JapaneseGO V3.1</title>
     <style>
         :root {
             --bg-color: #000000;
@@ -15,6 +15,7 @@
             --text-secondary: #8E8E93;
             --text-romaji: #FFD60A;
             --danger: #FF453A;
+            --header-height: 145px; /* 固定頂部高度 */
         }
 
         * {
@@ -23,24 +24,37 @@
         }
 
         body {
-            background: linear-gradient(135deg, #1c1c1e 0%, #000000 100%);
-            background-attachment: fixed;
+            background-color: #000000;
             color: var(--text-primary);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             padding: 0;
-            padding-bottom: 120px; /* 底部留白 */
+            padding-top: var(--header-height); /* 關鍵：把內容往下推，不被標題擋住 */
+            padding-bottom: 120px;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* 標題區 (固定) */
-        header {
-            padding: 50px 20px 10px;
-            background: rgba(0, 0, 0, 0.95);
-            position: sticky;
+        /* --- 頂部固定控制台 (Header + Tabs) --- */
+        .fixed-header {
+            position: fixed;
             top: 0;
-            z-index: 200; /* 最高層級 */
+            left: 0;
+            right: 0;
+            height: var(--header-height);
+            background: rgba(20, 20, 20, 0.98); /* 不透明背景，避免誤觸 */
             border-bottom: 1px solid var(--glass-border);
+            z-index: 1000; /* 最高層級，保證可點擊 */
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end; /* 內容靠下對齊 */
+            padding-bottom: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+
+        .header-title-area {
+            position: absolute;
+            top: 45px;
+            left: 20px;
         }
 
         h1 {
@@ -52,72 +66,74 @@
             font-weight: 800;
         }
 
-        /* 分類按鈕區 (黏性定位) */
-        .sticky-tabs {
-            position: sticky;
-            top: 96px; /* 根據 header 高度調整 */
-            z-index: 190;
-            background: rgba(0,0,0,0.85);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .tabs {
-            display: flex;
+        /* --- 分類按鈕區 --- */
+        .tabs-wrapper {
+            width: 100%;
             overflow-x: auto;
-            gap: 12px;
-            padding: 0 20px;
+            padding: 0 15px;
+            -webkit-overflow-scrolling: touch; /* iOS 滑動優化 */
             scrollbar-width: none;
+            margin-bottom: 5px;
         }
-        .tabs::-webkit-scrollbar { display: none; }
+        .tabs-wrapper::-webkit-scrollbar { display: none; }
+
+        .tabs-container {
+            display: flex;
+            gap: 10px;
+            padding-right: 20px; /* 右側留白 */
+        }
 
         .tab-btn {
             appearance: none;
             border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(44, 44, 46, 0.6);
-            color: var(--text-secondary);
-            padding: 8px 16px;
+            background: rgba(60, 60, 60, 0.6);
+            color: #ddd;
+            padding: 8px 18px;
             border-radius: 20px;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 600;
             white-space: nowrap;
             cursor: pointer;
-            transition: all 0.2s;
-            flex-shrink: 0;
+            flex-shrink: 0; /* 防止被擠壓 */
+            transition: all 0.1s;
+        }
+
+        .tab-btn:active {
+            transform: scale(0.95);
+            background: #555;
         }
 
         .tab-btn.active {
             background: var(--accent-color);
             color: white;
             border-color: var(--accent-color);
-            box-shadow: 0 0 15px rgba(10, 132, 255, 0.4);
         }
 
-        /* 視圖切換 */
-        .view { display: none; animation: fadeIn 0.4s ease; padding: 20px; max-width: 600px; margin: 0 auto; }
+        /* --- 內容區 --- */
+        .view {
+            display: none;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
         .view.active-view { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
         /* 卡片樣式 */
         .card {
             background: var(--card-bg);
             border: 1px solid var(--glass-border);
-            border-radius: 20px;
+            border-radius: 18px;
             padding: 20px;
             margin-bottom: 16px;
             position: relative;
-            transition: transform 0.1s;
         }
-        .card:active { transform: scale(0.98); background: #2c2c2e; }
+        .card:active { background: #2c2c2e; }
         
         .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
         .jp { font-size: 20px; font-weight: 700; line-height: 1.4; color: #fff; }
         .romaji { font-family: 'Courier New', monospace; color: var(--text-romaji); font-size: 14px; font-weight: 600; display: block; margin-bottom: 12px; }
         .cn { font-size: 16px; color: #ddd; font-weight: 500; }
         .en { font-size: 12px; color: #888; margin-top: 4px; }
-        
         .speaker-icon { font-size: 18px; opacity: 0.7; padding: 5px; background: rgba(255,255,255,0.1); border-radius: 50%; }
 
         /* 緊急卡片 */
@@ -131,7 +147,6 @@
             border-radius: 20px;
             border: 1px solid var(--glass-border);
             margin-bottom: 25px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
         .progress-header { display: flex; justify-content: space-between; margin-bottom: 10px; color: #aaa; font-size: 14px; }
         .bar-bg { background: #333; height: 8px; border-radius: 4px; overflow: hidden; }
@@ -167,11 +182,10 @@
         /* 底部導航 */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0;
-            background: rgba(20,20,20,0.95);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            background: rgba(20,20,20,0.98);
             border-top: 1px solid rgba(255,255,255,0.1);
             display: flex; justify-content: space-around;
-            padding: 10px 0 30px 0; z-index: 300;
+            padding: 10px 0 30px 0; z-index: 1000;
         }
         .nav-btn {
             display: flex; flex-direction: column; align-items: center;
@@ -185,7 +199,7 @@
             position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px);
             background: rgba(30,30,30,0.95); color: white; padding: 12px 24px;
             border-radius: 30px; font-size: 14px; opacity: 0; pointer-events: none;
-            transition: all 0.3s; z-index: 500; border: 1px solid #444; display: flex; align-items: center; gap: 8px;
+            transition: all 0.3s; z-index: 2000; border: 1px solid #444; display: flex; align-items: center; gap: 8px;
         }
         #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
@@ -193,10 +207,25 @@
 </head>
 <body>
 
-<header>
-    <h1>JapaneseGO</h1>
-    <div style="font-size: 13px; color: #888;">沖繩特訓 V3.0</div>
-</header>
+<div class="fixed-header" id="main-header">
+    <div class="header-title-area">
+        <h1>JapaneseGO</h1>
+        <div style="font-size: 13px; color: #888;">沖繩特訓 V3.1</div>
+    </div>
+
+    <div class="tabs-wrapper" id="sticky-tabs" style="display:none;">
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="filterDict('all', this)">全部</button>
+            <button class="tab-btn" onclick="filterDict('survival', this)">生存</button>
+            <button class="tab-btn" onclick="filterDict('dining', this)">美食</button>
+            <button class="tab-btn" onclick="filterDict('shopping', this)">購物</button>
+            <button class="tab-btn" onclick="filterDict('kids', this)">親子</button>
+            <button class="tab-btn" onclick="filterDict('driving', this)">自駕</button>
+            <button class="tab-btn" onclick="filterDict('hotel', this)">住宿</button>
+            <button class="tab-btn" onclick="filterDict('emergency', this)">緊急</button>
+        </div>
+    </div>
+</div>
 
 <div id="view-learn" class="view active-view">
     <div class="progress-box">
@@ -209,26 +238,12 @@
         </div>
         <div style="margin-top:10px; font-size:12px; color:#666;">目標：明年3月無障礙旅遊！</div>
     </div>
-
     <div id="curriculum-container"></div>
 </div>
 
-<div id="view-dict" class="view" style="padding-top: 0;"> </div>
-
-<div class="sticky-tabs" id="sticky-tabs" style="display:none;">
-    <div class="tabs">
-        <button class="tab-btn active" onclick="filterDict('all', this)">全部</button>
-        <button class="tab-btn" onclick="filterDict('survival', this)">生存</button>
-        <button class="tab-btn" onclick="filterDict('dining', this)">美食</button>
-        <button class="tab-btn" onclick="filterDict('shopping', this)">購物</button>
-        <button class="tab-btn" onclick="filterDict('kids', this)">親子</button>
-        <button class="tab-btn" onclick="filterDict('driving', this)">自駕</button>
-        <button class="tab-btn" onclick="filterDict('hotel', this)">住宿</button>
-        <button class="tab-btn" onclick="filterDict('emergency', this)">緊急</button>
-    </div>
+<div id="view-dict" class="view">
+    <div id="dict-container"></div>
 </div>
-
-<div id="dict-container" class="view" style="display:none;"></div>
 
 <div id="toast">🔊 發音播放中...</div>
 
@@ -244,7 +259,7 @@
 </div>
 
 <script>
-    // --- 擴充資料庫 (60+ 句) ---
+    // --- 擴充資料庫 (保持 V3.0 的豐富內容) ---
     const phrases = [
         // 1. SURVIVAL
         { id: "s1", category: "survival", jp: "すみません", romaji: "Su-mi-ma-sen", cn: "不好意思 / 請問", en: "Excuse me" },
@@ -255,7 +270,7 @@
         { id: "s6", category: "survival", jp: "もう一度お願いします", romaji: "Mou i-chi-do o-ne-gai...", cn: "請再說一次", en: "One more time please" },
         { id: "s7", category: "survival", jp: "中国語メニューは？", romaji: "Chuu-go-ku-go me-nyuu wa?", cn: "有中文菜單嗎？", en: "Chinese menu?" },
 
-        // 2. DINING (大幅擴充)
+        // 2. DINING
         { id: "d1", category: "dining", jp: "これ、お願いします", romaji: "Ko-re, o-ne-gai...", cn: "我要點這個", en: "This one please" },
         { id: "d2", category: "dining", jp: "お水ください", romaji: "O-mi-zu ku-da-sai", cn: "請給我水", en: "Water please" },
         { id: "d3", category: "dining", jp: "お会計お願いします", romaji: "O-kai-kei o-ne-gai...", cn: "麻煩結帳", en: "Check please" },
@@ -265,7 +280,7 @@
         { id: "d7", category: "dining", jp: "美味しい！", romaji: "Oi-shii!", cn: "好吃！", en: "Delicious!" },
         { id: "d8", category: "dining", jp: "豚肉は入ってますか？", romaji: "Bu-ta-ni-ku wa hait-te...", cn: "有含豬肉嗎？", en: "Contains pork?" },
         
-        // 3. SHOPPING (實用擴充)
+        // 3. SHOPPING
         { id: "sh1", category: "shopping", jp: "これを見せてください", romaji: "Ko-re o mi-se-te...", cn: "請讓我看這個", en: "Show me this" },
         { id: "sh2", category: "shopping", jp: "いくらですか？", romaji: "I-ku-ra de-su ka?", cn: "多少錢？", en: "How much?" },
         { id: "sh3", category: "shopping", jp: "カード使えますか？", romaji: "Kaa-do tsu-ka-e-ma-su ka?", cn: "可以刷卡嗎？", en: "Card OK?" },
@@ -274,13 +289,13 @@
         { id: "sh6", category: "shopping", jp: "新しいのはありますか？", romaji: "A-ta-ra-shii no wa...", cn: "有新的嗎？", en: "New one?" },
         { id: "sh7", category: "shopping", jp: "別々にできますか？", romaji: "Be-tsu-be-tsu ni de-ki-ma-su ka?", cn: "可以分開裝/結帳嗎？", en: "Separate please" },
 
-        // 4. KIDS (父母救星)
+        // 4. KIDS
         { id: "k1", category: "kids", jp: "子供用の椅子", romaji: "Ko-do-mo you no i-su", cn: "兒童椅", en: "High chair" },
         { id: "k2", category: "kids", jp: "スプーンとフォーク", romaji: "Su-puu-n to foo-ku", cn: "湯匙和叉子", en: "Spoon and fork" },
         { id: "k3", category: "kids", jp: "トイレどこですか？", romaji: "To-i-re do-ko de-su ka?", cn: "廁所在哪？", en: "Where is toilet?" },
         { id: "k4", category: "kids", jp: "お湯もらえますか？", romaji: "O-yu mo-ra-e-ma-su ka?", cn: "可以給我熱水嗎？(泡奶)", en: "Hot water?" },
         { id: "k5", category: "kids", jp: "授乳室はありますか？", romaji: "Ju-nyuu-shi-tsu wa...", cn: "有哺乳室嗎？", en: "Nursing room?" },
-        { id: "k6", category: "kids", jp: "子供が眠いです", romaji: "Ko-do-mo ga ne-mui de-su", cn: "小孩想睡覺了(鬧彆扭時用)", en: "Child is sleepy" },
+        { id: "k6", category: "kids", jp: "子供が眠いです", romaji: "Ko-do-mo ga ne-mui de-su", cn: "小孩想睡覺了", en: "Child is sleepy" },
         { id: "k7", category: "kids", jp: "辛くないですか？", romaji: "Ka-ra-ku nai de-su ka?", cn: "會辣嗎？", en: "Is it spicy?" },
 
         // 5. DRIVING
@@ -303,7 +318,7 @@
         { id: "e5", category: "emergency", jp: "警察", romaji: "Kei-sa-tsu", cn: "警察", en: "Police" }
     ];
 
-    // --- 課程規劃 (16週充實版) ---
+    // --- 課程規劃 ---
     const curriculum = [
         { week: 1, title: "生存起手式", desc: "這幾句不會不能出國", lessons: ["s1", "s2", "s3", "s4"] },
         { week: 2, title: "溝通萬用句", desc: "聽不懂與再說一次", lessons: ["s5", "s6", "s7"] },
@@ -323,38 +338,29 @@
         { week: 16, title: "緊急狀況(下)", desc: "護照與救護車", lessons: ["e2", "e3"] }
     ];
 
-    // --- 核心邏輯 ---
-
-    // 1. 初始化
+    // --- 程式邏輯 ---
     document.addEventListener('DOMContentLoaded', () => {
         renderCurriculum();
         renderDict('all');
         updateProgress();
     });
 
-    // 2. 主視圖切換
     function switchMainView(viewId, btn) {
-        // 隱藏所有 View
         document.getElementById('view-learn').style.display = 'none';
         document.getElementById('view-dict').style.display = 'none';
-        document.getElementById('dict-container').style.display = 'none';
-        document.getElementById('sticky-tabs').style.display = 'none';
-
-        // 導航按鈕樣式更新
+        
         document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
-        // 顯示目標 View
         if (viewId === 'learn') {
             document.getElementById('view-learn').style.display = 'block';
+            document.getElementById('sticky-tabs').style.display = 'none'; // 隱藏按鈕
         } else {
-            // 字典模式：顯示分類條與容器
-            document.getElementById('sticky-tabs').style.display = 'block';
-            document.getElementById('dict-container').style.display = 'block';
+            document.getElementById('view-dict').style.display = 'block';
+            document.getElementById('sticky-tabs').style.display = 'block'; // 顯示按鈕
         }
     }
 
-    // 3. 渲染字典
     function renderDict(filter, btn = null) {
         if(btn) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -382,7 +388,6 @@
         });
     }
 
-    // 4. 渲染課程
     function renderCurriculum() {
         const container = document.getElementById('curriculum-container');
         const progress = JSON.parse(localStorage.getItem('jp_progress') || '[]');
@@ -423,7 +428,6 @@
         });
     }
 
-    // 5. 進度處理
     function toggleCheck(id, el) {
         let progress = JSON.parse(localStorage.getItem('jp_progress') || '[]');
         if(progress.includes(id)) {
@@ -445,7 +449,6 @@
         document.getElementById('progress-fill').style.width = percent + "%";
     }
 
-    // 6. 發音
     function speak(text) {
         if ('speechSynthesis' in window) {
             window.speechSynthesis.cancel();
