@@ -3,179 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>JapaneseGO V6.0</title>
+    <title>JapaneseGO V7.0</title>
     <style>
         :root {
             --bg-color: #000000;
             --card-bg: #1c1c1e;
             --accent-color: #0A84FF;
+            --user-msg-bg: #0A84FF;
+            --staff-msg-bg: #2c2c2e;
             --text-primary: #FFFFFF;
             --text-secondary: #8E8E93;
             --safe-top: env(safe-area-inset-top);
+            --safe-bottom: env(safe-area-inset-bottom);
         }
 
-        * {
-            -webkit-tap-highlight-color: transparent;
-            box-sizing: border-box;
-        }
+        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-primary);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            padding-bottom: 120px;
+            margin: 0; padding: 0;
+            padding-bottom: calc(90px + var(--safe-bottom));
         }
 
         /* 頂部固定區 */
         .sticky-header-wrapper {
-            position: sticky;
-            top: 0;
-            z-index: 1000;
+            position: sticky; top: 0; z-index: 1000;
             background: rgba(0, 0, 0, 0.95);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid rgba(255,255,255,0.1);
             padding-top: var(--safe-top);
         }
+        .app-title { padding: 15px 20px 5px 20px; }
+        h1 { margin: 0; font-size: 26px; font-weight: 800; background: linear-gradient(90deg, #fff, #aaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-        .app-title {
-            padding: 15px 20px 5px 20px;
-        }
-        h1 {
-            margin: 0;
-            font-size: 28px;
-            font-weight: 800;
-            background: linear-gradient(90deg, #fff, #aaa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* 分類按鈕區 */
+        /* 分類按鈕 (僅字典用) */
         .tabs-container {
-            width: 100%;
-            overflow-x: auto;
-            padding: 10px 15px 15px 15px;
-            white-space: nowrap;
-            -webkit-overflow-scrolling: touch;
-            display: none; /* 預設隱藏 */
+            width: 100%; overflow-x: auto; padding: 10px 15px 15px 15px;
+            white-space: nowrap; -webkit-overflow-scrolling: touch; display: none;
         }
         .tabs-container::-webkit-scrollbar { display: none; }
-
-        /* 改用 button 標籤以確保 iOS 點擊反應 */
         .tab-btn {
-            display: inline-block;
-            appearance: none;
-            background: #333;
-            color: #ccc;
-            border: 1px solid #444;
-            padding: 10px 20px;
-            border-radius: 25px;
-            font-size: 15px;
-            font-weight: 600;
-            margin-right: 10px;
-            transition: all 0.2s;
-            cursor: pointer;
+            display: inline-block; appearance: none; background: #333; color: #ccc;
+            border: 1px solid #444; padding: 8px 16px; border-radius: 20px;
+            font-size: 14px; font-weight: 600; margin-right: 8px; transition: all 0.2s;
         }
-        
-        .tab-btn:active {
-            transform: scale(0.95);
-            background: #555;
-        }
-
-        .tab-btn.active {
-            background: var(--accent-color);
-            color: #fff;
-            border-color: var(--accent-color);
-            box-shadow: 0 0 10px rgba(10, 132, 255, 0.4);
-        }
+        .tab-btn.active { background: var(--accent-color); color: #fff; border-color: var(--accent-color); }
 
         /* 內容區 */
-        .view {
-            display: none;
-            padding: 20px;
-            max-width: 600px;
-            margin: 0 auto;
-            animation: fadeIn 0.3s ease;
-        }
+        .view { display: none; padding: 20px; max-width: 600px; margin: 0 auto; animation: fadeIn 0.3s ease; }
         .view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* 進度條 */
-        .progress-box {
-            background: #1c1c1e;
-            padding: 20px;
-            border-radius: 20px;
-            border: 1px solid #333;
-            margin-bottom: 25px;
-        }
-
-        /* 課程列表 */
+        /* --- 1. 特訓 & 字典共用樣式 --- */
+        .progress-box { background: #1c1c1e; padding: 20px; border-radius: 16px; border: 1px solid #333; margin-bottom: 25px; }
         .week-block { margin-bottom: 30px; }
-        .week-title { 
-            color: var(--accent-color); font-weight: 700; font-size: 18px; margin-bottom: 10px; 
-            border-left: 4px solid var(--accent-color); padding-left: 10px;
-        }
-
-        .lesson-row {
-            display: flex; align-items: center;
-            background: #222;
-            padding: 15px;
-            border-radius: 14px;
-            margin-bottom: 10px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-        .lesson-row:active { background: #333; }
-        
-        .check-box {
-            width: 30px; height: 30px; border-radius: 50%; border: 2px solid #555;
-            display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s;
-            margin-left: auto;
-        }
+        .week-title { color: var(--accent-color); font-weight: 700; font-size: 18px; margin-bottom: 10px; padding-left: 10px; border-left: 4px solid var(--accent-color); }
+        .lesson-row { display: flex; align-items: center; background: #222; padding: 15px; border-radius: 14px; margin-bottom: 10px; border: 1px solid #333; }
+        .check-box { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #555; margin-left: auto; display: flex; align-items: center; justify-content: center; }
         .check-box.checked { background: #30D158; border-color: #30D158; }
+        .card { background: #1c1c1e; border: 1px solid #333; border-radius: 16px; padding: 18px; margin-bottom: 12px; position: relative; }
+        .jp-big { font-size: 20px; font-weight: 700; margin-bottom: 4px; color: #fff; }
+        .romaji { font-family: monospace; color: #FFD60A; font-size: 13px; margin-bottom: 8px; display: block; }
+        .cn { font-size: 15px; color: #ccc; }
 
-        /* 字典卡片 */
-        .card {
-            background: var(--card-bg);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 18px;
-            padding: 20px;
-            margin-bottom: 15px;
-            position: relative;
+        /* --- 2. 會話模式專用樣式 --- */
+        .dialogue-card {
+            background: #151515; border: 1px solid #333; border-radius: 16px; 
+            margin-bottom: 25px; overflow: hidden;
         }
-        .card:active { background: #2a2a2a; transform: scale(0.98); }
+        .dialogue-header {
+            background: #222; padding: 12px 15px; border-bottom: 1px solid #333;
+            font-weight: 700; display: flex; align-items: center; gap: 8px; color: #fff;
+        }
+        .dialogue-body { padding: 15px; display: flex; flex-direction: column; gap: 15px; }
+        
+        /* 氣泡樣式 */
+        .bubble {
+            max-width: 85%; padding: 10px 14px; border-radius: 18px; 
+            font-size: 15px; line-height: 1.4; position: relative;
+            cursor: pointer;
+        }
+        .bubble:active { opacity: 0.7; }
+        
+        /* 對方 (左) */
+        .bubble.staff {
+            align-self: flex-start; background: var(--staff-msg-bg); 
+            border-bottom-left-radius: 4px; color: #ddd;
+        }
+        .bubble.staff::before { content: "店員"; position: absolute; top: -18px; left: 5px; font-size: 10px; color: #666; }
+        
+        /* 我 (右) */
+        .bubble.user {
+            align-self: flex-end; background: var(--user-msg-bg); 
+            border-bottom-right-radius: 4px; color: #fff;
+        }
+        .bubble.user::before { content: "我"; position: absolute; top: -18px; right: 5px; font-size: 10px; color: #666; }
 
-        .jp-big { font-size: 22px; font-weight: 800; margin-bottom: 5px; color: #fff; }
-        .romaji { font-family: monospace; color: #FFD60A; font-size: 15px; margin-bottom: 10px; display: block; }
-        .cn { font-size: 16px; color: #ccc; }
-        .speaker { position: absolute; top: 20px; right: 20px; font-size: 20px; opacity: 0.6; }
+        .bubble-jp { font-weight: 600; margin-bottom: 2px; }
+        .bubble-cn { font-size: 12px; opacity: 0.8; }
 
-        /* 底部導航 */
+        /* --- 底部導航 --- */
         .bottom-nav {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            height: 85px;
-            background: rgba(10,10,10,0.98);
-            border-top: 1px solid rgba(255,255,255,0.1);
-            display: flex;
-            justify-content: space-around;
-            padding-top: 12px;
-            padding-bottom: env(safe-area-inset-bottom);
-            z-index: 2000;
+            position: fixed; bottom: 0; left: 0; right: 0; height: 85px;
+            background: rgba(15,15,15,0.98); border-top: 1px solid #333;
+            display: flex; justify-content: space-around; padding-top: 10px;
+            padding-bottom: var(--safe-bottom); z-index: 2000;
         }
-        .nav-btn {
-            text-align: center; color: #666; font-size: 11px; width: 50%;
-            transition: color 0.2s;
-        }
+        .nav-btn { text-align: center; color: #666; font-size: 10px; width: 33%; transition: color 0.2s; }
         .nav-btn.active { color: var(--accent-color); }
         .nav-icon { font-size: 24px; display: block; margin-bottom: 4px; }
-
     </style>
 </head>
 <body>
@@ -183,7 +121,7 @@
 <div class="sticky-header-wrapper">
     <div class="app-title">
         <h1>JapaneseGO</h1>
-        <div style="font-size: 12px; color: #888;">沖繩特訓 V6.0 (Fixed)</div>
+        <div style="font-size: 12px; color: #888;">沖繩特訓 V7.0 (會話版)</div>
     </div>
     
     <div id="tabs-bar" class="tabs-container">
@@ -201,7 +139,7 @@
 <div id="view-learn" class="view active">
     <div class="progress-box">
         <div style="display:flex; justify-content:space-between; margin-bottom:10px; color:#aaa;">
-            <span>總進度</span>
+            <span>單字進度</span>
             <span id="progress-text">0%</span>
         </div>
         <div style="height:8px; background:#333; border-radius:4px;">
@@ -211,167 +149,206 @@
     <div id="curriculum-container"></div>
 </div>
 
+<div id="view-dialogue" class="view">
+    <div style="margin-bottom:15px; color:#888; font-size:13px; text-align:center;">
+        點擊對話泡泡可聽發音 🔊
+    </div>
+    <div id="dialogue-container"></div>
+</div>
+
 <div id="view-dict" class="view">
     <div id="dict-container"></div>
 </div>
 
 <div class="bottom-nav">
     <div class="nav-btn active" onclick="switchView('learn', this)">
-        <span class="nav-icon">📅</span>
-        特訓計畫
+        <span class="nav-icon">📅</span>特訓
+    </div>
+    <div class="nav-btn" onclick="switchView('dialogue', this)">
+        <span class="nav-icon">🗣️</span>會話
     </div>
     <div class="nav-btn" onclick="switchView('dict', this)">
-        <span class="nav-icon">📖</span>
-        實用字典
+        <span class="nav-icon">📖</span>字典
     </div>
 </div>
 
 <script>
-    // --- 資料庫 (60+ 句) ---
+    // --- 資料 1: 單字庫 ---
     const phrases = [
         { id: "s1", cat: "survival", jp: "すみません", romaji: "Su-mi-ma-sen", cn: "不好意思" },
-        { id: "s2", cat: "survival", jp: "ありがとう", romaji: "A-ri-ga-tou", cn: "謝謝" },
-        { id: "s3", cat: "survival", jp: "大丈夫", romaji: "Dai-jou-bu", cn: "沒關係 / 不用了" },
-        { id: "s4", cat: "survival", jp: "はい / いいえ", romaji: "Hai / Ii-e", cn: "是 / 不是" },
-        { id: "s5", cat: "survival", jp: "わかりません", romaji: "Wa-ka-ri-ma-sen", cn: "聽不懂" },
-        
+        { id: "s2", cat: "survival", jp: "ありがとうございます", romaji: "A-ri-ga-tou", cn: "謝謝" },
+        { id: "s3", cat: "survival", jp: "大丈夫です", romaji: "Dai-jou-bu", cn: "沒關係/不用" },
         { id: "d1", cat: "dining", jp: "これください", romaji: "Ko-re Ku-da-sai", cn: "我要這個" },
-        { id: "d2", cat: "dining", jp: "お水", romaji: "O-mi-zu", cn: "水" },
-        { id: "d3", cat: "dining", jp: "お会計", romaji: "O-kai-kei", cn: "結帳" },
-        { id: "d4", cat: "dining", jp: "美味しい", romaji: "Oi-shii", cn: "好吃" },
-        { id: "d5", cat: "dining", jp: "氷なし", romaji: "Koo-ri Na-shi", cn: "去冰" },
-        { id: "d6", cat: "dining", jp: "おすすめは？", romaji: "O-su-su-me wa?", cn: "推薦什麼？" },
-
-        { id: "sh1", cat: "shopping", jp: "いくら？", romaji: "I-ku-ra?", cn: "多少錢？" },
-        { id: "sh2", cat: "shopping", jp: "カードOK？", romaji: "Kaa-do OK?", cn: "可以刷卡嗎？" },
-        { id: "sh3", cat: "shopping", jp: "免税", romaji: "Men-zei", cn: "退稅" },
-        { id: "sh4", cat: "shopping", jp: "新しいの", romaji: "A-ta-ra-shii no", cn: "有新的嗎？" },
-
-        { id: "k1", cat: "kids", jp: "子供の椅子", romaji: "Ko-do-mo Isu", cn: "兒童椅" },
+        { id: "d2", cat: "dining", jp: "お水ください", romaji: "O-mi-zu", cn: "請給我水" },
+        { id: "d3", cat: "dining", jp: "お会計お願いします", romaji: "O-kai-kei", cn: "麻煩結帳" },
+        { id: "sh1", cat: "shopping", jp: "いくらですか？", romaji: "I-ku-ra?", cn: "多少錢？" },
+        { id: "sh2", cat: "shopping", jp: "カードは使えますか？", romaji: "Kaa-do OK?", cn: "可以刷卡嗎？" },
+        { id: "sh3", cat: "shopping", jp: "免税できますか？", romaji: "Men-zei", cn: "可以退稅嗎？" },
+        { id: "k1", cat: "kids", jp: "子供用の椅子", romaji: "Ko-do-mo Isu", cn: "兒童椅" },
         { id: "k2", cat: "kids", jp: "スプーン", romaji: "Su-puu-n", cn: "湯匙" },
-        { id: "k3", cat: "kids", jp: "お湯", romaji: "O-yu", cn: "熱水" },
-        { id: "k4", cat: "kids", jp: "トイレ", romaji: "To-i-re", cn: "廁所" },
-        
+        { id: "k3", cat: "kids", jp: "トイレはどこですか？", romaji: "To-i-re", cn: "廁所在哪" },
         { id: "dr1", cat: "driving", jp: "満タン", romaji: "Man-tan", cn: "加滿油" },
-        { id: "dr2", cat: "driving", jp: "レギュラー", romaji: "Re-gyu-raa", cn: "加普通油" },
-        { id: "dr3", cat: "driving", jp: "駐車場", romaji: "Chuu-sha-jou", cn: "停車場" },
-
-        { id: "h1", cat: "hotel", jp: "チェックイン", romaji: "Chek-ku-in", cn: "Check-in" },
-        { id: "h2", cat: "hotel", jp: "荷物", romaji: "Ni-mo-tsu", cn: "行李" },
-
-        { id: "e1", cat: "emergency", jp: "助けて", romaji: "Ta-su-ke-te", cn: "救命" },
-        { id: "e2", cat: "emergency", jp: "薬局", romaji: "Yak-kyo-ku", cn: "藥局" },
-        { id: "e3", cat: "emergency", jp: "病院", romaji: "Byou-in", cn: "醫院" }
+        { id: "dr2", cat: "driving", jp: "レギュラー", romaji: "Re-gyu-raa", cn: "普通汽油" },
+        { id: "h1", cat: "hotel", jp: "チェックインお願いします", romaji: "Chek-ku-in", cn: "我要Check-in" },
+        { id: "h2", cat: "hotel", jp: "荷物を預かってください", romaji: "Ni-mo-tsu", cn: "寄放行李" }
     ];
 
     const weeks = [
-        { t: "Week 1 暖身", ids: ["s1","s2","s3","s4"] },
-        { t: "Week 2 點餐", ids: ["d1","d2","d3","d4"] },
+        { t: "Week 1 基礎", ids: ["s1","s2","s3"] },
+        { t: "Week 2 點餐", ids: ["d1","d2","d3"] },
         { t: "Week 3 購物", ids: ["sh1","sh2","sh3"] },
-        { t: "Week 4 親子", ids: ["k1","k2","k3","k4"] },
-        { t: "Week 5 自駕", ids: ["dr1","dr2","dr3"] },
-        { t: "Week 6 住宿", ids: ["h1","h2","s5"] },
-        { t: "Week 7 緊急", ids: ["e1","e2","e3"] }
+        { t: "Week 4 親子", ids: ["k1","k2","k3"] },
+        { t: "Week 5 旅遊", ids: ["dr1","h1","h2"] }
+    ];
+
+    // --- 資料 2: 情境對話 (新功能) ---
+    const dialogues = [
+        {
+            title: "🏨 飯店 Check-in",
+            msgs: [
+                { role: "user", jp: "チェックインお願いします。", cn: "你好，我要辦理入住。" },
+                { role: "staff", jp: "はい、パスポートを見せてください。", cn: "好的，請出示護照。" },
+                { role: "user", jp: "はい、これです。", cn: "好的，在這裡。" },
+                { role: "staff", jp: "朝食は7時からです。", cn: "早餐是7點開始喔。" }
+            ]
+        },
+        {
+            title: "🍜 餐廳點餐",
+            msgs: [
+                { role: "staff", jp: "いらっしゃいませ。何名様ですか？", cn: "歡迎光臨，請問幾位？" },
+                { role: "user", jp: "3人です。子供がいます。", cn: "3位，有小孩。" },
+                { role: "staff", jp: "こちらへどうぞ。", cn: "請往這邊走。" },
+                { role: "user", jp: "これとこれをください。", cn: "我要這個跟這個。" },
+                { role: "user", jp: "わさび抜きでお願いします。", cn: "請不要加哇沙米。" }
+            ]
+        },
+        {
+            title: "🏪 便利商店",
+            msgs: [
+                { role: "staff", jp: "温めますか？", cn: "便當要微波加熱嗎？" },
+                { role: "user", jp: "はい、お願いします。", cn: "好的，麻煩你了。" },
+                { role: "staff", jp: "袋はいりますか？", cn: "需要袋子嗎？" },
+                { role: "user", jp: "大丈夫です。", cn: "沒關係，不用了。" }
+            ]
+        },
+        {
+            title: "🚗 加油站租車",
+            msgs: [
+                { role: "staff", jp: "いらっしゃいませ。", cn: "歡迎光臨。" },
+                { role: "user", jp: "レギュラー、満タンで。", cn: "普通汽油，加滿。" },
+                { role: "staff", jp: "現金のみですが...", cn: "我們只收現金喔..." },
+                { role: "user", jp: "あ、はい。大丈夫です。", cn: "啊，好的，沒問題。" }
+            ]
+        }
     ];
 
     // 初始化
     renderPlan();
-    filterDict('all', null); // 修正：這裡呼叫的名稱終於對了
+    renderDialogues();
+    filterDict('all', null);
 
-    // 切換頁面
-    function switchView(viewName, btn) {
+    // 切換視圖
+    function switchView(name, btn) {
         document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
         
-        document.getElementById('view-' + viewName).classList.add('active');
+        document.getElementById('view-' + name).classList.add('active');
         btn.classList.add('active');
 
-        // 控制分類按鈕列顯示
+        // 僅在字典模式顯示上方分類條
         const tabs = document.getElementById('tabs-bar');
-        if (viewName === 'dict') {
-            tabs.style.display = 'block';
-        } else {
-            tabs.style.display = 'none';
-        }
+        tabs.style.display = (name === 'dict') ? 'block' : 'none';
         
-        window.scrollTo(0, 0);
+        window.scrollTo(0,0);
     }
 
-    // 渲染字典 (修正：函數名稱改回 filterDict，對應 HTML onclick)
+    // 渲染字典
     function filterDict(cat, btn) {
         if(btn) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
         }
-        
-        const container = document.getElementById('dict-container');
-        container.innerHTML = '';
-        
-        const data = (cat === 'all') ? phrases : phrases.filter(p => p.cat === cat);
-        
+        const box = document.getElementById('dict-container');
+        box.innerHTML = '';
+        const data = (cat==='all') ? phrases : phrases.filter(p=>p.cat===cat);
         data.forEach(p => {
-            container.innerHTML += `
+            box.innerHTML += `
                 <div class="card" onclick="speak('${p.jp}')">
-                    <div class="jp-big">${p.jp}</div>
+                    <div class="jp-big">${p.jp} 🔊</div>
                     <span class="romaji">${p.romaji}</span>
                     <div class="cn">${p.cn}</div>
-                    <div class="speaker">🔊</div>
                 </div>`;
         });
     }
 
-    // 渲染計畫
+    // 渲染特訓
     function renderPlan() {
-        const container = document.getElementById('curriculum-container');
-        let saved = JSON.parse(localStorage.getItem('jp_v5_progress') || '[]');
+        const box = document.getElementById('curriculum-container');
+        let saved = JSON.parse(localStorage.getItem('jp_v7_prog')||'[]');
         
         weeks.forEach(w => {
             let html = `<div class="week-block"><div class="week-title">${w.t}</div>`;
             w.ids.forEach(id => {
-                let p = phrases.find(x => x.id === id);
-                let checked = saved.includes(id) ? 'checked' : '';
-                if(p) {
-                    html += `
-                        <div class="lesson-row">
-                            <div style="margin-right:15px; font-size:20px; opacity:0.8;" onclick="speak('${p.jp}')">▶</div>
-                            <div class="lesson-text" onclick="speak('${p.jp}')">
-                                <div style="font-weight:bold; font-size:16px; color:#fff;">${p.jp}</div>
-                                <div style="font-size:13px; color:#aaa;">${p.cn}</div>
-                            </div>
-                            <div class="check-box ${checked}" onclick="toggleCheck('${id}', this)">
-                                <span style="color:#fff; font-size:18px;">✓</span>
-                            </div>
-                        </div>`;
-                }
+                let p = phrases.find(x=>x.id===id);
+                if(!p) return;
+                let chk = saved.includes(id) ? 'checked' : '';
+                html += `
+                    <div class="lesson-row">
+                        <div style="flex:1" onclick="speak('${p.jp}')">
+                            <div style="font-weight:700; color:#fff; font-size:16px;">${p.jp} 🔊</div>
+                            <div style="color:#aaa; font-size:13px;">${p.cn}</div>
+                        </div>
+                        <div class="check-box ${chk}" onclick="toggle('${id}', this)">✓</div>
+                    </div>`;
             });
-            container.innerHTML += html + '</div>';
+            box.innerHTML += html + '</div>';
         });
         updateBar();
     }
 
-    // 進度控制
-    function toggleCheck(id, el) {
-        let saved = JSON.parse(localStorage.getItem('jp_v5_progress') || '[]');
-        if (saved.includes(id)) {
-            saved = saved.filter(x => x !== id);
+    // 渲染會話 (NEW)
+    function renderDialogues() {
+        const box = document.getElementById('dialogue-container');
+        dialogues.forEach(d => {
+            let bubbles = '';
+            d.msgs.forEach(m => {
+                bubbles += `
+                    <div class="bubble ${m.role}" onclick="speak('${m.jp}')">
+                        <div class="bubble-jp">${m.jp} 🔊</div>
+                        <div class="bubble-cn">${m.cn}</div>
+                    </div>`;
+            });
+            
+            box.innerHTML += `
+                <div class="dialogue-card">
+                    <div class="dialogue-header">${d.title}</div>
+                    <div class="dialogue-body">${bubbles}</div>
+                </div>`;
+        });
+    }
+
+    // 進度儲存
+    function toggle(id, el) {
+        let saved = JSON.parse(localStorage.getItem('jp_v7_prog')||'[]');
+        if(saved.includes(id)) {
+            saved = saved.filter(x=>x!==id);
             el.classList.remove('checked');
         } else {
             saved.push(id);
             el.classList.add('checked');
         }
-        localStorage.setItem('jp_v5_progress', JSON.stringify(saved));
+        localStorage.setItem('jp_v7_prog', JSON.stringify(saved));
         updateBar();
     }
 
     function updateBar() {
-        let saved = JSON.parse(localStorage.getItem('jp_v5_progress') || '[]');
-        let total = weeks.reduce((a, b) => a + b.ids.length, 0);
-        let pct = Math.round((saved.length / total) * 100);
-        document.getElementById('progress-fill').style.width = pct + '%';
-        document.getElementById('progress-text').innerText = pct + '%';
+        let saved = JSON.parse(localStorage.getItem('jp_v7_prog')||'[]');
+        let total = weeks.reduce((a,b)=>a+b.ids.length,0);
+        let pct = Math.round(saved.length/total*100);
+        document.getElementById('progress-fill').style.width = pct+'%';
+        document.getElementById('progress-text').innerText = pct+'%';
     }
 
-    // 發音
     function speak(txt) {
         let u = new SpeechSynthesisUtterance(txt);
         u.lang = 'ja-JP';
