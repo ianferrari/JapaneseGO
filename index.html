@@ -10,9 +10,10 @@
             --card-bg: rgba(28, 28, 30, 0.65);
             --glass-border: rgba(255, 255, 255, 0.12);
             --accent-color: #0A84FF;
+            --success-color: #30D158;
             --text-primary: #FFFFFF;
             --text-secondary: #8E8E93;
-            --text-romaji: #FFD60A; /* 亮黃色讓拼音更顯眼 */
+            --text-romaji: #FFD60A;
             --danger: #FF453A;
         }
 
@@ -24,419 +25,500 @@
             margin: 0;
             padding: 0;
             -webkit-font-smoothing: antialiased;
-            padding-bottom: 80px; /* 底部留白給選單 */
+            padding-bottom: 90px;
         }
 
-        /* Header Area */
-        header {
-            padding: 40px 20px 20px;
-            background: rgba(0, 0, 0, 0.8);
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(20, 20, 20, 0.95);
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0 25px 0; /* Extra padding for iPhone home bar */
+            z-index: 200;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 10px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            width: 50%;
+        }
+
+        .nav-item.active {
+            color: var(--accent-color);
+        }
+
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        /* Header */
+        header {
+            padding: 40px 20px 10px;
+            background: rgba(0, 0, 0, 0.8);
             position: sticky;
             top: 0;
             z-index: 100;
+            backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--glass-border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
         }
 
         h1 {
             margin: 0;
             font-size: 28px;
-            font-weight: 800;
             background: linear-gradient(90deg, #fff, #8E8E93);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            letter-spacing: -0.5px;
         }
 
-        .subtitle {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-top: 4px;
+        /* Views */
+        .view {
+            display: none;
+            padding: 10px 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            animation: fadeIn 0.3s ease;
         }
 
-        /* Category Tabs */
+        .view.active-view {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* --- Dictionary Styles --- */
         .tabs {
             display: flex;
             overflow-x: auto;
-            padding: 15px 20px;
-            gap: 12px;
-            scrollbar-width: none; /* Hide scrollbar */
+            padding: 10px 0;
+            gap: 10px;
+            scrollbar-width: none;
         }
         .tabs::-webkit-scrollbar { display: none; }
 
         .tab {
-            padding: 8px 16px;
+            padding: 6px 14px;
             background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
+            border-radius: 18px;
+            font-size: 13px;
             white-space: nowrap;
             color: var(--text-secondary);
             cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid transparent;
         }
-
         .tab.active {
             background: var(--accent-color);
             color: white;
-            box-shadow: 0 4px 12px rgba(10, 132, 255, 0.3);
-        }
-
-        /* Content Grid */
-        .container {
-            padding: 10px 20px;
-            max-width: 600px;
-            margin: 0 auto;
         }
 
         .card {
             background: var(--card-bg);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
             border: 1px solid var(--glass-border);
-            border-radius: 24px;
-            padding: 20px;
-            margin-bottom: 16px;
+            border-radius: 20px;
+            padding: 18px;
+            margin-bottom: 14px;
             position: relative;
-            transition: transform 0.2s, background 0.2s;
             cursor: pointer;
-            overflow: hidden;
         }
+        .card:active { transform: scale(0.98); background: #333; }
+        .card-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
+        .jp-text { font-size: 20px; font-weight: 700; line-height: 1.3; }
+        .romaji { font-family: 'Courier New', monospace; color: var(--text-romaji); font-size: 14px; font-weight: 600; margin-bottom: 10px; display: block; }
+        .cn-text { font-size: 16px; color: var(--text-primary); }
+        .en-text { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+        .card.emergency { border: 1px solid rgba(255, 69, 58, 0.5); background: rgba(60, 20, 20, 0.6); }
 
-        .card:active {
-            transform: scale(0.98);
-            background: rgba(44, 44, 46, 0.8);
+        /* --- Curriculum Styles --- */
+        .progress-container {
+            margin-bottom: 20px;
+            background: #1c1c1e;
+            padding: 15px;
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
         }
-
-        /* Card Content Layout */
-        .card-header {
+        .progress-header {
             display: flex;
             justify-content: space-between;
-            align-items: flex-start;
+            font-size: 14px;
             margin-bottom: 8px;
+            color: var(--text-secondary);
+        }
+        .progress-bar-bg {
+            height: 8px;
+            background: #333;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--success-color);
+            width: 0%;
+            transition: width 0.5s ease;
         }
 
-        .jp-text {
-            font-size: 22px;
+        .week-block {
+            margin-bottom: 25px;
+        }
+        .week-title {
+            font-size: 18px;
             font-weight: 700;
-            line-height: 1.4;
-            margin-bottom: 4px;
+            margin-bottom: 10px;
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+        }
+        .week-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-left: 10px;
+            font-weight: 400;
         }
 
-        .speaker-icon {
-            font-size: 20px;
-            opacity: 0.7;
-            background: rgba(255,255,255,0.1);
-            width: 36px;
-            height: 36px;
+        .lesson-item {
+            background: var(--card-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .lesson-content {
+            flex-grow: 1;
+        }
+        .lesson-jp { font-weight: 600; font-size: 16px; margin-bottom: 2px; }
+        .lesson-cn { font-size: 13px; color: #ccc; }
+
+        .checkbox-wrapper {
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
+            border: 2px solid var(--text-secondary);
+            margin-left: 15px;
             display: flex;
             align-items: center;
             justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
         }
-
-        .romaji {
-            font-family: 'Courier New', Courier, monospace;
-            color: var(--text-romaji);
+        .checkbox-wrapper.checked {
+            background: var(--success-color);
+            border-color: var(--success-color);
+        }
+        .check-icon {
+            color: white;
             font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 12px;
-            display: block;
+            display: none;
         }
-
-        .divider {
-            height: 1px;
-            background: rgba(255,255,255,0.1);
-            margin: 10px 0;
-        }
-
-        .cn-text {
-            font-size: 16px;
-            color: var(--text-primary);
-            font-weight: 500;
-        }
-
-        .en-text {
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-top: 2px;
-        }
-
-        /* Tag for categories */
-        .tag {
-            font-size: 10px;
-            padding: 2px 8px;
-            border-radius: 4px;
-            background: rgba(255,255,255,0.1);
-            color: var(--text-secondary);
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-        }
+        .checkbox-wrapper.checked .check-icon { display: block; }
         
-        /* Emergency Highlight */
-        .card.emergency {
-            border: 1px solid rgba(255, 69, 58, 0.3);
-            background: rgba(50, 20, 20, 0.6);
+        .play-btn {
+            font-size: 18px;
+            padding: 5px 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            margin-right: 10px;
+            cursor: pointer;
         }
-        .card.emergency .romaji { color: #FF9F0A; }
 
-        /* Floating Info */
-        .info-bubble {
+        /* Toast */
+        #toast {
             position: fixed;
-            bottom: 30px;
+            bottom: 100px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(20,20,20,0.9);
+            background: rgba(30,30,30,0.95);
             padding: 10px 20px;
-            border-radius: 30px;
-            font-size: 12px;
-            color: #888;
-            backdrop-filter: blur(10px);
-            border: 1px solid #333;
-            pointer-events: none;
+            border-radius: 20px;
+            color: white;
             opacity: 0;
             transition: opacity 0.3s;
+            pointer-events: none;
+            border: 1px solid #444;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            z-index: 300;
         }
-        .info-bubble.show { opacity: 1; }
+        #toast.show { opacity: 1; }
 
     </style>
 </head>
 <body>
 
 <header>
-    <div>
-        <h1>JapaneseGO</h1>
-        <div class="subtitle">沖繩親子遊特訓 V1.0</div>
-    </div>
-    <div style="font-size:24px;">🇯🇵</div>
+    <h1>JapaneseGO</h1>
+    <div style="font-size: 13px; color: #888;">沖繩特訓 V2.0</div>
 </header>
 
-<div class="tabs" id="categoryTabs">
-    <div class="tab active" onclick="filterCards('all', this)">全部 All</div>
-    <div class="tab" onclick="filterCards('survival', this)">生存 Survival</div>
-    <div class="tab" onclick="filterCards('dining', this)">美食 Dining</div>
-    <div class="tab" onclick="filterCards('kids', this)">親子 Kids</div>
-    <div class="tab" onclick="filterCards('emergency', this)">緊急 Help</div>
-</div>
-
-<div class="container" id="cardContainer">
+<div id="view-learn" class="view active-view">
+    <div class="progress-container">
+        <div class="progress-header">
+            <span>學習進度 (Learning Progress)</span>
+            <span id="progress-text">0%</span>
+        </div>
+        <div class="progress-bar-bg">
+            <div class="progress-bar-fill" id="progress-fill"></div>
+        </div>
+        <div style="margin-top:8px; font-size:12px; color:#666;">每天花 10 分鐘，為了明年3月的旅行！</div>
     </div>
 
-<div class="info-bubble" id="toast">🔊 已播放發音</div>
+    <div id="curriculum-container">
+        </div>
+    
+    <div style="height: 50px;"></div> </div>
+
+<div id="view-dict" class="view">
+    <div class="tabs">
+        <div class="tab active" onclick="filterDict('all', this)">全部</div>
+        <div class="tab" onclick="filterDict('survival', this)">生存</div>
+        <div class="tab" onclick="filterDict('dining', this)">美食</div>
+        <div class="tab" onclick="filterDict('shopping', this)">購物</div>
+        <div class="tab" onclick="filterDict('kids', this)">親子</div>
+        <div class="tab" onclick="filterDict('driving', this)">自駕</div>
+        <div class="tab" onclick="filterDict('hotel', this)">住宿</div>
+        <div class="tab" onclick="filterDict('emergency', this)">緊急</div>
+    </div>
+    <div id="dict-container" style="margin-top: 15px;">
+        </div>
+</div>
+
+<div id="toast">🔊 發音播放中...</div>
+
+<div class="bottom-nav">
+    <div class="nav-item active" onclick="switchView('learn', this)">
+        <div class="nav-icon">📅</div>
+        <div>特訓計畫</div>
+    </div>
+    <div class="nav-item" onclick="switchView('dict', this)">
+        <div class="nav-icon">📖</div>
+        <div>實用字典</div>
+    </div>
+</div>
 
 <script>
-    // Data Source: 包含日文、羅馬拼音、中文、英文、分類
+    // --- DATA ---
+    // Expanded Database
     const phrases = [
-        // --- Survival / Basic ---
-        {
-            jp: "すみません",
-            romaji: "Su-mi-ma-sen",
-            cn: "不好意思 / 請問",
-            en: "Excuse me",
-            category: "survival"
-        },
-        {
-            jp: "ありがとうございます",
-            romaji: "A-ri-ga-tou Go-zai-ma-su",
-            cn: "謝謝 (禮貌)",
-            en: "Thank you very much",
-            category: "survival"
-        },
-        {
-            jp: "これはいくらですか？",
-            romaji: "Ko-re wa i-ku-ra de-su ka?",
-            cn: "請問這個多少錢？",
-            en: "How much is this?",
-            category: "survival"
-        },
-        {
-            jp: "トイレはどこですか？",
-            romaji: "To-i-re wa do-ko de-su ka?",
-            cn: "廁所在哪裡？",
-            en: "Where is the restroom?",
-            category: "survival"
-        },
-        {
-            jp: "大丈夫です",
-            romaji: "Dai-jou-bu de-su",
-            cn: "沒關係 / 不用了 / 沒問題",
-            en: "It's okay / No thank you",
-            category: "survival"
-        },
+        // 1. SURVIVAL
+        { id: "s1", category: "survival", jp: "すみません", romaji: "Su-mi-ma-sen", cn: "不好意思 / 請問", en: "Excuse me" },
+        { id: "s2", category: "survival", jp: "ありがとうございます", romaji: "A-ri-ga-tou Go-zai-ma-su", cn: "謝謝", en: "Thank you" },
+        { id: "s3", category: "survival", jp: "大丈夫です", romaji: "Dai-jou-bu de-su", cn: "沒關係 / 不用了", en: "It's okay / No thanks" },
+        { id: "s4", category: "survival", jp: "はい / いいえ", romaji: "Hai / Ii-e", cn: "是 / 不是", en: "Yes / No" },
+        { id: "s5", category: "survival", jp: "わかりません", romaji: "Wa-ka-ri-ma-sen", cn: "我聽不懂", en: "I don't understand" },
+        { id: "s6", category: "survival", jp: "英語メニューはありますか？", romaji: "Ei-go me-nyuu wa a-ri-ma-su ka?", cn: "有英文菜單嗎？", en: "English menu?" },
 
-        // --- Dining ---
-        {
-            jp: "メニューをください",
-            romaji: "Me-nyuu o ku-da-sai",
-            cn: "請給我菜單",
-            en: "Menu, please",
-            category: "dining"
-        },
-        {
-            jp: "これをください",
-            romaji: "Ko-re o ku-da-sai",
-            cn: "我要點這個 (指著圖片)",
-            en: "I'll have this one",
-            category: "dining"
-        },
-        {
-            jp: "お水ください",
-            romaji: "O-mi-zu ku-da-sai",
-            cn: "請給我水",
-            en: "Water, please",
-            category: "dining"
-        },
-        {
-            jp: "お会計お願いします",
-            romaji: "O-kai-kei o-ne-gai shi-ma-su",
-            cn: "麻煩結帳",
-            en: "Check, please",
-            category: "dining"
-        },
-        {
-            jp: "美味しいです！",
-            romaji: "Oi-shii de-su!",
-            cn: "很好吃！",
-            en: "It's delicious!",
-            category: "dining"
-        },
+        // 2. DINING
+        { id: "d1", category: "dining", jp: "これ、お願いします", romaji: "Ko-re, o-ne-gai shi-ma-su", cn: "我要點這個", en: "This one please" },
+        { id: "d2", category: "dining", jp: "お水ください", romaji: "O-mi-zu ku-da-sai", cn: "請給我水", en: "Water please" },
+        { id: "d3", category: "dining", jp: "お会計お願いします", romaji: "O-kai-kei o-ne-gai shi-ma-su", cn: "麻煩結帳", en: "Check please" },
+        { id: "d4", category: "dining", jp: "テイクアウトできますか？", romaji: "Tei-ku-au-to de-ki-ma-su ka?", cn: "可以外帶嗎？", en: "Can I take out?" },
+        { id: "d5", category: "dining", jp: "美味しい！", romaji: "Oi-shii!", cn: "好吃！", en: "Delicious!" },
+        { id: "d6", category: "dining", jp: "豚肉は入っていますか？", romaji: "Bu-ta-ni-ku wa hait-te i-ma-su ka?", cn: "這裡面有豬肉嗎？", en: "Does this contain pork?" }, // 沖繩常見
 
-        // --- Kids / Parenting (Crucial) ---
-        {
-            jp: "子供用の椅子はありますか？",
-            romaji: "Ko-do-mo you-no i-su wa a-ri-ma-su ka?",
-            cn: "請問有兒童椅嗎？",
-            en: "Do you have a high chair?",
-            category: "kids"
-        },
-        {
-            jp: "子供用の食器はありますか？",
-            romaji: "Ko-do-mo you-no shok-ki wa a-ri-ma-su ka?",
-            cn: "請問有兒童餐具嗎？",
-            en: "Do you have children's cutlery?",
-            category: "kids"
-        },
-        {
-            jp: "辛くないですか？",
-            romaji: "Ka-ra-ku nai de-su ka?",
-            cn: "這個會辣嗎？ (為小孩問)",
-            en: "Is this spicy?",
-            category: "kids"
-        },
-        {
-            jp: "ベビーカーは入れますか？",
-            romaji: "Be-bii-kaa wa hai-re-ma-su ka?",
-            cn: "嬰兒車可以直接進去嗎？",
-            en: "Can we enter with a stroller?",
-            category: "kids"
-        },
-        {
-            jp: "オムツ交換台はありますか？",
-            romaji: "O-mu-tsu kou-kan-dai wa a-ri-ma-su ka?",
-            cn: "有換尿布的地方嗎？",
-            en: "Is there a diaper changing station?",
-            category: "kids"
-        },
+        // 3. KIDS (Parenting)
+        { id: "k1", category: "kids", jp: "子供用の椅子", romaji: "Ko-do-mo you-no i-su", cn: "兒童椅", en: "High chair" },
+        { id: "k2", category: "kids", jp: "取り皿とスプーン", romaji: "To-ri-za-ra to su-puu-n", cn: "分食盤和湯匙", en: "Small plate and spoon" },
+        { id: "k3", category: "kids", jp: "トイレ行きたい！", romaji: "To-i-re i-ki-tai!", cn: "想上廁所！(小孩說)", en: "I want to go to toilet" },
+        { id: "k4", category: "kids", jp: "お湯をもらえますか？", romaji: "O-yu o mo-ra-e-ma-su ka?", cn: "可以給我熱水嗎？(泡奶用)", en: "Hot water please" },
+        { id: "k5", category: "kids", jp: "ごめんなさい、こぼしました", romaji: "Go-men-na-sai, ko-bo-shi-ma-shi-ta", cn: "對不起，打翻東西了", en: "Sorry, spilled it" },
+        { id: "k6", category: "kids", jp: "かわいいですね", romaji: "Ka-wai-i de-su ne", cn: "好可愛喔 (聽到別人稱讚時)", en: "So cute" },
 
-        // --- Emergency / Medical ---
-        {
-            jp: "子供がお腹痛いです",
-            romaji: "Ko-do-mo ga o-na-ka i-tai de-su",
-            cn: "小孩肚子痛",
-            en: "My child has a stomachache",
-            category: "emergency"
-        },
-        {
-            jp: "熱があります",
-            romaji: "Ne-tsu ga a-ri-ma-su",
-            cn: "發燒了",
-            en: "Has a fever",
-            category: "emergency"
-        },
-        {
-            jp: "薬局はどこですか？",
-            romaji: "Yak-kyo-ku wa do-ko de-su ka?",
-            cn: "請問藥局在哪裡？",
-            en: "Where is a pharmacy?",
-            category: "emergency"
-        },
-        {
-            jp: "病院に行きたいです",
-            romaji: "Byou-in ni i-ki-tai de-su",
-            cn: "我想去醫院",
-            en: "I want to go to a hospital",
-            category: "emergency"
-        },
-        {
-            jp: "助けてください！",
-            romaji: "Ta-su-ke-te ku-da-sai!",
-            cn: "請幫幫我！",
-            en: "Please help me!",
-            category: "emergency"
-        }
+        // 4. SHOPPING
+        { id: "sh1", category: "shopping", jp: "これを見せてください", romaji: "Ko-re o mi-se-te ku-da-sai", cn: "請讓我看這個", en: "Show me this" },
+        { id: "sh2", category: "shopping", jp: "いくらですか？", romaji: "I-ku-ra de-su ka?", cn: "多少錢？", en: "How much?" },
+        { id: "sh3", category: "shopping", jp: "カードは使えますか？", romaji: "Kaa-do wa tsu-ka-e-ma-su ka?", cn: "可以刷卡嗎？", en: "Credit card OK?" },
+        { id: "sh4", category: "shopping", jp: "袋はいりません", romaji: "Fu-ku-ro wa i-ri-ma-sen", cn: "不用袋子", en: "No bag needed" },
+        { id: "sh5", category: "shopping", jp: "免税できますか？", romaji: "Men-zei de-ki-ma-su ka?", cn: "可以退稅嗎？", en: "Tax free?" },
+
+        // 5. DRIVING (Okinawa Crucial)
+        { id: "dr1", category: "driving", jp: "満タンにしてください", romaji: "Man-tan ni shi-te ku-da-sai", cn: "請加滿油", en: "Full tank please" },
+        { id: "dr2", category: "driving", jp: "レギュラー", romaji: "Re-gyu-raa", cn: "加普通汽油 (紅色油槍)", en: "Regular gas" },
+        { id: "dr3", category: "driving", jp: "駐車場はどこですか？", romaji: "Chuu-sha-jou wa do-ko...?", cn: "停車場在哪？", en: "Where is parking?" },
+        { id: "dr4", category: "driving", jp: "マップコード", romaji: "Map-pu Koo-do", cn: "Map Code (導航用)", en: "Map Code" },
+
+        // 6. HOTEL
+        { id: "h1", category: "hotel", jp: "チェックインお願いします", romaji: "Chek-ku-in o-ne-gai...", cn: "我要辦理入住", en: "Check in please" },
+        { id: "h2", category: "hotel", jp: "荷物を預かってもらえますか？", romaji: "Ni-mo-tsu o a-zu-kat-te...", cn: "可以寄放行李嗎？", en: "Keep luggage?" },
+        { id: "h3", category: "hotel", jp: "Wi-Fiのパスワードは？", romaji: "Wi-Fi no pa-su-waa-do wa?", cn: "Wi-Fi 密碼是？", en: "Wi-Fi password?" },
+
+        // 7. EMERGENCY
+        { id: "e1", category: "emergency", jp: "助けて！", romaji: "Ta-su-ke-te!", cn: "救命/幫幫我！", en: "Help!" },
+        { id: "e2", category: "emergency", jp: "子供が熱を出しました", romaji: "Ko-do-mo ga ne-tsu o da-shi-ma-shi-ta", cn: "小孩發燒了", en: "Child has fever" },
+        { id: "e3", category: "emergency", jp: "お腹が痛い", romaji: "O-na-ka ga i-tai", cn: "肚子痛", en: "Stomach hurts" },
+        { id: "e4", category: "emergency", jp: "薬局", romaji: "Yak-kyo-ku", cn: "藥局", en: "Pharmacy" },
+        { id: "e5", category: "emergency", jp: "病院", romaji: "Byou-in", cn: "醫院", en: "Hospital" }
     ];
 
-    const container = document.getElementById('cardContainer');
-    const toast = document.getElementById('toast');
+    // --- CURRICULUM PLAN (16 Weeks) ---
+    const curriculum = [
+        { week: 1, title: "暖身週", desc: "最基本的禮貌用語", lessons: ["s1", "s2", "s4"] },
+        { week: 2, title: "萬能語週", desc: "這兩句走遍天下", lessons: ["s3", "s5"] },
+        { week: 3, title: "點餐基礎", desc: "看圖點餐法", lessons: ["d1", "d6", "d5"] },
+        { week: 4, title: "餐廳服務", desc: "結帳與喝水", lessons: ["d2", "d3", "d4"] },
+        { week: 5, title: "親子餐廳篇 (1)", desc: "進餐廳必問", lessons: ["k1", "k2"] },
+        { week: 6, title: "親子餐廳篇 (2)", desc: "突發狀況處理", lessons: ["k4", "k5"] },
+        { week: 7, title: "購物殺手", desc: "詢問價錢", lessons: ["sh1", "sh2"] },
+        { week: 8, title: "購物結帳", desc: "刷卡與退稅", lessons: ["sh3", "sh4", "sh5"] },
+        { week: 9, title: "自駕加油", desc: "租車必備", lessons: ["dr1", "dr2"] },
+        { week: 10, title: "找路停車", desc: "導航與停車", lessons: ["dr3", "dr4"] },
+        { week: 11, title: "飯店住宿", desc: "入住與網路", lessons: ["h1", "h3"] },
+        { week: 12, title: "飯店服務", desc: "寄放行李", lessons: ["h2", "s6"] },
+        { week: 13, title: "生理需求", desc: "廁所很重要", lessons: ["k3"] }, // Reusing k3 for generic toilet
+        { week: 14, title: "緊急醫療 (1)", desc: "身體不適", lessons: ["e2", "e3"] },
+        { week: 15, title: "緊急醫療 (2)", desc: "找地方求救", lessons: ["e1", "e4", "e5"] },
+        { week: 16, title: "總複習", desc: "準備出發！", lessons: ["k6"] } // Fun review
+    ];
 
-    // Function to render cards
-    function renderCards(filter = 'all') {
+    // --- LOGIC ---
+
+    // 1. Initial Load
+    document.addEventListener('DOMContentLoaded', () => {
+        renderCurriculum();
+        renderDict('all');
+        updateProgress();
+    });
+
+    // 2. View Switching
+    function switchView(viewName, navEl) {
+        document.querySelectorAll('.view').forEach(el => el.classList.remove('active-view'));
+        document.getElementById(`view-${viewName}`).classList.add('active-view');
+        
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        navEl.classList.add('active');
+    }
+
+    // 3. Render Dictionary
+    function renderDict(filter, tabEl = null) {
+        if(tabEl) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            tabEl.classList.add('active');
+        }
+
+        const container = document.getElementById('dict-container');
         container.innerHTML = '';
-        const filteredData = filter === 'all' ? phrases : phrases.filter(p => p.category === filter);
+        
+        const filtered = filter === 'all' ? phrases : phrases.filter(p => p.category === filter);
 
-        filteredData.forEach(item => {
-            const card = document.createElement('div');
-            card.className = `card ${item.category === 'emergency' ? 'emergency' : ''}`;
-            card.onclick = () => speak(item.jp);
-
-            card.innerHTML = `
+        filtered.forEach(p => {
+            const el = document.createElement('div');
+            el.className = `card ${p.category === 'emergency' ? 'emergency' : ''}`;
+            el.onclick = (e) => { speak(p.jp); };
+            el.innerHTML = `
                 <div class="card-header">
-                    <div class="jp-text">${item.jp}</div>
-                    <div class="speaker-icon">🔊</div>
+                    <div class="jp-text">${p.jp}</div>
+                    <div style="opacity:0.6">🔊</div>
                 </div>
-                <span class="romaji">${item.romaji}</span>
-                <div class="divider"></div>
-                <div class="cn-text">${item.cn}</div>
-                <div class="en-text">${item.en}</div>
+                <span class="romaji">${p.romaji}</span>
+                <div style="height:1px; background:rgba(255,255,255,0.1); margin:8px 0;"></div>
+                <div class="cn-text">${p.cn}</div>
+                <div class="en-text">${p.en}</div>
             `;
-            container.appendChild(card);
+            container.appendChild(el);
         });
     }
 
-    // Tab Switching Logic
-    function filterCards(category, element) {
-        // Update active tab visual
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        element.classList.add('active');
-        
-        // Render content
-        renderCards(category);
+    // 4. Render Curriculum
+    function renderCurriculum() {
+        const container = document.getElementById('curriculum-container');
+        container.innerHTML = '';
+
+        // Get saved progress
+        const savedProgress = JSON.parse(localStorage.getItem('jp_progress') || '[]');
+
+        curriculum.forEach(week => {
+            const weekDiv = document.createElement('div');
+            weekDiv.className = 'week-block';
+            
+            let lessonsHTML = '';
+            week.lessons.forEach(lid => {
+                const p = phrases.find(item => item.id === lid);
+                const isChecked = savedProgress.includes(lid) ? 'checked' : '';
+                
+                if(p) {
+                    lessonsHTML += `
+                        <div class="lesson-item">
+                            <div class="play-btn" onclick="speak('${p.jp}')">▶</div>
+                            <div class="lesson-content" onclick="speak('${p.jp}')">
+                                <div class="lesson-jp">${p.jp}</div>
+                                <div class="romaji" style="font-size:12px; margin-bottom:2px;">${p.romaji}</div>
+                                <div class="lesson-cn">${p.cn}</div>
+                            </div>
+                            <div class="checkbox-wrapper ${isChecked}" onclick="toggleCheck('${lid}', this)">
+                                <span class="check-icon">✔</span>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            weekDiv.innerHTML = `
+                <div class="week-title">
+                    Week ${week.week} 
+                    <span class="week-subtitle">${week.title} - ${week.desc}</span>
+                </div>
+                ${lessonsHTML}
+            `;
+            container.appendChild(weekDiv);
+        });
     }
 
-    // Text to Speech Function
+    // 5. Progress Logic (LocalStorage)
+    function toggleCheck(id, el) {
+        let progress = JSON.parse(localStorage.getItem('jp_progress') || '[]');
+        
+        if (progress.includes(id)) {
+            progress = progress.filter(i => i !== id);
+            el.classList.remove('checked');
+        } else {
+            progress.push(id);
+            el.classList.add('checked');
+            // Little feedback sound or vibration could go here
+        }
+        
+        localStorage.setItem('jp_progress', JSON.stringify(progress));
+        updateProgress();
+    }
+
+    function updateProgress() {
+        const progress = JSON.parse(localStorage.getItem('jp_progress') || '[]');
+        const totalLessons = curriculum.reduce((acc, curr) => acc + curr.lessons.length, 0);
+        const completed = progress.length;
+        const percentage = Math.round((completed / totalLessons) * 100);
+
+        document.getElementById('progress-text').innerText = `${percentage}%`;
+        document.getElementById('progress-fill').style.width = `${percentage}%`;
+    }
+
+    // 6. Speech
     function speak(text) {
         if ('speechSynthesis' in window) {
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'ja-JP'; // Set language to Japanese
-            utterance.rate = 0.9; // Slightly slower for learning
-            window.speechSynthesis.speak(utterance);
+            window.speechSynthesis.cancel(); // Stop previous
+            const u = new SpeechSynthesisUtterance(text);
+            u.lang = 'ja-JP';
+            u.rate = 0.85; // slightly slower
+            window.speechSynthesis.speak(u);
             
-            // Show toast
-            toast.classList.add('show');
-            setTimeout(() => toast.classList.remove('show'), 1500);
-        } else {
-            alert("您的瀏覽器不支援發音功能 / Browser does not support speech synthesis");
+            const t = document.getElementById('toast');
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 1500);
         }
     }
-
-    // Initial Render
-    renderCards();
 
 </script>
 
