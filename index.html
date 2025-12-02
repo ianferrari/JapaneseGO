@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>JapaneseGO V8.0</title>
+    <title>JapaneseGO V8.1</title>
     <style>
         :root {
             --bg-color: #000000;
@@ -27,13 +27,15 @@
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid #333;
             padding-top: var(--safe-top);
+            transition: all 0.3s ease;
         }
         .header-top { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; }
         h1 { margin: 0; font-size: 22px; font-weight: 800; background: linear-gradient(90deg, #fff, #aaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        /* 搜尋框 */
+        /* 搜尋框 (預設隱藏，字典模式才顯示) */
         .search-box {
             margin: 0 15px 10px 15px; position: relative;
+            display: none; /* 關鍵修正：預設隱藏 */
         }
         .search-input {
             width: 100%; background: #2c2c2e; border: none; border-radius: 10px;
@@ -41,10 +43,10 @@
         }
         .search-icon { position: absolute; left: 10px; top: 10px; color: #888; }
         
-        /* 分類按鈕 */
+        /* 分類按鈕 (預設隱藏) */
         .tabs-container {
             width: 100%; overflow-x: auto; padding: 0 15px 10px 15px; white-space: nowrap;
-            display: none; /* 預設隱藏，字典模式顯示 */
+            display: none; 
         }
         .tabs-container::-webkit-scrollbar { display: none; }
         .tab-btn {
@@ -83,7 +85,7 @@
         
         /* 遮擋模式樣式 */
         .masked .romaji, .masked .cn { opacity: 0; filter: blur(5px); }
-        .masked:active .romaji, .masked:active .cn { opacity: 1; filter: none; } /* 按住顯示 */
+        .masked:active .romaji, .masked:active .cn { opacity: 1; filter: none; } 
 
         /* 收藏星星 */
         .star-btn { font-size: 22px; color: #555; transition: 0.2s; padding: 5px; }
@@ -115,21 +117,23 @@
 
 <div class="sticky-header">
     <div class="header-top">
-        <h1>JapaneseGO <span style="font-size:12px; color:#888;">Pro V8.0</span></h1>
+        <h1>JapaneseGO <span style="font-size:12px; color:#888;">Pro V8.1</span></h1>
     </div>
-    <div class="search-box">
+    <div id="search-bar-container" class="search-box">
         <span class="search-icon">🔍</span>
         <input type="text" id="search-input" class="search-input" placeholder="搜尋：廁所、水、toile..." oninput="handleSearch()">
     </div>
     <div id="tabs-bar" class="tabs-container">
         <button class="tab-btn active" onclick="filterDict('all', this)">全部</button>
-        <button class="tab-btn" onclick="filterDict('fav', this)">⭐ 收藏</button> <button class="tab-btn" onclick="filterDict('survival', this)">生存</button>
+        <button class="tab-btn" onclick="filterDict('fav', this)">⭐ 收藏</button>
+        <button class="tab-btn" onclick="filterDict('survival', this)">生存</button>
         <button class="tab-btn" onclick="filterDict('dining', this)">美食</button>
         <button class="tab-btn" onclick="filterDict('shopping', this)">購物</button>
         <button class="tab-btn" onclick="filterDict('kids', this)">親子</button>
         <button class="tab-btn" onclick="filterDict('driving', this)">自駕</button>
         <button class="tab-btn" onclick="filterDict('hotel', this)">住宿</button>
-        <button class="tab-btn" onclick="filterDict('drug', this)">藥妝</button> </div>
+        <button class="tab-btn" onclick="filterDict('drug', this)">藥妝</button>
+    </div>
 </div>
 
 <div id="view-learn" class="view active">
@@ -203,7 +207,7 @@
         { id: "k4", cat: "kids", jp: "かわいい", romaji: "Ka-wai-i", cn: "好可愛" },
         { id: "k5", cat: "kids", jp: "触らないで", romaji: "Sa-wa-ra-nai de", cn: "不要摸(對小孩說)" },
 
-        // 藥妝 (新增)
+        // 藥妝
         { id: "m1", cat: "drug", jp: "風邪薬", romaji: "Ka-ze gu-su-ri", cn: "感冒藥" },
         { id: "m2", cat: "drug", jp: "頭痛薬", romaji: "Zu-tsuu ya-ku", cn: "頭痛藥" },
         { id: "m3", cat: "drug", jp: "絆創膏", romaji: "Ban-sou-kou", cn: "OK繃" },
@@ -222,7 +226,6 @@
         { id: "h3", cat: "hotel", jp: "Wi-Fiパスワード", romaji: "Wi-Fi pa-su-waa-do", cn: "Wi-Fi密碼" }
     ];
 
-    // 會話資料
     const dialogues = [
         {
             title: "🏨 飯店入住",
@@ -258,7 +261,6 @@
         }
     ];
 
-    // 特訓週次
     const weeks = [
         { t: "Week 1 生存", ids: ["s1","s2","s3","s4","s6"] },
         { t: "Week 2 點餐", ids: ["d1","d2","d3","d4","d5"] },
@@ -277,6 +279,9 @@
     renderDialogues();
     filterDict('all', null);
     loadMaskState();
+    
+    // 預設將特訓頁面設為當前，確保 UI 狀態一致
+    // (搜尋框預設在 CSS 已設為 display:none)
 
     function switchView(name, btn) {
         document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
@@ -286,33 +291,28 @@
         
         // 控制 Header 顯示
         const tabs = document.getElementById('tabs-bar');
-        const search = document.querySelector('.search-box');
+        const search = document.getElementById('search-bar-container');
         
         if (name === 'dict') {
             tabs.style.display = 'block';
-            search.style.display = 'block';
-        } else if (name === 'learn') {
-            tabs.style.display = 'none';
-            search.style.display = 'none'; // 特訓時不搜尋，專注學習
+            search.style.display = 'block'; // 只有字典模式才顯示
         } else {
             tabs.style.display = 'none';
-            search.style.display = 'none';
+            search.style.display = 'none'; // 其他模式隱藏
         }
         window.scrollTo(0,0);
     }
 
-    // 搜尋功能
     function handleSearch() {
         const key = document.getElementById('search-input').value.toLowerCase();
-        // 強制切換到字典並搜尋
-        if (document.getElementById('view-dict').style.display === 'none') {
-            // 如果不在字典頁，不強制跳轉，避免干擾，僅在字典頁搜尋有效
+        // 如果在字典頁才即時渲染
+        if (document.getElementById('view-dict').classList.contains('active')) {
+             renderDictRaw(phrases.filter(p => 
+                p.jp.includes(key) || 
+                p.romaji.toLowerCase().includes(key) || 
+                p.cn.includes(key)
+            ));
         }
-        renderDictRaw(phrases.filter(p => 
-            p.jp.includes(key) || 
-            p.romaji.toLowerCase().includes(key) || 
-            p.cn.includes(key)
-        ));
     }
 
     function filterDict(cat, btn) {
@@ -321,7 +321,7 @@
             btn.classList.add('active');
         }
         currentCat = cat;
-        document.getElementById('search-input').value = ''; // 清空搜尋
+        document.getElementById('search-input').value = ''; 
 
         if (cat === 'fav') {
             const favs = JSON.parse(localStorage.getItem('jp_favs')||'[]');
@@ -358,7 +358,6 @@
         }).join('');
     }
 
-    // 收藏功能
     function toggleFav(id, el) {
         let favs = JSON.parse(localStorage.getItem('jp_favs')||'[]');
         if (favs.includes(id)) {
@@ -369,17 +368,14 @@
             el.classList.add('fav');
         }
         localStorage.setItem('jp_favs', JSON.stringify(favs));
-        
-        // 如果在收藏頁，即時移除
         if(currentCat === 'fav') filterDict('fav', null);
     }
 
-    // 遮擋模式
     function toggleMask() {
         isMasked = !isMasked;
         document.getElementById('mask-switch').classList.toggle('on');
         localStorage.setItem('jp_mask', isMasked);
-        renderPlan(); // 重繪特訓頁面以套用樣式
+        renderPlan(); 
     }
 
     function loadMaskState() {
@@ -387,7 +383,6 @@
         if(isMasked) document.getElementById('mask-switch').classList.add('on');
     }
 
-    // 渲染特訓 (支援遮擋)
     function renderPlan() {
         const box = document.getElementById('curriculum-container');
         const saved = JSON.parse(localStorage.getItem('jp_prog')||'[]');
@@ -416,7 +411,6 @@
             return `<h3 style="color:#0A84FF; margin:15px 0 10px 0;">${w.t}</h3>${lessons}`;
         }).join('');
         
-        // 計算進度
         const total = weeks.reduce((a,b)=>a+b.ids.length,0);
         const pct = Math.round(saved.length/total*100);
         document.getElementById('progress-text').innerText = pct+'%';
@@ -432,13 +426,11 @@
             el.classList.add('checked');
         }
         localStorage.setItem('jp_prog', JSON.stringify(saved));
-        // 更新 %
         const total = weeks.reduce((a,b)=>a+b.ids.length,0);
         const pct = Math.round(saved.length/total*100);
         document.getElementById('progress-text').innerText = pct+'%';
     }
 
-    // 渲染會話
     function renderDialogues() {
         document.getElementById('dialogue-container').innerHTML = dialogues.map(d => {
             const bubbles = d.msgs.map(m => `
