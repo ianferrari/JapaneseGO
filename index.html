@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>JapaneseGO V18.0</title>
+    <title>JapaneseGO V19.0</title>
     <style>
         :root {
             --bg-color: #000000;
@@ -12,7 +12,7 @@
             --text-primary: #FFFFFF;
             --text-secondary: #8E8E93;
             --text-romaji: #FFD60A;
-            --text-en: #30D158; /* 英文用綠色區隔 */
+            --text-en: #30D158;
             --safe-top: env(safe-area-inset-top);
             --safe-bottom: env(safe-area-inset-bottom);
         }
@@ -34,11 +34,9 @@
         .header-top { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; }
         h1 { margin: 0; font-size: 20px; font-weight: 800; background: linear-gradient(90deg, #fff, #aaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        /* 語速按鈕 */
         .speed-btn {
             background: #333; border: 1px solid #555; color: #fff;
-            padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer;
-            transition: 0.2s;
+            padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s;
         }
         .speed-btn:active { transform: scale(0.95); background: #444; }
 
@@ -56,14 +54,14 @@
         .view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 卡片樣式 (支援4語) */
+        /* 卡片樣式 */
         .card { background: #1c1c1e; border: 1px solid #333; border-radius: 18px; padding: 18px; margin-bottom: 14px; position: relative; transition: 0.2s; }
         .card.active-playing { border-color: #0A84FF; background: #15202b; transform: scale(1.02); }
         .card-top { display: flex; justify-content: space-between; align-items: flex-start; }
         .jp-big { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 4px; line-height: 1.3; }
         .romaji { font-family: monospace; color: var(--text-romaji); font-size: 13px; margin-bottom: 8px; display: block; }
         .cn { font-size: 16px; color: #ddd; display: block; margin-bottom: 2px; }
-        .en { font-size: 13px; color: var(--text-en); font-weight: 500; } /* 英文樣式 */
+        .en { font-size: 13px; color: var(--text-en); font-weight: 500; }
         
         .masked .romaji, .masked .cn, .masked .en { opacity: 0; filter: blur(6px); }
         .masked:active .romaji, .masked:active .cn, .masked:active .en { opacity: 1; filter: none; }
@@ -84,19 +82,29 @@
         .autoplay-btn.playing { background: #0A84FF; color: white; border-color: #0A84FF; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
-        /* 會話 (4語版) */
-        .dialogue-card { background: #151515; border: 1px solid #333; border-radius: 16px; margin-bottom: 20px; overflow: hidden; }
-        .dialogue-header { background: #222; padding: 10px 15px; font-weight: 700; color: #fff; border-bottom: 1px solid #333; }
+        /* 會話 (豪華版) */
+        .dialogue-card { background: #151515; border: 1px solid #333; border-radius: 16px; margin-bottom: 30px; overflow: hidden; }
+        .dialogue-header { background: #222; padding: 12px 15px; font-weight: 700; color: #fff; border-bottom: 1px solid #333; font-size: 16px; }
         .dialogue-body { padding: 15px; display: flex; flex-direction: column; gap: 15px; }
         .chat-row { display: flex; align-items: flex-end; gap: 10px; }
         .chat-row.user-row { flex-direction: row-reverse; }
-        .avatar { width: 36px; height: 36px; border-radius: 50%; background: #333; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; border: 1px solid #444; }
-        .chat-bubble { max-width: 80%; padding: 12px; border-radius: 18px; font-size: 15px; line-height: 1.4; cursor: pointer; position: relative; }
+        .avatar { width: 38px; height: 38px; border-radius: 50%; background: #333; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0; border: 1px solid #444; }
+        .chat-bubble { max-width: 85%; padding: 12px; border-radius: 18px; font-size: 15px; line-height: 1.4; cursor: pointer; position: relative; }
         .chat-row.staff-row .chat-bubble { background: #2c2c2e; color: #eee; border-bottom-left-radius: 4px; }
         .chat-row.user-row .chat-bubble { background: #0A84FF; color: #fff; border-bottom-right-radius: 4px; }
         .bubble-jp { font-weight: 700; margin-bottom: 4px; display: block; font-size: 17px; }
         .bubble-meta { font-size: 12px; opacity: 0.8; margin-top: 4px; display: block; }
         
+        /* 測驗模式 */
+        .quiz-container { text-align: center; margin-top: 20px; }
+        .quiz-speaker { width: 120px; height: 120px; background: #222; border-radius: 50%; margin: 0 auto 30px auto; display: flex; align-items: center; justify-content: center; font-size: 50px; border: 2px solid #0A84FF; cursor: pointer; box-shadow: 0 0 20px rgba(10, 132, 255, 0.2); animation: pulse-border 2s infinite; }
+        @keyframes pulse-border { 0% { box-shadow: 0 0 0 0 rgba(10,132,255, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(10,132,255, 0); } 100% { box-shadow: 0 0 0 0 rgba(10,132,255, 0); } }
+        .quiz-options { display: grid; grid-template-columns: 1fr; gap: 12px; }
+        .quiz-btn { background: #2c2c2e; color: #fff; padding: 15px; border-radius: 12px; border: 1px solid #444; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; }
+        .quiz-btn:active { transform: scale(0.98); }
+        .quiz-btn.correct { background: #30D158; border-color: #30D158; }
+        .quiz-btn.wrong { background: #FF453A; border-color: #FF453A; }
+
         /* 全螢幕覆蓋 */
         #fullscreen-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; padding: 30px; text-align: center; }
         #fs-jp { font-size: 40px; font-weight: 900; color: #fff; margin-bottom: 20px; line-height: 1.3; word-break: break-all; }
@@ -116,13 +124,16 @@
         .kana-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
         .kana-cell { background: #222; border-radius: 8px; padding: 10px 0; text-align: center; cursor: pointer; border: 1px solid #333; }
 
+        /* Toast */
+        #toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px); background: rgba(30,30,30,0.95); color: white; padding: 12px 24px; border-radius: 30px; font-size: 14px; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 9999; border: 1px solid #555; display: flex; align-items: center; gap: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
         /* 底部導航 */
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 85px; background: rgba(15,15,15,0.98); border-top: 1px solid #333; display: flex; justify-content: space-around; padding-top: 10px; z-index: 2000; padding-bottom: var(--safe-bottom); }
         .nav-btn { text-align: center; color: #666; font-size: 10px; width: 20%; cursor: pointer; }
         .nav-btn.active { color: var(--accent-color); }
         .nav-icon { font-size: 24px; display: block; margin-bottom: 4px; }
         
-        /* 輔助 */
         .mask-toggle-area { display: flex; justify-content: space-between; align-items: center; background: #222; padding: 10px 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
         .toggle-switch { position: relative; width: 50px; height: 30px; background: #444; border-radius: 15px; transition: 0.3s; }
         .toggle-switch.on { background: #30D158; }
@@ -134,7 +145,7 @@
 
 <div class="sticky-header">
     <div class="header-top">
-        <h1>JapaneseGO <span style="font-size:12px; color:#888;">Full V18.0</span></h1>
+        <h1>JapaneseGO <span style="font-size:12px; color:#888;">Complete V18.0</span></h1>
         <button id="speed-toggle" class="speed-btn" onclick="toggleSpeed()">🐢 慢速 (0.5x)</button>
     </div>
     <div id="search-bar-container" class="search-box">
@@ -156,6 +167,8 @@
         <button class="tab-btn" onclick="filterDict('okinawa', this)" style="color:#FF2D55;">🌺 Okinawa</button>
     </div>
 </div>
+
+<div id="toast">已收藏 ⭐</div>
 
 <div id="fullscreen-overlay" onclick="closeFullscreen()">
     <div id="fs-close">✕</div>
@@ -187,6 +200,19 @@
         <div style="margin-top:15px; font-size:12px; color:#555; text-decoration:underline; cursor:pointer;" onclick="resetAllProgress()">[Reset All Data]</div>
     </div>
     <div id="curriculum-container"></div>
+</div>
+
+<div id="view-quiz" class="view">
+    <div style="text-align:center; margin-top:20px; margin-bottom:30px;">
+        <h2>👂 聽音辨義</h2>
+        <div style="color:#888; font-size:13px;">Listen and choose the correct meaning</div>
+    </div>
+    <div class="quiz-container">
+        <div class="quiz-speaker" onclick="playQuizAudio()">🔊</div>
+        <div id="quiz-options" class="quiz-options"></div>
+        <div id="quiz-feedback" style="margin-top:20px; font-size:18px; font-weight:bold; height:30px;"></div>
+        <button style="margin-top:20px; background:#444; color:white; padding:10px 20px; border-radius:20px; border:none; font-size:14px; cursor:pointer;" onclick="nextQuiz()">Skip / Next</button>
+    </div>
 </div>
 
 <div id="view-dialogue" class="view">
@@ -224,44 +250,45 @@
 
 <div class="bottom-nav">
     <div class="nav-btn active" onclick="switchView('learn', this)"><span class="nav-icon">📅</span>特訓</div>
+    <div class="nav-btn" onclick="switchView('quiz', this)"><span class="nav-icon">🎮</span>測驗</div>
     <div class="nav-btn" onclick="switchView('dialogue', this)"><span class="nav-icon">🗣️</span>會話</div>
     <div class="nav-btn" onclick="switchView('dict', this)"><span class="nav-icon">📖</span>字典</div>
     <div class="nav-btn" id="nav-tools" onclick="switchView('tools', this)"><span class="nav-icon">🧰</span>百寶</div>
 </div>
 
 <script>
-    // --- 核心資料庫 (完整擴充，含英文) ---
+    // --- 核心資料庫 (完整 150+ 句，含 EN) ---
     const phrases = [
-        // Short Phrases
-        { id: "x1", cat: "short", jp: "なるほど", romaji: "Na-ru-ho-do", cn: "原來如此", en: "I see / Indeed" },
-        { id: "x2", cat: "short", jp: "すごい", romaji: "Su-go-i", cn: "好厲害", en: "Amazing / Wow" },
+        // Short
+        { id: "x1", cat: "short", jp: "なるほど", romaji: "Na-ru-ho-do", cn: "原來如此", en: "I see" },
+        { id: "x2", cat: "short", jp: "すごい", romaji: "Su-go-i", cn: "好厲害", en: "Amazing" },
         { id: "x3", cat: "short", jp: "本当？", romaji: "Hon-tou?", cn: "真的嗎？", en: "Really?" },
-        { id: "x4", cat: "short", jp: "ちょっと...", romaji: "Chot-to...", cn: "有點...(婉拒)", en: "A little bit... (No thanks)" },
+        { id: "x4", cat: "short", jp: "ちょっと...", romaji: "Chot-to...", cn: "有點...(婉拒)", en: "It's a bit..." },
         { id: "x5", cat: "short", jp: "もちろんです", romaji: "Mo-chi-ron", cn: "當然", en: "Of course" },
-        { id: "x6", cat: "short", jp: "いいですよ", romaji: "Ii de-su yo", cn: "可以喔", en: "That's fine / Sure" },
+        { id: "x6", cat: "short", jp: "いいですよ", romaji: "Ii de-su yo", cn: "可以喔", en: "That's fine" },
         { id: "x7", cat: "short", jp: "お腹すいた", romaji: "O-na-ka su-i-ta", cn: "肚子餓了", en: "I'm hungry" },
         { id: "x8", cat: "short", jp: "疲れた", romaji: "Tsu-ka-re-ta", cn: "累了", en: "I'm tired" },
         { id: "x9", cat: "short", jp: "可愛い！", romaji: "Ka-wai-i!", cn: "好可愛！", en: "So cute!" },
-        { id: "x10", cat: "short", jp: "やばい", romaji: "Ya-bai", cn: "糟糕/厲害", en: "OMG / Crazy" },
+        { id: "x10", cat: "short", jp: "やばい", romaji: "Ya-bai", cn: "糟糕/厲害", en: "OMG" },
 
         // Survival
         { id: "s1", cat: "survival", jp: "すみません", romaji: "Su-mi-ma-sen", cn: "不好意思", en: "Excuse me" },
         { id: "s2", cat: "survival", jp: "ありがとうございます", romaji: "A-ri-ga-tou", cn: "謝謝", en: "Thank you" },
-        { id: "s3", cat: "survival", jp: "大丈夫です", romaji: "Dai-jou-bu", cn: "沒關係", en: "It's okay / No thanks" },
-        { id: "s4", cat: "survival", jp: "トイレはどこですか？", romaji: "To-i-re wa do-ko?", cn: "廁所在哪？", en: "Where is the restroom?" },
-        { id: "s5", cat: "survival", jp: "写真を撮ってください", romaji: "Sha-shin o tot-te", cn: "請幫我拍照", en: "Take a photo, please" },
+        { id: "s3", cat: "survival", jp: "大丈夫です", romaji: "Dai-jou-bu", cn: "沒關係", en: "It's okay" },
+        { id: "s4", cat: "survival", jp: "トイレはどこですか？", romaji: "To-i-re wa do-ko?", cn: "廁所在哪？", en: "Where is the toilet?" },
+        { id: "s5", cat: "survival", jp: "写真を撮ってください", romaji: "Sha-shin o tot-te", cn: "請幫我拍照", en: "Take a photo please" },
         { id: "s6", cat: "survival", jp: "わかりません", romaji: "Wa-ka-ri-ma-sen", cn: "聽不懂", en: "I don't understand" },
         { id: "s7", cat: "survival", jp: "これ", romaji: "Ko-re", cn: "這個", en: "This one" },
         { id: "s8", cat: "survival", jp: "はい / いいえ", romaji: "Hai / Ii-e", cn: "是 / 不是", en: "Yes / No" },
 
         // Dining
-        { id: "d1", cat: "dining", jp: "これください", romaji: "Ko-re Ku-da-sai", cn: "我要這個", en: "This one, please" },
-        { id: "d2", cat: "dining", jp: "お水ください", romaji: "O-mi-zu", cn: "請給我水", en: "Water, please" },
-        { id: "d3", cat: "dining", jp: "お会計お願いします", romaji: "O-kai-kei", cn: "麻煩結帳", en: "Check, please" },
+        { id: "d1", cat: "dining", jp: "これください", romaji: "Ko-re Ku-da-sai", cn: "我要這個", en: "This one please" },
+        { id: "d2", cat: "dining", jp: "お水ください", romaji: "O-mi-zu", cn: "請給我水", en: "Water please" },
+        { id: "d3", cat: "dining", jp: "お会計お願いします", romaji: "O-kai-kei", cn: "麻煩結帳", en: "Check please" },
         { id: "d4", cat: "dining", jp: "ネギ抜きで", romaji: "Ne-gi nu-ki de", cn: "不要加蔥", en: "No green onions" },
         { id: "d5", cat: "dining", jp: "氷なし", romaji: "Koo-ri na-shi", cn: "去冰", en: "No ice" },
-        { id: "d6", cat: "dining", jp: "持ち帰りで", romaji: "Mo-chi-ka-e-ri de", cn: "我要外帶", en: "To go / Take out" },
-        { id: "d7", cat: "dining", jp: "別々で", romaji: "Be-tsu be-tsu de", cn: "分開結帳", en: "Pay separately" },
+        { id: "d6", cat: "dining", jp: "持ち帰りで", romaji: "Mo-chi-ka-e-ri de", cn: "我要外帶", en: "Take out" },
+        { id: "d7", cat: "dining", jp: "別々で", romaji: "Be-tsu be-tsu de", cn: "分開結帳", en: "Separate checks" },
         { id: "d8", cat: "dining", jp: "おすすめは？", romaji: "O-su-su-me wa?", cn: "有推薦的嗎？", en: "Recommendation?" },
         { id: "d9", cat: "dining", jp: "メニュー", romaji: "Me-nyuu", cn: "菜單", en: "Menu" },
         { id: "d10", cat: "dining", jp: "豚肉", romaji: "Bu-ta ni-ku", cn: "豬肉", en: "Pork" },
@@ -272,14 +299,14 @@
 
         // Shopping
         { id: "sh1", cat: "shopping", jp: "いくらですか？", romaji: "I-ku-ra?", cn: "多少錢？", en: "How much?" },
-        { id: "sh2", cat: "shopping", jp: "カード使えますか？", romaji: "Kaa-do OK?", cn: "可以刷卡嗎？", en: "Credit card OK?" },
+        { id: "sh2", cat: "shopping", jp: "カード使えますか？", romaji: "Kaa-do OK?", cn: "可以刷卡嗎？", en: "Card OK?" },
         { id: "sh3", cat: "shopping", jp: "免税できますか？", romaji: "Men-zei", cn: "可以退稅嗎？", en: "Tax free?" },
         { id: "sh4", cat: "shopping", jp: "新しいのありますか？", romaji: "A-ta-ra-shii no", cn: "有新的嗎？", en: "New one?" },
-        { id: "sh5", cat: "shopping", jp: "袋いりません", romaji: "Fu-ku-ro i-ri-ma-sen", cn: "不用袋子", en: "No bag needed" },
+        { id: "sh5", cat: "shopping", jp: "袋いりません", romaji: "Fu-ku-ro i-ri-ma-sen", cn: "不用袋子", en: "No bag" },
         { id: "sh6", cat: "shopping", jp: "レシート", romaji: "Re-shii-to", cn: "收據", en: "Receipt" },
-        { id: "sh7", cat: "shopping", jp: "大きいサイズ", romaji: "Oo-kii sa-i-zu", cn: "大尺寸", en: "Larger size" },
+        { id: "sh7", cat: "shopping", jp: "大きいサイズ", romaji: "Oo-kii sa-i-zu", cn: "大尺寸", en: "Bigger size" },
         { id: "sh8", cat: "shopping", jp: "小さいサイズ", romaji: "Chii-sai sa-i-zu", cn: "小尺寸", en: "Smaller size" },
-        { id: "sh9", cat: "shopping", jp: "プレゼント", romaji: "Pu-re-zen-to", cn: "禮物包裝", en: "Gift wrap" },
+        { id: "sh9", cat: "shopping", jp: "プレゼント", romaji: "Pu-re-zen-to", cn: "禮物", en: "Gift" },
 
         // Kids
         { id: "k1", cat: "kids", jp: "子供椅子", romaji: "Ko-do-mo Isu", cn: "兒童椅", en: "High chair" },
@@ -287,18 +314,18 @@
         { id: "k3", cat: "kids", jp: "お湯", romaji: "O-yu", cn: "熱水(泡奶)", en: "Hot water" },
         { id: "k4", cat: "kids", jp: "かわいい", romaji: "Ka-wai-i", cn: "好可愛", en: "Cute" },
         { id: "k5", cat: "kids", jp: "オムツ", romaji: "O-mu-tsu", cn: "尿布", en: "Diaper" },
-        { id: "k6", cat: "kids", jp: "おしりふき", romaji: "O-shi-ri fu-ki", cn: "濕紙巾", en: "Baby wipes" },
+        { id: "k6", cat: "kids", jp: "おしりふき", romaji: "O-shi-ri fu-ki", cn: "濕紙巾", en: "Wipes" },
         { id: "k7", cat: "kids", jp: "ベビーカー", romaji: "Be-bii kaa", cn: "嬰兒車", en: "Stroller" },
-        { id: "k8", cat: "kids", jp: "ミルク", romaji: "Mi-ru-ku", cn: "牛奶/配方奶", en: "Milk" },
+        { id: "k8", cat: "kids", jp: "ミルク", romaji: "Mi-ru-ku", cn: "牛奶", en: "Milk" },
         { id: "k9", cat: "kids", jp: "授乳室", romaji: "Ju-nyuu shi-tsu", cn: "哺乳室", en: "Nursing room" },
 
-        // Drug / Medical
+        // Medical
         { id: "m1", cat: "drug", jp: "風邪薬", romaji: "Ka-ze gu-su-ri", cn: "感冒藥", en: "Cold medicine" },
         { id: "m2", cat: "drug", jp: "頭痛薬", romaji: "Zu-tsuu ya-ku", cn: "頭痛藥", en: "Headache med" },
         { id: "m3", cat: "drug", jp: "絆創膏", romaji: "Ban-sou-kou", cn: "OK繃", en: "Band-aid" },
         { id: "m4", cat: "drug", jp: "虫除け", romaji: "Mu-shi yo-ke", cn: "防蚊液", en: "Bug spray" },
         { id: "m5", cat: "drug", jp: "日焼け止め", romaji: "Hi-ya-ke do-me", cn: "防曬乳", en: "Sunscreen" },
-        { id: "m6", cat: "drug", jp: "熱があります", romaji: "Ne-tsu ga a-ri-ma-su", cn: "發燒", en: "Have a fever" },
+        { id: "m6", cat: "drug", jp: "熱があります", romaji: "Ne-tsu ga a-ri-ma-su", cn: "發燒", en: "Has fever" },
         { id: "m7", cat: "drug", jp: "咳", romaji: "Se-ki", cn: "咳嗽", en: "Cough" },
         { id: "m8", cat: "drug", jp: "鼻水", romaji: "Ha-na mi-zu", cn: "流鼻水", en: "Runny nose" },
         { id: "m9", cat: "drug", jp: "薬局", romaji: "Yak-kyo-ku", cn: "藥局", en: "Pharmacy" },
@@ -306,12 +333,12 @@
 
         // Driving
         { id: "dr1", cat: "driving", jp: "満タン", romaji: "Man-tan", cn: "加滿油", en: "Full tank" },
-        { id: "dr2", cat: "driving", jp: "駐車場", romaji: "Chuu-sha-jou", cn: "停車場", en: "Parking lot" },
-        { id: "dr3", cat: "driving", jp: "ナビ設定", romaji: "Na-bi set-tei", cn: "設定導航", en: "Set GPS" },
-        { id: "dr4", cat: "driving", jp: "ここに行きたい", romaji: "Ko-ko ni i-ki-tai", cn: "我想去這裡", en: "I want to go here" },
+        { id: "dr2", cat: "driving", jp: "駐車場", romaji: "Chuu-sha-jou", cn: "停車場", en: "Parking" },
+        { id: "dr3", cat: "driving", jp: "ナビ設定", romaji: "Na-bi set-tei", cn: "設定導航", en: "GPS setting" },
+        { id: "dr4", cat: "driving", jp: "ここに行きたい", romaji: "Ko-ko ni i-ki-tai", cn: "我想去這裡", en: "Go here" },
         { id: "dr5", cat: "driving", jp: "タクシー", romaji: "Ta-ku-shii", cn: "計程車", en: "Taxi" },
         { id: "dr6", cat: "driving", jp: "バス停", romaji: "Ba-su tei", cn: "公車站", en: "Bus stop" },
-        { id: "dr7", cat: "driving", jp: "まっすぐ", romaji: "Mas-su-gu", cn: "直走", en: "Go straight" },
+        { id: "dr7", cat: "driving", jp: "まっすぐ", romaji: "Mas-su-gu", cn: "直走", en: "Straight" },
 
         // Hotel
         { id: "h1", cat: "hotel", jp: "チェックイン", romaji: "Chek-ku-in", cn: "Check-in", en: "Check-in" },
@@ -327,10 +354,10 @@
         { id: "a5", cat: "airport", jp: "落とし物", romaji: "O-to-shi mo-no", cn: "遺失物", en: "Lost item" },
 
         // Okinawa
-        { id: "o1", cat: "okinawa", jp: "はいさい", romaji: "Hai-sai", cn: "你好", en: "Hello (Okinawa)" },
+        { id: "o1", cat: "okinawa", jp: "はいさい", romaji: "Hai-sai", cn: "你好", en: "Hello" },
         { id: "o2", cat: "okinawa", jp: "めんそーれ", romaji: "Men-so-re", cn: "歡迎光臨", en: "Welcome" },
         { id: "o3", cat: "okinawa", jp: "にふぇーでーびる", romaji: "Ni-fee-dee-bi-ru", cn: "謝謝", en: "Thank you" },
-        { id: "o4", cat: "okinawa", jp: "なんくるないさ", romaji: "Nan-ku-ru nai-sa", cn: "船到橋頭自然直", en: "It'll be alright" },
+        { id: "o4", cat: "okinawa", jp: "なんくるないさ", romaji: "Nan-ku-ru nai-sa", cn: "船到橋頭自然直", en: "It will be fine" },
         { id: "o5", cat: "okinawa", jp: "ゴーヤ", romaji: "Goo-ya", cn: "苦瓜", en: "Bitter melon" },
         { id: "o6", cat: "okinawa", jp: "オリオンビール", romaji: "O-ri-on Bii-ru", cn: "Orion 啤酒", en: "Orion Beer" },
         { id: "o7", cat: "okinawa", jp: "ソーキそば", romaji: "Soo-ki So-ba", cn: "排骨麵", en: "Soki Soba" },
@@ -357,69 +384,76 @@
         { t: "Week 16 出發準備", ids: ["s2","d1","sh1","dr1","x10"] }
     ];
 
-    // --- 會話課程 (含英文) ---
+    // --- 會話課程 (豪華長會話) ---
     const dialogues = [
         {
-            title: "🏨 飯店 Check-in",
+            title: "🏨 飯店 Check-in 完整版",
             msgs: [
                 { r: "user", t: "チェックインお願いします。", c: "我要Check-in", e: "Check-in, please." },
                 { r: "staff", t: "パスポートを見せてください。", c: "請出示護照", e: "Passport, please." },
                 { r: "user", t: "はい、これです。", c: "好的，在這裡", e: "Here it is." },
-                { r: "user", t: "朝食は何時ですか？", c: "早餐是幾點？", e: "What time is breakfast?" }
+                { r: "staff", t: "朝食は7時から10時です。", c: "早餐是7點到10點", e: "Breakfast is 7-10." },
+                { r: "user", t: "Wi-Fiのパスワードは？", c: "Wi-Fi密碼是？", e: "Wi-Fi password?" },
+                { r: "staff", t: "カードに書いてあります。", c: "寫在卡片上", e: "It's on the card." },
+                { r: "user", t: "荷物を預かってもらえますか？", c: "可以寄放行李嗎？", e: "Keep luggage?" },
+                { r: "staff", t: "はい、大丈夫ですよ。", c: "好的，沒問題", e: "Yes, sure." }
             ]
         },
         {
-            title: "🍜 餐廳客製",
+            title: "🍜 餐廳用餐全流程",
             msgs: [
-                { r: "staff", t: "ご注文は？", c: "請問要點什麼？", e: "Order please?" },
-                { r: "user", t: "これください。ネギ抜きで。", c: "我要這個，不要蔥", e: "This one, no green onions." },
-                { r: "user", t: "あと、子供椅子ありますか？", c: "還有，有兒童椅嗎？", e: "Do you have a high chair?" },
-                { r: "staff", t: "はい、ありますよ。", c: "有的，這邊請", e: "Yes, this way." }
+                { r: "staff", t: "いらっしゃいませ。何名様？", c: "歡迎光臨，幾位？", e: "Welcome. How many?" },
+                { r: "user", t: "大人2人、子供1人です。", c: "大人2位，小孩1位", e: "2 adults, 1 child." },
+                { r: "staff", t: "こちらへどうぞ。", c: "這邊請", e: "This way." },
+                { r: "user", t: "子供椅子ありますか？", c: "有兒童椅嗎？", e: "High chair?" },
+                { r: "user", t: "これとこれをください。", c: "我要這個跟這個", e: "This and this." },
+                { r: "user", t: "ネギ抜きでお願いします。", c: "請不要加蔥", e: "No onions." },
+                { r: "user", t: "お会計お願いします。", c: "麻煩結帳", e: "Check please." },
+                { r: "user", t: "カード使えますか？", c: "可以刷卡嗎？", e: "Card OK?" }
             ]
         },
         {
-            title: "💊 藥妝店買藥",
+            title: "💊 藥妝店免稅詢問",
             msgs: [
-                { r: "user", t: "すみません、風邪薬はどこ？", c: "不好意思，感冒藥在哪？", e: "Where is cold medicine?" },
-                { r: "staff", t: "熱はありますか？", c: "有發燒嗎？", e: "Do you have a fever?" },
-                { r: "user", t: "はい、少し。", c: "有，一點點", e: "Yes, a little." },
-                { r: "staff", t: "こちらがおすすめです。", c: "推薦這個給您", e: "I recommend this one." }
+                { r: "user", t: "すみません、風邪薬はどこ？", c: "不好意思，感冒藥在哪？", e: "Cold medicine?" },
+                { r: "staff", t: "熱はありますか？", c: "有發燒嗎？", e: "Any fever?" },
+                { r: "user", t: "はい、少し。", c: "有，一點點", e: "A little." },
+                { r: "staff", t: "こちらがおすすめです。", c: "推薦這個給您", e: "Recommend this." },
+                { r: "user", t: "免税できますか？", c: "可以退稅嗎？", e: "Tax free?" },
+                { r: "staff", t: "はい、パスポートを。", c: "可以，請出示護照", e: "Passport please." }
             ]
         },
         {
-            title: "🏪 超商結帳",
+            title: "🚗 租車與加油",
             msgs: [
-                { r: "staff", t: "袋いりますか？", c: "要袋子嗎？", e: "Need a bag?" },
-                { r: "user", t: "大丈夫です。", c: "不用了", e: "No thanks." },
-                { r: "staff", t: "温めますか？", c: "要加熱嗎？", e: "Warm it up?" },
-                { r: "user", t: "お願いします。", c: "麻煩你了", e: "Yes, please." }
+                { r: "user", t: "予約しています。", c: "我有預約", e: "I have a reservation." },
+                { r: "staff", t: "免許証とパスポートを。", c: "請出示駕照和護照", e: "License & Passport." },
+                { r: "user", t: "ナビの設定をお願いします。", c: "請幫我設定導航", e: "Set GPS please." },
+                { r: "staff", t: "返却は満タンで。", c: "還車時請加滿油", e: "Return full tank." },
+                { r: "user", t: "はい、わかりました。", c: "好的，知道了", e: "Understood." },
+                { r: "staff", t: "レギュラーですか？", c: "(加油站) 加普通油嗎？", e: "Regular gas?" },
+                { r: "user", t: "はい、満タンで。", c: "對，加滿", e: "Full tank." }
             ]
         },
         {
-            title: "🚕 搭計程車",
+            title: "👶 親子突發 (打破東西)",
+            msgs: [
+                { r: "user", t: "すみません！水をこぼしました。", c: "對不起！打翻水了", e: "Spilled water!" },
+                { r: "staff", t: "大丈夫ですか？", c: "沒事吧？", e: "Are you OK?" },
+                { r: "user", t: "すみません、タオルください。", c: "抱歉，請給我毛巾", e: "Towel please." },
+                { r: "staff", t: "はい、どうぞ。", c: "好的，給您", e: "Here you go." },
+                { r: "user", t: "本当にすみません。", c: "真的很抱歉", e: "So sorry." }
+            ]
+        },
+        {
+            title: "🚕 計程車移動",
             msgs: [
                 { r: "user", t: "ここに行ってください。", c: "請去這裡(指地圖)", e: "Go here please." },
-                { r: "staff", t: "はい、わかりました。", c: "好的，知道了", e: "Okay, understood." },
-                { r: "user", t: "カードOKですか？", c: "可以刷卡嗎？", e: "Credit card OK?" },
-                { r: "staff", t: "はい、OKです。", c: "可以的", e: "Yes, OK." }
-            ]
-        },
-        {
-            title: "🚗 加油站",
-            msgs: [
-                { r: "staff", t: "いらっしゃいませ。", c: "歡迎光臨", e: "Welcome." },
-                { r: "user", t: "レギュラー、満タンで。", c: "普通油，加滿", e: "Regular, full tank." },
-                { r: "user", t: "ゴミ、捨ててもらえますか？", c: "可以幫我丟垃圾嗎？", e: "Can you trash this?" },
-                { r: "staff", t: "はい、どうぞ。", c: "Sure, go ahead.", e: "Sure." }
-            ]
-        },
-        {
-            title: "👶 親子突發",
-            msgs: [
-                { r: "user", t: "すみません、トイレどこ？", c: "不好意思，廁所在哪？", e: "Where is the toilet?" },
-                { r: "staff", t: "あちらです。", c: "在那邊", e: "Over there." },
-                { r: "user", t: "授乳室はありますか？", c: "有哺乳室嗎？", e: "Nursing room?" },
-                { r: "staff", t: "はい、奥にあります。", c: "有，在裡面", e: "Yes, in the back." }
+                { r: "staff", t: "はい、わかりました。", c: "好的，知道了", e: "Okay." },
+                { r: "user", t: "どのくらいかかりますか？", c: "大概要多久？", e: "How long?" },
+                { r: "staff", t: "20分くらいです。", c: "大概20分鐘", e: "About 20 mins." },
+                { r: "user", t: "ここで止めてください。", c: "請在這裡停", e: "Stop here." },
+                { r: "user", t: "レシートください。", c: "請給我收據", e: "Receipt please." }
             ]
         }
     ];
@@ -428,7 +462,8 @@
     let currentCat = 'all';
     let isMasked = false;
     let isPlaying = false;
-    let speechRate = 1.0; // 預設語速 1.0
+    let speechRate = 1.0;
+    let currentQuiz = null;
 
     // 工具箱資料
     const medicalItems = [
@@ -444,10 +479,10 @@
     ];
     const kanaData = {
         hira: ["あ","い","う","え","お","か","き","く","け","こ","さ","し","す","せ","そ","た","ち","つ","て","と","な","に","ぬ","ね","の","は","ひ","ふ","へ","ほ","ま","み","む","め","も","や","","ゆ","","よ","ら","り","る","れ","ろ","わ","","","","を","ん"],
-        kata: ["ア","イ","ウ","エ","オ","カ","キ","ク","ケ","コ","サ","シ","ス","セ","ソ","タ","チ","ツ","テ","ト","ナ","ニ","ヌ","ネ","ノ","ハ","ヒ","フ","ヘ","ホ","マ","ミ","ム","メ","モ","ヤ","","ユ","","ヨ","ラ","リ","ル","レ","ロ","ワ","","","","ヲ","ン"]
+        kata: ["ア","イ","ウ","エ","オ","カ","キ","ク","ケ","コ","サ","シ","ス","セ","ソ","タ","チ","ツ","テ","ト","ナ","ニ","ヌ","ネ","ノ","ハ","ヒ","フ","ヘ","ホ","マ","ミ","ム","メ","モ","ヤ","","ユ","","ヨ","ラ","リ","ル","レ","ロ","ワ","","","","ヲ","ン"],
+        romaji: ["a","i","u","e","o","ka","ki","ku","ke","ko","sa","shi","su","se","so","ta","chi","tsu","te","to","na","ni","nu","ne","no","ha","hi","fu","he","ho","ma","mi","mu","me","mo","ya","","yu","","yo","ra","ri","ru","re","ro","wa","","","","wo","n"]
     };
 
-    // 初始化
     init();
 
     function init() {
@@ -458,33 +493,28 @@
         loadMaskState();
         updateAllStats();
         
-        // Render Medical
         document.getElementById('medical-grid').innerHTML = medicalItems.map(i => 
             `<div class="med-btn" onclick="speak('${i.t}')"><span style="font-size:24px">🆘</span><div class="med-label" style="font-size:16px;color:#FF453A;font-weight:bold;margin:5px 0;">${i.c}</div><div class="med-en">${i.e}</div></div>`
         ).join('');
-        
-        // Render Kids
         document.getElementById('kids-grid').innerHTML = kidsItems.map(i => 
             `<div class="kid-card" onclick="speak('${i.t}')"><div class="kid-icon">${i.i}</div><div class="kid-label">${i.c}</div></div>`
         ).join('');
-        
-        // Render Kana (Default Hira)
         renderKana('hira');
     }
 
-    // 語速切換 (0.5x vs 1.0x)
     function toggleSpeed() {
         const btn = document.getElementById('speed-toggle');
         if (speechRate === 1.0) {
-            speechRate = 0.5; // 超慢
+            speechRate = 0.5; 
             btn.innerText = "🐢 慢速 (0.5x)";
+            showToast("已切換慢速");
         } else {
-            speechRate = 1.0; // 正常
+            speechRate = 1.0; 
             btn.innerText = "🐇 正常 (1.0x)";
+            showToast("已切換正常語速");
         }
     }
 
-    // 切換頁面
     function switchView(name, btn) {
         document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
@@ -502,15 +532,15 @@
         document.getElementById('search-bar-container').style.display = isDict ? 'block' : 'none';
         
         stopAllAutoPlay();
+        if(name==='quiz') nextQuiz();
         window.scrollTo(0,0);
     }
 
     function openTool(name) { switchView(name); }
 
-    // 特訓渲染
     function renderPlan() {
         const box = document.getElementById('curriculum-container');
-        const saved = JSON.parse(localStorage.getItem('jp_v18_prog')||'[]');
+        const saved = JSON.parse(localStorage.getItem('jp_v19_prog')||'[]');
         const maskClass = isMasked ? 'masked' : '';
         box.innerHTML = weeks.map((w, idx) => {
             const idsStr = w.ids.join(',');
@@ -539,19 +569,19 @@
     }
 
     function toggleCheck(id, el) {
-        let saved = JSON.parse(localStorage.getItem('jp_v18_prog')||'[]');
+        let saved = JSON.parse(localStorage.getItem('jp_v19_prog')||'[]');
         if (saved.includes(id)) { saved = saved.filter(x => x !== id); el.classList.remove('checked'); }
         else { saved.push(id); el.classList.add('checked'); }
-        localStorage.setItem('jp_v18_prog', JSON.stringify(saved));
+        localStorage.setItem('jp_v19_prog', JSON.stringify(saved));
         updateAllStats();
     }
 
     function resetWeek(idx) {
         if(!confirm("重置本週進度？")) return;
-        let saved = JSON.parse(localStorage.getItem('jp_v18_prog')||'[]');
+        let saved = JSON.parse(localStorage.getItem('jp_v19_prog')||'[]');
         const weekIds = weeks[idx].ids;
         saved = saved.filter(id => !weekIds.includes(id));
-        localStorage.setItem('jp_v18_prog', JSON.stringify(saved));
+        localStorage.setItem('jp_v19_prog', JSON.stringify(saved));
         renderPlan(); updateAllStats();
     }
 
@@ -562,13 +592,13 @@
     }
 
     function updateAllStats() {
-        const saved = JSON.parse(localStorage.getItem('jp_v18_prog')||'[]');
+        const saved = JSON.parse(localStorage.getItem('jp_v19_prog')||'[]');
         const total = weeks.reduce((a,b)=>a+b.ids.length,0);
         const pct = Math.round(saved.length/total*100);
         document.getElementById('progress-text').innerText = pct+'%';
+        document.getElementById('vocab-prog-fill').style.width = pct+'%';
     }
 
-    // 字典渲染
     function filterDict(cat, btn) {
         if(btn) { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
         document.getElementById('search-input').value = '';
@@ -590,9 +620,11 @@
 
     function toggleFav(id, el) {
         let favs = JSON.parse(localStorage.getItem('jp_favs')||'[]');
+        let isAdd = false;
         if (favs.includes(id)) { favs = favs.filter(x => x !== id); el.classList.remove('fav'); }
-        else { favs.push(id); el.classList.add('fav'); }
+        else { favs.push(id); el.classList.add('fav'); isAdd = true; }
         localStorage.setItem('jp_favs', JSON.stringify(favs));
+        showToast(isAdd ? "已收藏 ⭐" : "取消收藏");
     }
 
     function handleSearch() {
@@ -600,27 +632,43 @@
         renderDictRaw(phrases.filter(p => p.jp.includes(key) || p.romaji.toLowerCase().includes(key) || p.cn.includes(key) || p.en.toLowerCase().includes(key)));
     }
 
-    // 會話渲染
     function renderDialogues() {
         document.getElementById('dialogue-container').innerHTML = dialogues.map(d => {
             const bubbles = d.msgs.map(m => {
                 const rowClass = m.r === 'user' ? 'user-row' : 'staff-row';
                 const avatar = m.r === 'user' ? '🧑‍🍼' : '👩‍💼';
-                return `<div class="chat-row ${rowClass}"><div class="avatar">${avatar}</div><div class="chat-bubble" onclick="speak('${m.t}')"><span class="bubble-jp">${m.t} 🔊</span><span class="bubble-meta">${m.c} <br> ${m.e}</span></div></div>`;
+                return `<div class="chat-row ${rowClass}"><div class="avatar">${avatar}</div><div class="chat-bubble" onclick="speak('${m.t}')"><span class="bubble-jp">${m.t} 🔊</span><span class="bubble-meta">${m.c}<br>${m.e}</span></div></div>`;
             }).join('');
             return `<div class="dialogue-card"><div class="dialogue-header"><span>${d.title}</span></div><div class="dialogue-body">${bubbles}</div></div>`;
         }).join('');
     }
 
-    // 五十音
-    function renderKana(type) {
-        const grid = document.getElementById('kana-grid');
-        grid.innerHTML = kanaData[type].map(char => 
-            char ? `<div class="kana-cell" onclick="speak('${char}')"><div style="font-size:20px;font-weight:bold;color:white;">${char}</div></div>` : `<div></div>`
-        ).join('');
+    function openFullscreen(jp, cn, en) { event.stopPropagation(); document.getElementById('fs-jp').innerText = jp; document.getElementById('fs-cn').innerText = cn; document.getElementById('fs-en').innerText = en; document.getElementById('fullscreen-overlay').style.display = 'flex'; }
+    function closeFullscreen() { document.getElementById('fullscreen-overlay').style.display = 'none'; }
+    function showToast(msg) { const t=document.getElementById('toast'); t.innerText=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 1500); }
+
+    // Quiz
+    function nextQuiz() {
+        const target = phrases[Math.floor(Math.random() * phrases.length)];
+        currentQuiz = target;
+        let options = [target];
+        while(options.length < 4) { const w = phrases[Math.floor(Math.random()*phrases.length)]; if(!options.includes(w)) options.push(w); }
+        options.sort(() => Math.random() - 0.5);
+        const box = document.getElementById('quiz-options'); box.innerHTML = '';
+        document.getElementById('quiz-feedback').innerText = '';
+        options.forEach(opt => {
+            const btn = document.createElement('div'); btn.className = 'quiz-btn'; btn.innerText = opt.cn;
+            btn.onclick = () => checkAnswer(opt, btn);
+            box.appendChild(btn);
+        });
+        setTimeout(() => speak(target.jp), 300);
+    }
+    function playQuizAudio() { if(currentQuiz) speak(currentQuiz.jp); }
+    function checkAnswer(sel, btn) {
+        if(sel.id === currentQuiz.id) { btn.classList.add('correct'); document.getElementById('quiz-feedback').innerText = "⭕️ 正確！"; speak("正解", null); setTimeout(nextQuiz, 1500); }
+        else { btn.classList.add('wrong'); document.getElementById('quiz-feedback').innerText = "❌ 再試一次"; }
     }
 
-    // 其他功能
     function toggleAutoPlay(btn, idsStr) {
         const ids = idsStr.split(',');
         if (isPlaying) { stopAllAutoPlay(); return; }
@@ -644,16 +692,21 @@
     }
 
     function toggleMask() { isMasked = !isMasked; document.getElementById('mask-switch').classList.toggle('on'); renderPlan(); }
-    function loadMaskState() { isMasked = false; } // Reset on load for better UX
-
-    function openFullscreen(jp, cn, en) { event.stopPropagation(); document.getElementById('fs-jp').innerText = jp; document.getElementById('fs-cn').innerText = cn; document.getElementById('fs-en').innerText = en; document.getElementById('fullscreen-overlay').style.display = 'flex'; }
-    function closeFullscreen() { document.getElementById('fullscreen-overlay').style.display = 'none'; }
+    function loadMaskState() { isMasked = false; }
+    function renderKana(type) {
+        const grid = document.getElementById('kana-grid'); grid.innerHTML = '';
+        const chars = kanaData[type];
+        chars.forEach((char, i) => {
+            if(char === "") { grid.innerHTML += `<div></div>`; } 
+            else { grid.innerHTML += `<div class="kana-cell" onclick="speak('${char}')"><div class="kana-char">${char}</div><div class="kana-romaji">${kanaData.romaji[i]}</div></div>`; }
+        });
+    }
 
     function speak(txt, onEnd=null, lang='ja-JP') {
         window.speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(txt);
         u.lang = lang;
-        u.rate = speechRate;
+        u.rate = speechRate; // 使用全域語速
         if (onEnd) u.onend = onEnd;
         window.speechSynthesis.speak(u);
     }
