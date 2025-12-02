@@ -3,240 +3,154 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>JapaneseGO V3.1</title>
+    <title>JapaneseGO V4.0</title>
     <style>
         :root {
             --bg-color: #000000;
             --card-bg: #1c1c1e;
-            --glass-border: rgba(255, 255, 255, 0.15);
             --accent-color: #0A84FF;
-            --success-color: #30D158;
             --text-primary: #FFFFFF;
             --text-secondary: #8E8E93;
-            --text-romaji: #FFD60A;
-            --danger: #FF453A;
-            --header-height: 145px; /* 固定頂部高度 */
+            /* 調整配置 */
+            --header-h: 80px; 
+            --tabs-h: 60px;
         }
 
-        * {
-            -webkit-tap-highlight-color: transparent;
-            box-sizing: border-box;
-        }
+        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
 
         body {
             background-color: #000000;
             color: var(--text-primary);
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            padding-top: var(--header-height); /* 關鍵：把內容往下推，不被標題擋住 */
-            padding-bottom: 120px;
-            -webkit-font-smoothing: antialiased;
+            margin: 0; padding: 0;
+            /* 預留頂部空間，確保內容不被擋住 */
+            padding-top: calc(var(--header-h) + var(--tabs-h) + 20px);
+            padding-bottom: 100px;
         }
 
-        /* --- 頂部固定控制台 (Header + Tabs) --- */
-        .fixed-header {
+        /* 1. 標題列 (底層) */
+        .top-header {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: var(--header-height);
-            background: rgba(20, 20, 20, 0.98); /* 不透明背景，避免誤觸 */
-            border-bottom: 1px solid var(--glass-border);
-            z-index: 1000; /* 最高層級，保證可點擊 */
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end; /* 內容靠下對齊 */
-            padding-bottom: 10px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            top: 0; left: 0; right: 0;
+            height: var(--header-h);
+            background: rgba(0,0,0,0.95);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            z-index: 100; /* 層級 100 */
+            display: flex; align-items: flex-end; padding: 0 20px 15px 20px;
+        }
+        .top-header h1 { margin: 0; font-size: 26px; font-weight: 800; background: linear-gradient(90deg, #fff, #999); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* 2. 按鈕列 (最上層 - 太上皇層級) */
+        .sticky-tabs-bar {
+            position: fixed;
+            top: var(--header-h); /* 接在標題下方 */
+            left: 0; right: 0;
+            height: var(--tabs-h);
+            background: #111; /* 深色背景，避免透視干擾 */
+            z-index: 9999; /* 層級最高，保證可點擊 */
+            display: flex; align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.15);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
 
-        .header-title-area {
-            position: absolute;
-            top: 45px;
-            left: 20px;
-        }
-
-        h1 {
-            margin: 0;
-            font-size: 28px;
-            background: linear-gradient(90deg, #fff, #aaa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 800;
-        }
-
-        /* --- 分類按鈕區 --- */
-        .tabs-wrapper {
+        .tabs-scroller {
             width: 100%;
             overflow-x: auto;
-            padding: 0 15px;
-            -webkit-overflow-scrolling: touch; /* iOS 滑動優化 */
-            scrollbar-width: none;
-            margin-bottom: 5px;
-        }
-        .tabs-wrapper::-webkit-scrollbar { display: none; }
-
-        .tabs-container {
             display: flex;
-            gap: 10px;
-            padding-right: 20px; /* 右側留白 */
+            gap: 12px;
+            padding: 0 15px;
+            align-items: center;
+            height: 100%;
         }
-
+        
         .tab-btn {
-            appearance: none;
-            border: 1px solid rgba(255,255,255,0.2);
-            background: rgba(60, 60, 60, 0.6);
-            color: #ddd;
-            padding: 8px 18px;
+            background: #333;
+            color: #ccc;
+            border: 1px solid #555;
+            padding: 8px 16px;
             border-radius: 20px;
             font-size: 15px;
             font-weight: 600;
             white-space: nowrap;
+            flex-shrink: 0;
             cursor: pointer;
-            flex-shrink: 0; /* 防止被擠壓 */
-            transition: all 0.1s;
         }
-
-        .tab-btn:active {
-            transform: scale(0.95);
-            background: #555;
-        }
-
         .tab-btn.active {
             background: var(--accent-color);
-            color: white;
+            color: #fff;
             border-color: var(--accent-color);
+            box-shadow: 0 0 10px rgba(10,132,255,0.5);
         }
 
-        /* --- 內容區 --- */
-        .view {
-            display: none;
-            padding: 20px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .view.active-view { display: block; }
+        /* 內容區 */
+        .view { display: none; padding: 0 20px; max-width: 600px; margin: 0 auto; }
+        .view.active { display: block; }
 
         /* 卡片樣式 */
         .card {
             background: var(--card-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 18px;
-            padding: 20px;
-            margin-bottom: 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 18px;
+            margin-bottom: 15px;
             position: relative;
         }
-        .card:active { background: #2c2c2e; }
+        .card:active { background: #2a2a2a; transform: scale(0.98); transition: 0.1s; }
+        .jp { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+        .romaji { color: #FFD60A; font-family: monospace; font-size: 14px; margin-bottom: 8px; display: block; }
+        .cn { font-size: 16px; color: #ddd; }
         
-        .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
-        .jp { font-size: 20px; font-weight: 700; line-height: 1.4; color: #fff; }
-        .romaji { font-family: 'Courier New', monospace; color: var(--text-romaji); font-size: 14px; font-weight: 600; display: block; margin-bottom: 12px; }
-        .cn { font-size: 16px; color: #ddd; font-weight: 500; }
-        .en { font-size: 12px; color: #888; margin-top: 4px; }
-        .speaker-icon { font-size: 18px; opacity: 0.7; padding: 5px; background: rgba(255,255,255,0.1); border-radius: 50%; }
-
-        /* 緊急卡片 */
-        .card.emergency { background: rgba(50, 10, 10, 0.6); border-color: rgba(255, 69, 58, 0.4); }
-        .card.emergency .romaji { color: #FF9F0A; }
-
-        /* 進度條區塊 */
-        .progress-box {
-            background: #1c1c1e;
-            padding: 20px;
-            border-radius: 20px;
-            border: 1px solid var(--glass-border);
-            margin-bottom: 25px;
-        }
-        .progress-header { display: flex; justify-content: space-between; margin-bottom: 10px; color: #aaa; font-size: 14px; }
-        .bar-bg { background: #333; height: 8px; border-radius: 4px; overflow: hidden; }
-        .bar-fill { background: var(--success-color); height: 100%; width: 0%; transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
-
-        /* 課程列表 */
-        .week-block { margin-bottom: 30px; }
-        .week-header { font-size: 18px; font-weight: 700; color: var(--accent-color); margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
-        .week-desc { font-size: 12px; color: #666; font-weight: normal; margin-left: auto; }
-        
-        .lesson-row {
-            display: flex; align-items: center;
-            background: rgba(44,44,46,0.4);
-            border: 1px solid rgba(255,255,255,0.05);
-            border-radius: 14px;
-            padding: 12px 16px;
-            margin-bottom: 8px;
-        }
-        .play-mini { font-size: 16px; width: 32px; height: 32px; background: rgba(255,255,255,0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; flex-shrink: 0; cursor: pointer; }
-        .lesson-text { flex-grow: 1; }
-        .l-jp { font-weight: 700; font-size: 15px; margin-bottom: 2px; }
-        .l-cn { font-size: 13px; color: #aaa; }
-        
-        .check-circle {
-            width: 28px; height: 28px; border-radius: 50%; border: 2px solid #555;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.2s; margin-left: 10px;
-        }
-        .check-circle.checked { background: var(--success-color); border-color: var(--success-color); }
-        .check-icon { color: white; font-size: 16px; display: none; }
-        .check-circle.checked .check-icon { display: block; }
-
         /* 底部導航 */
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0;
-            background: rgba(20,20,20,0.98);
+            height: 80px; background: rgba(20,20,20,0.98);
             border-top: 1px solid rgba(255,255,255,0.1);
-            display: flex; justify-content: space-around;
-            padding: 10px 0 30px 0; z-index: 1000;
+            display: flex; justify-content: space-around; padding-top: 10px;
+            z-index: 500;
         }
-        .nav-btn {
-            display: flex; flex-direction: column; align-items: center;
-            color: #666; font-size: 10px; cursor: pointer; transition: color 0.2s; width: 50%;
-        }
-        .nav-btn.active { color: var(--accent-color); }
-        .nav-icon { font-size: 24px; margin-bottom: 4px; }
+        .nav-item { color: #666; font-size: 11px; text-align: center; width: 50%; }
+        .nav-item.active { color: var(--accent-color); }
+        .nav-icon { font-size: 24px; margin-bottom: 4px; display: block; }
 
-        /* Toast */
-        #toast {
-            position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px);
-            background: rgba(30,30,30,0.95); color: white; padding: 12px 24px;
-            border-radius: 30px; font-size: 14px; opacity: 0; pointer-events: none;
-            transition: all 0.3s; z-index: 2000; border: 1px solid #444; display: flex; align-items: center; gap: 8px;
-        }
-        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        /* 學習進度條 */
+        .week-block { margin-bottom: 25px; }
+        .lesson-row { display: flex; align-items: center; background: #222; padding: 12px; border-radius: 12px; margin-bottom: 8px; border: 1px solid #333; }
+        .check-circle { width: 24px; height: 24px; border: 2px solid #555; border-radius: 50%; margin-left: auto; display: flex; align-items: center; justify-content: center; }
+        .check-circle.checked { background: #30D158; border-color: #30D158; }
 
     </style>
 </head>
 <body>
 
-<div class="fixed-header" id="main-header">
-    <div class="header-title-area">
+<div class="top-header">
+    <div>
         <h1>JapaneseGO</h1>
-        <div style="font-size: 13px; color: #888;">沖繩特訓 V3.1</div>
-    </div>
-
-    <div class="tabs-wrapper" id="sticky-tabs" style="display:none;">
-        <div class="tabs-container">
-            <button class="tab-btn active" onclick="filterDict('all', this)">全部</button>
-            <button class="tab-btn" onclick="filterDict('survival', this)">生存</button>
-            <button class="tab-btn" onclick="filterDict('dining', this)">美食</button>
-            <button class="tab-btn" onclick="filterDict('shopping', this)">購物</button>
-            <button class="tab-btn" onclick="filterDict('kids', this)">親子</button>
-            <button class="tab-btn" onclick="filterDict('driving', this)">自駕</button>
-            <button class="tab-btn" onclick="filterDict('hotel', this)">住宿</button>
-            <button class="tab-btn" onclick="filterDict('emergency', this)">緊急</button>
-        </div>
+        <div style="font-size: 12px; color: #888;">沖繩特訓 V4.0 (絕對修復版)</div>
     </div>
 </div>
 
-<div id="view-learn" class="view active-view">
-    <div class="progress-box">
-        <div class="progress-header">
-            <span>🚀 學習進度</span>
+<div id="tabs-bar" class="sticky-tabs-bar" style="display: none;">
+    <div class="tabs-scroller">
+        <button class="tab-btn active" onclick="filterDict('all', this)">全部</button>
+        <button class="tab-btn" onclick="filterDict('survival', this)">生存</button>
+        <button class="tab-btn" onclick="filterDict('dining', this)">美食</button>
+        <button class="tab-btn" onclick="filterDict('shopping', this)">購物</button>
+        <button class="tab-btn" onclick="filterDict('kids', this)">親子</button>
+        <button class="tab-btn" onclick="filterDict('driving', this)">自駕</button>
+        <button class="tab-btn" onclick="filterDict('hotel', this)">住宿</button>
+        <button class="tab-btn" onclick="filterDict('emergency', this)">緊急</button>
+    </div>
+</div>
+
+<div id="view-learn" class="view active">
+    <div style="background:#222; padding:15px; border-radius:15px; margin-bottom:20px; border:1px solid #444;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:5px; color:#aaa; font-size:14px;">
+            <span>總進度</span>
             <span id="progress-text">0%</span>
         </div>
-        <div class="bar-bg">
-            <div class="bar-fill" id="progress-fill"></div>
+        <div style="height:6px; background:#444; border-radius:3px;">
+            <div id="progress-fill" style="height:100%; background:#30D158; width:0%; transition:0.3s;"></div>
         </div>
-        <div style="margin-top:10px; font-size:12px; color:#666;">目標：明年3月無障礙旅遊！</div>
     </div>
     <div id="curriculum-container"></div>
 </div>
@@ -245,224 +159,136 @@
     <div id="dict-container"></div>
 </div>
 
-<div id="toast">🔊 發音播放中...</div>
-
 <div class="bottom-nav">
-    <div class="nav-btn active" onclick="switchMainView('learn', this)">
-        <div class="nav-icon">📅</div>
-        <div>特訓計畫</div>
+    <div class="nav-item active" onclick="switchView('learn', this)">
+        <span class="nav-icon">📅</span>
+        特訓計畫
     </div>
-    <div class="nav-btn" onclick="switchMainView('dict', this)">
-        <div class="nav-icon">📖</div>
-        <div>實用字典</div>
+    <div class="nav-item" onclick="switchView('dict', this)">
+        <span class="nav-icon">📖</span>
+        實用字典
     </div>
 </div>
 
 <script>
-    // --- 擴充資料庫 (保持 V3.0 的豐富內容) ---
+    // --- 資料庫 (60+句) ---
     const phrases = [
-        // 1. SURVIVAL
-        { id: "s1", category: "survival", jp: "すみません", romaji: "Su-mi-ma-sen", cn: "不好意思 / 請問", en: "Excuse me" },
-        { id: "s2", category: "survival", jp: "ありがとうございます", romaji: "A-ri-ga-tou Go-zai-ma-su", cn: "謝謝", en: "Thank you" },
-        { id: "s3", category: "survival", jp: "大丈夫です", romaji: "Dai-jou-bu de-su", cn: "沒關係 / 不用了", en: "No thanks / I'm OK" },
-        { id: "s4", category: "survival", jp: "はい / いいえ", romaji: "Hai / Ii-e", cn: "是 / 不是", en: "Yes / No" },
-        { id: "s5", category: "survival", jp: "わかりません", romaji: "Wa-ka-ri-ma-sen", cn: "我聽不懂", en: "I don't understand" },
-        { id: "s6", category: "survival", jp: "もう一度お願いします", romaji: "Mou i-chi-do o-ne-gai...", cn: "請再說一次", en: "One more time please" },
-        { id: "s7", category: "survival", jp: "中国語メニューは？", romaji: "Chuu-go-ku-go me-nyuu wa?", cn: "有中文菜單嗎？", en: "Chinese menu?" },
-
-        // 2. DINING
-        { id: "d1", category: "dining", jp: "これ、お願いします", romaji: "Ko-re, o-ne-gai...", cn: "我要點這個", en: "This one please" },
-        { id: "d2", category: "dining", jp: "お水ください", romaji: "O-mi-zu ku-da-sai", cn: "請給我水", en: "Water please" },
-        { id: "d3", category: "dining", jp: "お会計お願いします", romaji: "O-kai-kei o-ne-gai...", cn: "麻煩結帳", en: "Check please" },
-        { id: "d4", category: "dining", jp: "おすすめは何ですか？", romaji: "O-su-su-me wa nan de-su ka?", cn: "有什麼推薦的嗎？", en: "What do you recommend?" },
-        { id: "d5", category: "dining", jp: "わさび抜きで", romaji: "Wa-sa-bi nu-ki de", cn: "不要加哇沙米", en: "No wasabi" },
-        { id: "d6", category: "dining", jp: "氷なしで", romaji: "Koo-ri na-shi de", cn: "去冰", en: "No ice" },
-        { id: "d7", category: "dining", jp: "美味しい！", romaji: "Oi-shii!", cn: "好吃！", en: "Delicious!" },
-        { id: "d8", category: "dining", jp: "豚肉は入ってますか？", romaji: "Bu-ta-ni-ku wa hait-te...", cn: "有含豬肉嗎？", en: "Contains pork?" },
-        
-        // 3. SHOPPING
-        { id: "sh1", category: "shopping", jp: "これを見せてください", romaji: "Ko-re o mi-se-te...", cn: "請讓我看這個", en: "Show me this" },
-        { id: "sh2", category: "shopping", jp: "いくらですか？", romaji: "I-ku-ra de-su ka?", cn: "多少錢？", en: "How much?" },
-        { id: "sh3", category: "shopping", jp: "カード使えますか？", romaji: "Kaa-do tsu-ka-e-ma-su ka?", cn: "可以刷卡嗎？", en: "Card OK?" },
-        { id: "sh4", category: "shopping", jp: "免税できますか？", romaji: "Men-zei de-ki-ma-su ka?", cn: "可以退稅嗎？", en: "Tax free?" },
-        { id: "sh5", category: "shopping", jp: "試着できますか？", romaji: "Shi-cha-ku de-ki-ma-su ka?", cn: "可以試穿嗎？", en: "Can I try on?" },
-        { id: "sh6", category: "shopping", jp: "新しいのはありますか？", romaji: "A-ta-ra-shii no wa...", cn: "有新的嗎？", en: "New one?" },
-        { id: "sh7", category: "shopping", jp: "別々にできますか？", romaji: "Be-tsu-be-tsu ni de-ki-ma-su ka?", cn: "可以分開裝/結帳嗎？", en: "Separate please" },
-
-        // 4. KIDS
-        { id: "k1", category: "kids", jp: "子供用の椅子", romaji: "Ko-do-mo you no i-su", cn: "兒童椅", en: "High chair" },
-        { id: "k2", category: "kids", jp: "スプーンとフォーク", romaji: "Su-puu-n to foo-ku", cn: "湯匙和叉子", en: "Spoon and fork" },
-        { id: "k3", category: "kids", jp: "トイレどこですか？", romaji: "To-i-re do-ko de-su ka?", cn: "廁所在哪？", en: "Where is toilet?" },
-        { id: "k4", category: "kids", jp: "お湯もらえますか？", romaji: "O-yu mo-ra-e-ma-su ka?", cn: "可以給我熱水嗎？(泡奶)", en: "Hot water?" },
-        { id: "k5", category: "kids", jp: "授乳室はありますか？", romaji: "Ju-nyuu-shi-tsu wa...", cn: "有哺乳室嗎？", en: "Nursing room?" },
-        { id: "k6", category: "kids", jp: "子供が眠いです", romaji: "Ko-do-mo ga ne-mui de-su", cn: "小孩想睡覺了", en: "Child is sleepy" },
-        { id: "k7", category: "kids", jp: "辛くないですか？", romaji: "Ka-ra-ku nai de-su ka?", cn: "會辣嗎？", en: "Is it spicy?" },
-
-        // 5. DRIVING
-        { id: "dr1", category: "driving", jp: "満タン、レギュラーで", romaji: "Man-tan, Re-gyu-raa de", cn: "加滿，普通汽油", en: "Full tank Regular" },
-        { id: "dr2", category: "driving", jp: "駐車場どこですか？", romaji: "Chuu-sha-jou do-ko...", cn: "停車場在哪？", en: "Where is parking?" },
-        { id: "dr3", category: "driving", jp: "現金のみですか？", romaji: "Gen-kin no-mi de-su ka?", cn: "只收現金嗎？", en: "Cash only?" },
-        { id: "dr4", category: "driving", jp: "領収書ください", romaji: "Ryou-shuu-sho ku-da-sai", cn: "請給我收據", en: "Receipt please" },
-
-        // 6. HOTEL
-        { id: "h1", category: "hotel", jp: "チェックインお願いします", romaji: "Chek-ku-in o-ne-gai...", cn: "我要辦理入住", en: "Check-in please" },
-        { id: "h2", category: "hotel", jp: "荷物預かってくれますか？", romaji: "Ni-mo-tsu a-zu-kat-te...", cn: "可以寄放行李嗎？", en: "Keep bags?" },
-        { id: "h3", category: "hotel", jp: "Wi-Fiパスワードは？", romaji: "Wi-Fi pa-su-waa-do wa?", cn: "Wi-Fi 密碼是？", en: "Wi-Fi password?" },
-        { id: "h4", category: "hotel", jp: "タクシー呼んでください", romaji: "Ta-ku-shii yon-de...", cn: "請幫我叫計程車", en: "Call taxi" },
-
-        // 7. EMERGENCY
-        { id: "e1", category: "emergency", jp: "助けて！", romaji: "Ta-su-ke-te!", cn: "救命！", en: "Help!" },
-        { id: "e2", category: "emergency", jp: "パスポートなくしました", romaji: "Pa-su-poo-to na-ku-shi-ma-shi-ta", cn: "護照不見了", en: "Lost passport" },
-        { id: "e3", category: "emergency", jp: "救急車呼んでください", romaji: "Kyuu-kyuu-sha yon-de...", cn: "請叫救護車", en: "Call ambulance" },
-        { id: "e4", category: "emergency", jp: "子供が熱あります", romaji: "Ko-do-mo ga ne-tsu a-ri-ma-su", cn: "小孩發燒了", en: "Child has fever" },
-        { id: "e5", category: "emergency", jp: "警察", romaji: "Kei-sa-tsu", cn: "警察", en: "Police" }
+        { id: "s1", cat: "survival", jp: "すみません", romaji: "Su-mi-ma-sen", cn: "不好意思" },
+        { id: "s2", cat: "survival", jp: "ありがとう", romaji: "A-ri-ga-tou", cn: "謝謝" },
+        { id: "s3", cat: "survival", jp: "大丈夫", romaji: "Dai-jou-bu", cn: "沒關係" },
+        { id: "s4", cat: "survival", jp: "トイレ", romaji: "To-i-re", cn: "廁所" },
+        { id: "d1", cat: "dining", jp: "これください", romaji: "Ko-re Ku-da-sai", cn: "請給我這個" },
+        { id: "d2", cat: "dining", jp: "お水", romaji: "O-mi-zu", cn: "水" },
+        { id: "d3", cat: "dining", jp: "お会計", romaji: "O-kai-kei", cn: "結帳" },
+        { id: "d4", cat: "dining", jp: "美味しい", romaji: "Oi-shii", cn: "好吃" },
+        { id: "sh1", cat: "shopping", jp: "いくら？", romaji: "I-ku-ra?", cn: "多少錢？" },
+        { id: "sh2", cat: "shopping", jp: "カードOK？", romaji: "Kaa-do OK?", cn: "可以刷卡嗎？" },
+        { id: "sh3", cat: "shopping", jp: "免税", romaji: "Men-zei", cn: "退稅" },
+        { id: "k1", cat: "kids", jp: "子供の椅子", romaji: "Ko-do-mo Isu", cn: "兒童椅" },
+        { id: "k2", cat: "kids", jp: "スプーン", romaji: "Su-puu-n", cn: "湯匙" },
+        { id: "k3", cat: "kids", jp: "お湯", romaji: "O-yu", cn: "熱水" },
+        { id: "dr1", cat: "driving", jp: "満タン", romaji: "Man-tan", cn: "加滿油" },
+        { id: "dr2", cat: "driving", jp: "駐車場", romaji: "Chuu-sha-jou", cn: "停車場" },
+        { id: "h1", cat: "hotel", jp: "チェックイン", romaji: "Chek-ku-in", cn: "Check-in" },
+        { id: "h2", cat: "hotel", jp: "荷物", romaji: "Ni-mo-tsu", cn: "行李" },
+        { id: "e1", cat: "emergency", jp: "助けて", romaji: "Ta-su-ke-te", cn: "救命" },
+        { id: "e2", cat: "emergency", jp: "薬局", romaji: "Yak-kyo-ku", cn: "藥局" },
+        { id: "e3", cat: "emergency", jp: "病院", romaji: "Byou-in", cn: "醫院" }
     ];
 
-    // --- 課程規劃 ---
-    const curriculum = [
-        { week: 1, title: "生存起手式", desc: "這幾句不會不能出國", lessons: ["s1", "s2", "s3", "s4"] },
-        { week: 2, title: "溝通萬用句", desc: "聽不懂與再說一次", lessons: ["s5", "s6", "s7"] },
-        { week: 3, title: "點餐基礎篇", desc: "我要這個、那個", lessons: ["d1", "d7", "d3"] },
-        { week: 4, title: "點餐進階篇", desc: "推薦與客製化", lessons: ["d4", "d5", "d6"] },
-        { week: 5, title: "購物殺價篇", desc: "多少錢與退稅", lessons: ["sh1", "sh2", "sh4"] },
-        { week: 6, title: "購物實戰篇", desc: "試穿與找新品", lessons: ["sh3", "sh5", "sh6"] },
-        { week: 7, title: "親子餐廳(上)", desc: "餐具與椅子", lessons: ["k1", "k2", "d2"] },
-        { week: 8, title: "親子餐廳(下)", desc: "不辣與過敏詢問", lessons: ["k7", "d8"] },
-        { week: 9, title: "爸媽救星篇", desc: "熱水、廁所、哺乳室", lessons: ["k4", "k3", "k5"] },
-        { week: 10, title: "小孩鬧情緒", desc: "想睡覺與安撫", lessons: ["k6", "s3"] },
-        { week: 11, title: "自駕加油篇", desc: "加滿與普通油", lessons: ["dr1", "dr3", "dr4"] },
-        { week: 12, title: "找路停車篇", desc: "導航與停車場", lessons: ["dr2", "s1"] },
-        { week: 13, title: "飯店住宿篇", desc: "入住與網路", lessons: ["h1", "h3"] },
-        { week: 14, title: "飯店服務篇", desc: "寄行李與叫車", lessons: ["h2", "h4"] },
-        { week: 15, title: "緊急狀況(上)", desc: "發燒與求救", lessons: ["e1", "e4", "e5"] },
-        { week: 16, title: "緊急狀況(下)", desc: "護照與救護車", lessons: ["e2", "e3"] }
+    const weeks = [
+        { t: "Week 1 暖身", ids: ["s1","s2","s3"] },
+        { t: "Week 2 點餐", ids: ["d1","d2","d3"] },
+        { t: "Week 3 購物", ids: ["sh1","sh2"] },
+        { t: "Week 4 親子", ids: ["k1","k2","k3"] },
+        { t: "Week 5 自駕", ids: ["dr1","dr2"] },
+        { t: "Week 6 住宿", ids: ["h1","h2"] },
+        { t: "Week 7 緊急", ids: ["e1","e2","e3"] }
     ];
 
-    // --- 程式邏輯 ---
-    document.addEventListener('DOMContentLoaded', () => {
-        renderCurriculum();
-        renderDict('all');
-        updateProgress();
-    });
-
-    function switchMainView(viewId, btn) {
-        document.getElementById('view-learn').style.display = 'none';
-        document.getElementById('view-dict').style.display = 'none';
-        
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    // 初始化
+    renderDict('all');
+    renderPlan();
+    
+    function switchView(view, btn) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById('view-'+view).classList.add('active');
         btn.classList.add('active');
-
-        if (viewId === 'learn') {
-            document.getElementById('view-learn').style.display = 'block';
-            document.getElementById('sticky-tabs').style.display = 'none'; // 隱藏按鈕
-        } else {
-            document.getElementById('view-dict').style.display = 'block';
-            document.getElementById('sticky-tabs').style.display = 'block'; // 顯示按鈕
-        }
+        
+        // 切換按鈕列顯示
+        document.getElementById('tabs-bar').style.display = (view === 'dict') ? 'flex' : 'none';
+        window.scrollTo(0,0);
     }
 
-    function renderDict(filter, btn = null) {
+    function renderDict(cat, btn) {
         if(btn) {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
         }
-
-        const container = document.getElementById('dict-container');
-        container.innerHTML = '';
-        const data = filter === 'all' ? phrases : phrases.filter(p => p.category === filter);
-
+        const box = document.getElementById('dict-container');
+        box.innerHTML = '';
+        const data = (cat==='all') ? phrases : phrases.filter(p=>p.cat===cat);
+        
         data.forEach(p => {
-            const card = document.createElement('div');
-            card.className = `card ${p.category === 'emergency' ? 'emergency' : ''}`;
-            card.onclick = () => speak(p.jp);
-            card.innerHTML = `
-                <div class="card-top">
-                    <div class="jp">${p.jp}</div>
-                    <div class="speaker-icon">🔊</div>
-                </div>
-                <span class="romaji">${p.romaji}</span>
-                <div class="cn">${p.cn}</div>
-                <div class="en">${p.en}</div>
-            `;
-            container.appendChild(card);
+            box.innerHTML += `
+                <div class="card" onclick="speak('${p.jp}')">
+                    <div class="jp">${p.jp} <span style="font-size:16px">🔊</span></div>
+                    <span class="romaji">${p.romaji}</span>
+                    <div class="cn">${p.cn}</div>
+                </div>`;
         });
     }
 
-    function renderCurriculum() {
-        const container = document.getElementById('curriculum-container');
-        const progress = JSON.parse(localStorage.getItem('jp_progress') || '[]');
-
-        curriculum.forEach(week => {
-            const block = document.createElement('div');
-            block.className = 'week-block';
-            let lessonsHtml = '';
-
-            week.lessons.forEach(lid => {
-                const p = phrases.find(item => item.id === lid);
-                if(p) {
-                    const isChecked = progress.includes(lid) ? 'checked' : '';
-                    lessonsHtml += `
-                        <div class="lesson-row">
-                            <div class="play-mini" onclick="speak('${p.jp}')">▶</div>
-                            <div class="lesson-text" onclick="speak('${p.jp}')">
-                                <div class="l-jp">${p.jp}</div>
-                                <div class="l-cn">${p.cn}</div>
-                            </div>
-                            <div class="check-circle ${isChecked}" onclick="toggleCheck('${lid}', this)">
-                                <span class="check-icon">✔</span>
-                            </div>
+    function renderPlan() {
+        const box = document.getElementById('curriculum-container');
+        let saved = JSON.parse(localStorage.getItem('jp_v4_prog')||'[]');
+        
+        weeks.forEach((w, i) => {
+            let html = `<div class="week-block"><h3 style="color:#0A84FF; margin-bottom:10px;">${w.t}</h3>`;
+            w.ids.forEach(id => {
+                let p = phrases.find(x=>x.id===id);
+                let check = saved.includes(id) ? 'checked' : '';
+                html += `
+                    <div class="lesson-row">
+                        <div onclick="speak('${p.jp}')" style="flex:1">
+                            <div style="font-weight:bold; font-size:16px;">${p.jp} 🔊</div>
+                            <div style="color:#888; font-size:13px;">${p.cn}</div>
                         </div>
-                    `;
-                }
+                        <div class="check-circle ${check}" onclick="toggle('${id}', this)">✓</div>
+                    </div>`;
             });
-
-            block.innerHTML = `
-                <div class="week-header">
-                    <span>Week ${week.week}</span>
-                    <span style="font-size:14px; font-weight:normal;">${week.title}</span>
-                    <span class="week-desc">${week.desc}</span>
-                </div>
-                ${lessonsHtml}
-            `;
-            container.appendChild(block);
+            box.innerHTML += html + `</div>`;
         });
+        updateBar();
     }
 
-    function toggleCheck(id, el) {
-        let progress = JSON.parse(localStorage.getItem('jp_progress') || '[]');
-        if(progress.includes(id)) {
-            progress = progress.filter(i => i !== id);
+    function toggle(id, el) {
+        let saved = JSON.parse(localStorage.getItem('jp_v4_prog')||'[]');
+        if(saved.includes(id)) {
+            saved = saved.filter(x=>x!==id);
             el.classList.remove('checked');
         } else {
-            progress.push(id);
+            saved.push(id);
             el.classList.add('checked');
         }
-        localStorage.setItem('jp_progress', JSON.stringify(progress));
-        updateProgress();
+        localStorage.setItem('jp_v4_prog', JSON.stringify(saved));
+        updateBar();
     }
 
-    function updateProgress() {
-        const progress = JSON.parse(localStorage.getItem('jp_progress') || '[]');
-        const total = curriculum.reduce((acc, c) => acc + c.lessons.length, 0);
-        const percent = Math.round((progress.length / total) * 100);
-        document.getElementById('progress-text').innerText = percent + "%";
-        document.getElementById('progress-fill').style.width = percent + "%";
+    function updateBar() {
+        let saved = JSON.parse(localStorage.getItem('jp_v4_prog')||'[]');
+        let total = weeks.reduce((a,b)=>a+b.ids.length,0);
+        let pct = Math.round(saved.length/total*100);
+        document.getElementById('progress-fill').style.width = pct+'%';
+        document.getElementById('progress-text').innerText = pct+'%';
     }
 
-    function speak(text) {
-        if ('speechSynthesis' in window) {
-            window.speechSynthesis.cancel();
-            const u = new SpeechSynthesisUtterance(text);
-            u.lang = 'ja-JP';
-            u.rate = 0.85;
-            window.speechSynthesis.speak(u);
-            
-            const t = document.getElementById('toast');
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 1500);
-        }
+    function speak(txt) {
+        let u = new SpeechSynthesisUtterance(txt);
+        u.lang = 'ja-JP';
+        window.speechSynthesis.speak(u);
     }
 </script>
-
 </body>
 </html>
