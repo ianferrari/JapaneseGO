@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>JapaneseGO V8.1</title>
+    <title>JapaneseGO V9.0</title>
     <style>
         :root {
             --bg-color: #000000;
@@ -20,22 +20,20 @@
             margin: 0; padding: 0; padding-bottom: 120px;
         }
 
-        /* --- 頂部區 (搜尋 + 標題) --- */
+        /* 頂部區 */
         .sticky-header {
             position: sticky; top: 0; z-index: 1000;
             background: rgba(0,0,0,0.95); backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid #333;
             padding-top: var(--safe-top);
-            transition: all 0.3s ease;
         }
         .header-top { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; }
         h1 { margin: 0; font-size: 22px; font-weight: 800; background: linear-gradient(90deg, #fff, #aaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        /* 搜尋框 (預設隱藏，字典模式才顯示) */
+        /* 搜尋框 (預設隱藏) */
         .search-box {
-            margin: 0 15px 10px 15px; position: relative;
-            display: none; /* 關鍵修正：預設隱藏 */
+            margin: 0 15px 10px 15px; position: relative; display: none;
         }
         .search-input {
             width: 100%; background: #2c2c2e; border: none; border-radius: 10px;
@@ -45,8 +43,7 @@
         
         /* 分類按鈕 (預設隱藏) */
         .tabs-container {
-            width: 100%; overflow-x: auto; padding: 0 15px 10px 15px; white-space: nowrap;
-            display: none; 
+            width: 100%; overflow-x: auto; padding: 0 15px 10px 15px; white-space: nowrap; display: none;
         }
         .tabs-container::-webkit-scrollbar { display: none; }
         .tab-btn {
@@ -56,44 +53,35 @@
         }
         .tab-btn.active { background: var(--accent-color); color: #fff; border-color: var(--accent-color); }
 
-        /* --- 內容區 --- */
+        /* 內容區 */
         .view { display: none; padding: 15px; max-width: 600px; margin: 0 auto; animation: fadeIn 0.3s; }
         .view.active { display: block; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* 記憶模式開關 */
+        /* 記憶開關 */
         .mask-toggle-area {
             display: flex; justify-content: space-between; align-items: center;
             background: #222; padding: 10px 15px; border-radius: 12px; margin-bottom: 20px;
         }
-        .toggle-switch {
-            position: relative; width: 50px; height: 30px; background: #444; border-radius: 15px; transition: 0.3s;
-        }
+        .toggle-switch { position: relative; width: 50px; height: 30px; background: #444; border-radius: 15px; transition: 0.3s; }
         .toggle-switch.on { background: #30D158; }
-        .toggle-knob {
-            position: absolute; top: 2px; left: 2px; width: 26px; height: 26px;
-            background: #fff; border-radius: 50%; transition: 0.3s;
-        }
+        .toggle-knob { position: absolute; top: 2px; left: 2px; width: 26px; height: 26px; background: #fff; border-radius: 50%; transition: 0.3s; }
         .toggle-switch.on .toggle-knob { transform: translateX(20px); }
 
-        /* 卡片 */
+        /* 卡片與列表 */
         .card { background: #1c1c1e; border: 1px solid #333; border-radius: 16px; padding: 16px; margin-bottom: 12px; position: relative; }
         .card-top { display: flex; justify-content: space-between; align-items: flex-start; }
-        .jp-big { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 5px; }
+        .jp-big { font-size: 19px; font-weight: 700; color: #fff; margin-bottom: 5px; }
         .romaji { font-family: monospace; color: #FFD60A; font-size: 13px; margin-bottom: 5px; display: block; }
         .cn { font-size: 15px; color: #ccc; transition: 0.3s; }
-        
-        /* 遮擋模式樣式 */
         .masked .romaji, .masked .cn { opacity: 0; filter: blur(5px); }
-        .masked:active .romaji, .masked:active .cn { opacity: 1; filter: none; } 
-
-        /* 收藏星星 */
+        .masked:active .romaji, .masked:active .cn { opacity: 1; filter: none; }
         .star-btn { font-size: 22px; color: #555; transition: 0.2s; padding: 5px; }
         .star-btn.fav { color: #FFD60A; transform: scale(1.2); }
 
-        /* 會話氣泡 */
+        /* 會話 */
         .dialogue-card { background: #151515; border: 1px solid #333; border-radius: 16px; margin-bottom: 20px; overflow: hidden; }
-        .dialogue-header { background: #222; padding: 10px 15px; font-weight: 700; color: #fff; border-bottom: 1px solid #333; }
+        .dialogue-header { background: #222; padding: 10px 15px; font-weight: 700; color: #fff; border-bottom: 1px solid #333; display: flex; align-items: center; gap: 8px; }
         .dialogue-body { padding: 15px; display: flex; flex-direction: column; gap: 12px; }
         .bubble { max-width: 85%; padding: 10px 14px; border-radius: 18px; font-size: 15px; position: relative; cursor: pointer; }
         .bubble.staff { align-self: flex-start; background: #2c2c2e; color: #ddd; border-bottom-left-radius: 4px; }
@@ -110,18 +98,17 @@
         .nav-btn { text-align: center; color: #666; font-size: 10px; width: 25%; }
         .nav-btn.active { color: var(--accent-color); }
         .nav-icon { font-size: 24px; display: block; margin-bottom: 4px; }
-
     </style>
 </head>
 <body>
 
 <div class="sticky-header">
     <div class="header-top">
-        <h1>JapaneseGO <span style="font-size:12px; color:#888;">Pro V8.1</span></h1>
+        <h1>JapaneseGO <span style="font-size:12px; color:#888;">Content V9.0</span></h1>
     </div>
     <div id="search-bar-container" class="search-box">
         <span class="search-icon">🔍</span>
-        <input type="text" id="search-input" class="search-input" placeholder="搜尋：廁所、水、toile..." oninput="handleSearch()">
+        <input type="text" id="search-input" class="search-input" placeholder="搜尋：尿布、痛、車..." oninput="handleSearch()">
     </div>
     <div id="tabs-bar" class="tabs-container">
         <button class="tab-btn active" onclick="filterDict('all', this)">全部</button>
@@ -130,9 +117,10 @@
         <button class="tab-btn" onclick="filterDict('dining', this)">美食</button>
         <button class="tab-btn" onclick="filterDict('shopping', this)">購物</button>
         <button class="tab-btn" onclick="filterDict('kids', this)">親子</button>
-        <button class="tab-btn" onclick="filterDict('driving', this)">自駕</button>
-        <button class="tab-btn" onclick="filterDict('hotel', this)">住宿</button>
         <button class="tab-btn" onclick="filterDict('drug', this)">藥妝</button>
+        <button class="tab-btn" onclick="filterDict('driving', this)">交通</button>
+        <button class="tab-btn" onclick="filterDict('hotel', this)">住宿</button>
+        <button class="tab-btn" onclick="filterDict('airport', this)">機場</button>
     </div>
 </div>
 
@@ -140,11 +128,10 @@
     <div class="mask-toggle-area" onclick="toggleMask()">
         <div>
             <div style="font-weight:bold; color:#fff;">🫣 記憶遮擋模式</div>
-            <div style="font-size:12px; color:#888;">隱藏中文，點擊卡片才顯示</div>
+            <div style="font-size:12px; color:#888;">隱藏中文，點擊顯示</div>
         </div>
         <div id="mask-switch" class="toggle-switch"><div class="toggle-knob"></div></div>
     </div>
-
     <div class="week-block" style="color:#888; text-align:center; font-size:13px; margin-bottom:10px;">
         總進度: <span id="progress-text">0%</span>
     </div>
@@ -172,17 +159,19 @@
 </div>
 
 <script>
-    // --- 擴充資料庫 (100+ 句) ---
+    // --- 擴充資料庫 (150+ 句) ---
     const phrases = [
-        // 生存
+        // 1. 生存 (Survival)
         { id: "s1", cat: "survival", jp: "すみません", romaji: "Su-mi-ma-sen", cn: "不好意思" },
         { id: "s2", cat: "survival", jp: "ありがとう", romaji: "A-ri-ga-tou", cn: "謝謝" },
         { id: "s3", cat: "survival", jp: "大丈夫", romaji: "Dai-jou-bu", cn: "沒關係" },
         { id: "s4", cat: "survival", jp: "トイレ", romaji: "To-i-re", cn: "廁所" },
         { id: "s5", cat: "survival", jp: "写真を撮ってください", romaji: "Sha-shin o tot-te...", cn: "請幫我拍照" },
-        { id: "s6", cat: "survival", jp: "日本語わかりません", romaji: "Ni-hon-go wa-ka-ri-ma-sen", cn: "我不會日文" },
+        { id: "s6", cat: "survival", jp: "わかりません", romaji: "Wa-ka-ri-ma-sen", cn: "聽不懂" },
+        { id: "s7", cat: "survival", jp: "これ", romaji: "Ko-re", cn: "這個" },
+        { id: "s8", cat: "survival", jp: "はい / いいえ", romaji: "Hai / Ii-e", cn: "是 / 不是" },
         
-        // 美食
+        // 2. 美食 (Dining)
         { id: "d1", cat: "dining", jp: "これください", romaji: "Ko-re Ku-da-sai", cn: "我要這個" },
         { id: "d2", cat: "dining", jp: "お水", romaji: "O-mi-zu", cn: "水" },
         { id: "d3", cat: "dining", jp: "お会計", romaji: "O-kai-kei", cn: "結帳" },
@@ -190,98 +179,167 @@
         { id: "d5", cat: "dining", jp: "氷なし", romaji: "Koo-ri na-shi", cn: "去冰" },
         { id: "d6", cat: "dining", jp: "持ち帰りで", romaji: "Mo-chi-ka-e-ri de", cn: "我要外帶" },
         { id: "d7", cat: "dining", jp: "別々で", romaji: "Be-tsu be-tsu de", cn: "分開結帳" },
-        { id: "d8", cat: "dining", jp: "辛いですか？", romaji: "Ka-rai de-su ka?", cn: "會辣嗎？" },
+        { id: "d8", cat: "dining", jp: "おすすめは？", romaji: "O-su-su-me wa?", cn: "有推薦的嗎？" },
+        { id: "d9", cat: "dining", jp: "メニュー", romaji: "Me-nyuu", cn: "菜單" },
+        { id: "d10", cat: "dining", jp: "豚肉", romaji: "Bu-ta ni-ku", cn: "豬肉" },
+        { id: "d11", cat: "dining", jp: "牛肉", romaji: "Gyuu ni-ku", cn: "牛肉" },
 
-        // 購物
+        // 3. 購物 (Shopping)
         { id: "sh1", cat: "shopping", jp: "いくら？", romaji: "I-ku-ra?", cn: "多少錢？" },
         { id: "sh2", cat: "shopping", jp: "カードOK？", romaji: "Kaa-do OK?", cn: "可以刷卡嗎？" },
         { id: "sh3", cat: "shopping", jp: "免税", romaji: "Men-zei", cn: "退稅" },
         { id: "sh4", cat: "shopping", jp: "新しいの", romaji: "A-ta-ra-shii no", cn: "有新的嗎？" },
         { id: "sh5", cat: "shopping", jp: "袋いりません", romaji: "Fu-ku-ro i-ri-ma-sen", cn: "不用袋子" },
-        { id: "sh6", cat: "shopping", jp: "これのLサイズ", romaji: "Ko-re no L sa-i-zu", cn: "這個的L號" },
+        { id: "sh6", cat: "shopping", jp: "レシート", romaji: "Re-shii-to", cn: "收據" },
+        { id: "sh7", cat: "shopping", jp: "プレゼント", romaji: "Pu-re-zen-to", cn: "禮物(包裝)" },
 
-        // 親子
+        // 4. 親子 (Kids) - 擴充
         { id: "k1", cat: "kids", jp: "子供椅子", romaji: "Ko-do-mo Isu", cn: "兒童椅" },
         { id: "k2", cat: "kids", jp: "スプーン", romaji: "Su-puu-n", cn: "湯匙" },
         { id: "k3", cat: "kids", jp: "お湯", romaji: "O-yu", cn: "熱水(泡奶)" },
         { id: "k4", cat: "kids", jp: "かわいい", romaji: "Ka-wai-i", cn: "好可愛" },
-        { id: "k5", cat: "kids", jp: "触らないで", romaji: "Sa-wa-ra-nai de", cn: "不要摸(對小孩說)" },
+        { id: "k5", cat: "kids", jp: "オムツ", romaji: "O-mu-tsu", cn: "尿布" },
+        { id: "k6", cat: "kids", jp: "おしりふき", romaji: "O-shi-ri fu-ki", cn: "濕紙巾" },
+        { id: "k7", cat: "kids", jp: "ベビーカー", romaji: "Be-bii kaa", cn: "嬰兒車" },
+        { id: "k8", cat: "kids", jp: "ミルク", romaji: "Mi-ru-ku", cn: "牛奶/配方奶" },
+        { id: "k9", cat: "kids", jp: "授乳室", romaji: "Ju-nyuu shi-tsu", cn: "哺乳室" },
 
-        // 藥妝
+        // 5. 藥妝 (Drug) - 擴充
         { id: "m1", cat: "drug", jp: "風邪薬", romaji: "Ka-ze gu-su-ri", cn: "感冒藥" },
         { id: "m2", cat: "drug", jp: "頭痛薬", romaji: "Zu-tsuu ya-ku", cn: "頭痛藥" },
         { id: "m3", cat: "drug", jp: "絆創膏", romaji: "Ban-sou-kou", cn: "OK繃" },
         { id: "m4", cat: "drug", jp: "虫除け", romaji: "Mu-shi yo-ke", cn: "防蚊液" },
         { id: "m5", cat: "drug", jp: "日焼け止め", romaji: "Hi-ya-ke do-me", cn: "防曬乳" },
+        { id: "m6", cat: "drug", jp: "熱", romaji: "Ne-tsu", cn: "發燒" },
+        { id: "m7", cat: "drug", jp: "咳", romaji: "Se-ki", cn: "咳嗽" },
+        { id: "m8", cat: "drug", jp: "鼻水", romaji: "Ha-na mi-zu", cn: "流鼻水" },
 
-        // 自駕 & 交通
+        // 6. 交通 & 自駕 (Driving)
         { id: "dr1", cat: "driving", jp: "満タン", romaji: "Man-tan", cn: "加滿油" },
         { id: "dr2", cat: "driving", jp: "駐車場", romaji: "Chuu-sha-jou", cn: "停車場" },
         { id: "dr3", cat: "driving", jp: "ナビ設定", romaji: "Na-bi set-tei", cn: "設定導航" },
-        { id: "dr4", cat: "driving", jp: "ここに行きたい", romaji: "Ko-ko ni i-ki-tai", cn: "我想去這裡(指地圖)" },
+        { id: "dr4", cat: "driving", jp: "ここに行きたい", romaji: "Ko-ko ni i-ki-tai", cn: "我想去這裡" },
+        { id: "dr5", cat: "driving", jp: "タクシー", romaji: "Ta-ku-shii", cn: "計程車" },
+        { id: "dr6", cat: "driving", jp: "バス停", romaji: "Ba-su tei", cn: "公車站" },
+        { id: "dr7", cat: "driving", jp: "まっすぐ", romaji: "Mas-su-gu", cn: "直走" },
 
-        // 住宿
+        // 7. 住宿 (Hotel)
         { id: "h1", cat: "hotel", jp: "チェックイン", romaji: "Chek-ku-in", cn: "Check-in" },
         { id: "h2", cat: "hotel", jp: "荷物預かり", romaji: "Ni-mo-tsu a-zu-ka-ri", cn: "寄放行李" },
-        { id: "h3", cat: "hotel", jp: "Wi-Fiパスワード", romaji: "Wi-Fi pa-su-waa-do", cn: "Wi-Fi密碼" }
+        { id: "h3", cat: "hotel", jp: "Wi-Fiパスワード", romaji: "Wi-Fi pa-su-waa-do", cn: "Wi-Fi密碼" },
+        { id: "h4", cat: "hotel", jp: "朝食", romaji: "Chou-sho-ku", cn: "早餐" },
+
+        // 8. 機場 (Airport) - NEW
+        { id: "a1", cat: "airport", jp: "パスポート", romaji: "Pa-su-poo-to", cn: "護照" },
+        { id: "a2", cat: "airport", jp: "レンタカー", romaji: "Ren-ta-kaa", cn: "租車" },
+        { id: "a3", cat: "airport", jp: "バス乗り場", romaji: "Ba-su no-ri-ba", cn: "巴士搭乘處" },
+        { id: "a4", cat: "airport", jp: "国際線", romaji: "Ko-ku-sai-sen", cn: "國際線" }
     ];
 
+    // --- 16 週特訓計畫 ---
+    const weeks = [
+        { t: "Week 1 生存基礎", ids: ["s1","s2","s3","s4","s7"] },
+        { t: "Week 2 溝通回應", ids: ["s6","s8","s5","d1"] },
+        { t: "Week 3 點餐入門", ids: ["d2","d3","d5","d9"] },
+        { t: "Week 4 點餐高手", ids: ["d4","d6","d7","d8"] },
+        { t: "Week 5 購物基礎", ids: ["sh1","sh2","sh3","sh5"] },
+        { t: "Week 6 購物進階", ids: ["sh4","sh6","sh7","a1"] },
+        { t: "Week 7 親子必備(1)", ids: ["k1","k2","k3","k4"] },
+        { t: "Week 8 親子必備(2)", ids: ["k5","k6","k7","k8"] },
+        { t: "Week 9 藥妝症狀(1)", ids: ["m1","m2","m3","m6"] },
+        { t: "Week 10 藥妝症狀(2)", ids: ["m4","m5","m7","m8"] },
+        { t: "Week 11 交通移動", ids: ["dr5","dr6","dr7","a3"] },
+        { t: "Week 12 自駕租車", ids: ["a2","dr1","dr2","dr3"] },
+        { t: "Week 13 飯店住宿", ids: ["h1","h2","h3","h4"] },
+        { t: "Week 14 機場通關", ids: ["a1","a4","s5","s1"] },
+        { t: "Week 15 緊急複習", ids: ["s4","m6","dr4","k9"] },
+        { t: "Week 16 出發準備", ids: ["s2","d1","sh1","dr1"] }
+    ];
+
+    // --- 8 大情境會話 ---
     const dialogues = [
         {
-            title: "🏨 飯店入住",
+            title: "🏨 飯店 Check-in",
             msgs: [
                 { r: "user", t: "チェックインお願いします。", c: "我要Check-in" },
                 { r: "staff", t: "パスポートを見せてください。", c: "請出示護照" },
-                { r: "user", t: "はい、これです。", c: "好的，在這裡" }
+                { r: "user", t: "はい、これです。", c: "好的，在這裡" },
+                { r: "user", t: "朝食は何時ですか？", c: "早餐是幾點？" }
             ]
         },
         {
-            title: "🍜 餐廳客製",
+            title: "🍜 餐廳客製點餐",
             msgs: [
                 { r: "staff", t: "ご注文は？", c: "請問要點什麼？" },
                 { r: "user", t: "これください。ネギ抜きで。", c: "我要這個，不要蔥" },
-                { r: "user", t: "あと、お水ください。", c: "還有，請給我水" }
+                { r: "user", t: "あと、子供椅子ありますか？", c: "還有，有兒童椅嗎？" },
+                { r: "staff", t: "はい、ありますよ。", c: "有的，這邊請" }
             ]
         },
         {
-            title: "💊 藥妝店尋物",
+            title: "💊 藥妝店買藥",
             msgs: [
                 { r: "user", t: "すみません、風邪薬はどこ？", c: "不好意思，感冒藥在哪？" },
-                { r: "staff", t: "あちらの棚です。", c: "在那邊的架子上" },
-                { r: "user", t: "免税できますか？", c: "可以退稅嗎？" }
+                { r: "staff", t: "熱はありますか？", c: "有發燒嗎？" },
+                { r: "user", t: "はい、少し。", c: "有，一點點" },
+                { r: "staff", t: "こちらがおすすめです。", c: "推薦這個給您" }
             ]
         },
         {
-            title: "🏪 超商結帳",
+            title: "🏪 便利商店結帳",
             msgs: [
                 { r: "staff", t: "袋いりますか？", c: "要袋子嗎？" },
                 { r: "user", t: "大丈夫です。", c: "不用了" },
-                { r: "staff", t: "レシートです。", c: "這是收據" }
+                { r: "staff", t: "温めますか？", c: "要加熱嗎？" },
+                { r: "user", t: "お願いします。", c: "麻煩你了" }
+            ]
+        },
+        {
+            title: "🚕 搭計程車",
+            msgs: [
+                { r: "user", t: "ここに行ってください。", c: "請去這裡(指地圖)" },
+                { r: "staff", t: "はい、わかりました。", c: "好的，知道了" },
+                { r: "user", t: "カードOKですか？", c: "可以刷卡嗎？" },
+                { r: "staff", t: "はい、OKです。", c: "可以的" }
+            ]
+        },
+        {
+            title: "🚗 加油站加油",
+            msgs: [
+                { r: "staff", t: "いらっしゃいませ。", c: "歡迎光臨" },
+                { r: "user", t: "レギュラー、満タンで。", c: "普通油，加滿" },
+                { r: "user", t: "ゴミ、捨ててもらえますか？", c: "可以幫我丟垃圾嗎？" },
+                { r: "staff", t: "はい、どうぞ。", c: "好的，請給我" }
+            ]
+        },
+        {
+            title: "👶 親子突發狀況",
+            msgs: [
+                { r: "user", t: "すみません、トイレどこ？", c: "不好意思，廁所在哪？" },
+                { r: "staff", t: "あちらです。", c: "在那邊" },
+                { r: "user", t: "オムツ交換台はありますか？", c: "有尿布台嗎？" },
+                { r: "staff", t: "はい、中にあります。", c: "有的，在裡面" }
+            ]
+        },
+        {
+            title: "✈️ 機場/租車櫃檯",
+            msgs: [
+                { r: "user", t: "予約しています。", c: "我有預約" },
+                { r: "staff", t: "お名前をお願いします。", c: "請告訴我大名" },
+                { r: "user", t: "台湾の〇〇です。", c: "我是台灣的〇〇" },
+                { r: "staff", t: "バスでお待ちください。", c: "請在巴士上稍等" }
             ]
         }
     ];
 
-    const weeks = [
-        { t: "Week 1 生存", ids: ["s1","s2","s3","s4","s6"] },
-        { t: "Week 2 點餐", ids: ["d1","d2","d3","d4","d5"] },
-        { t: "Week 3 購物", ids: ["sh1","sh2","sh3","sh5"] },
-        { t: "Week 4 親子", ids: ["k1","k2","k3","k5"] },
-        { t: "Week 5 藥妝", ids: ["m1","m2","m3","m4"] },
-        { t: "Week 6 自駕", ids: ["dr1","dr2","dr3","dr4"] }
-    ];
-
-    // --- 邏輯區 ---
+    // --- 核心邏輯 (與 V8.1 相同，確保穩定性) ---
     let currentCat = 'all';
     let isMasked = false;
 
-    // 初始化
     renderPlan();
     renderDialogues();
     filterDict('all', null);
     loadMaskState();
-    
-    // 預設將特訓頁面設為當前，確保 UI 狀態一致
-    // (搜尋框預設在 CSS 已設為 display:none)
 
     function switchView(name, btn) {
         document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
@@ -289,28 +347,23 @@
         document.getElementById('view-'+name).classList.add('active');
         btn.classList.add('active');
         
-        // 控制 Header 顯示
         const tabs = document.getElementById('tabs-bar');
         const search = document.getElementById('search-bar-container');
-        
         if (name === 'dict') {
             tabs.style.display = 'block';
-            search.style.display = 'block'; // 只有字典模式才顯示
+            search.style.display = 'block';
         } else {
             tabs.style.display = 'none';
-            search.style.display = 'none'; // 其他模式隱藏
+            search.style.display = 'none';
         }
         window.scrollTo(0,0);
     }
 
     function handleSearch() {
         const key = document.getElementById('search-input').value.toLowerCase();
-        // 如果在字典頁才即時渲染
         if (document.getElementById('view-dict').classList.contains('active')) {
              renderDictRaw(phrases.filter(p => 
-                p.jp.includes(key) || 
-                p.romaji.toLowerCase().includes(key) || 
-                p.cn.includes(key)
+                p.jp.includes(key) || p.romaji.toLowerCase().includes(key) || p.cn.includes(key)
             ));
         }
     }
@@ -322,7 +375,6 @@
         }
         currentCat = cat;
         document.getElementById('search-input').value = ''; 
-
         if (cat === 'fav') {
             const favs = JSON.parse(localStorage.getItem('jp_favs')||'[]');
             renderDictRaw(phrases.filter(p => favs.includes(p.id)));
@@ -336,12 +388,10 @@
     function renderDictRaw(data) {
         const box = document.getElementById('dict-container');
         const favs = JSON.parse(localStorage.getItem('jp_favs')||'[]');
-        
         if (data.length === 0) {
             box.innerHTML = '<div style="text-align:center; color:#666; padding:20px;">沒有找到結果</div>';
             return;
         }
-
         box.innerHTML = data.map(p => {
             const isFav = favs.includes(p.id) ? 'fav' : '';
             return `
@@ -408,7 +458,7 @@
                     </div>
                 </div>`;
             }).join('');
-            return `<h3 style="color:#0A84FF; margin:15px 0 10px 0;">${w.t}</h3>${lessons}`;
+            return `<h3 style="color:#0A84FF; margin:20px 0 10px 0;">${w.t}</h3>${lessons}`;
         }).join('');
         
         const total = weeks.reduce((a,b)=>a+b.ids.length,0);
@@ -439,7 +489,7 @@
                     <div class="bubble-cn">${m.c}</div>
                 </div>
             `).join('');
-            return `<div class="dialogue-card"><div class="dialogue-header">${d.title}</div><div class="dialogue-body">${bubbles}</div></div>`;
+            return `<div class="dialogue-card"><div class="dialogue-header"><span>${d.title}</span></div><div class="dialogue-body">${bubbles}</div></div>`;
         }).join('');
     }
 
