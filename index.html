@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>JapaneseGO V15.0</title>
+    <title>JapaneseGO V16.0</title>
     <style>
         :root {
             --bg-color: #000000;
@@ -31,7 +31,6 @@
         .header-top { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; }
         h1 { margin: 0; font-size: 22px; font-weight: 800; background: linear-gradient(90deg, #fff, #aaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        /* 語速按鈕 */
         .speed-btn {
             background: #333; border: 1px solid #555; color: #fff;
             padding: 5px 12px; border-radius: 20px; font-size: 14px; cursor: pointer;
@@ -60,77 +59,35 @@
         .romaji { font-family: monospace; color: #FFD60A; font-size: 14px; margin-bottom: 6px; display: block; }
         .cn { font-size: 15px; color: #ccc; }
         
-        /* 收藏星星 (優化版) */
         .card-actions { display: flex; gap: 10px; align-items: center; margin-left: 10px; }
-        .star-btn { 
-            font-size: 28px; /* 加大 */
-            color: #444; 
-            padding: 5px; 
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
-            cursor: pointer;
-        }
-        .star-btn.fav { 
-            color: #FFD60A; 
-            text-shadow: 0 0 10px rgba(255, 214, 10, 0.4); /* 發光特效 */
-            transform: scale(1.2); 
-        }
+        .star-btn { font-size: 28px; color: #444; padding: 5px; transition: transform 0.2s; cursor: pointer; }
+        .star-btn.fav { color: #FFD60A; text-shadow: 0 0 10px rgba(255, 214, 10, 0.4); transform: scale(1.2); }
         .star-btn:active { transform: scale(0.9); }
-
         .show-btn { font-size: 22px; color: #666; padding: 5px; cursor: pointer; }
+        .check-box { width: 26px; height: 26px; border-radius: 50%; border: 2px solid #555; display: flex; align-items: center; justify-content: center; cursor: pointer; color: transparent; transition: all 0.2s; }
+        .check-box.checked { background: #30D158; border-color: #30D158; color: white; }
 
-        /* 測驗模式 (Quiz) - NEW */
+        /* 測驗模式 */
         .quiz-container { text-align: center; margin-top: 20px; }
-        .quiz-speaker { 
-            width: 120px; height: 120px; background: #222; border-radius: 50%; 
-            margin: 0 auto 30px auto; display: flex; align-items: center; justify-content: center;
-            font-size: 50px; border: 2px solid #0A84FF; cursor: pointer;
-            box-shadow: 0 0 20px rgba(10, 132, 255, 0.2);
-            animation: pulse-border 2s infinite;
-        }
+        .quiz-speaker { width: 120px; height: 120px; background: #222; border-radius: 50%; margin: 0 auto 30px auto; display: flex; align-items: center; justify-content: center; font-size: 50px; border: 2px solid #0A84FF; cursor: pointer; box-shadow: 0 0 20px rgba(10, 132, 255, 0.2); animation: pulse-border 2s infinite; }
         @keyframes pulse-border { 0% { box-shadow: 0 0 0 0 rgba(10,132,255, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(10,132,255, 0); } 100% { box-shadow: 0 0 0 0 rgba(10,132,255, 0); } }
-        
         .quiz-options { display: grid; grid-template-columns: 1fr; gap: 12px; }
-        .quiz-btn { 
-            background: #2c2c2e; color: #fff; padding: 15px; border-radius: 12px; 
-            border: 1px solid #444; font-size: 16px; font-weight: 600; cursor: pointer; 
-            transition: 0.2s;
-        }
+        .quiz-btn { background: #2c2c2e; color: #fff; padding: 15px; border-radius: 12px; border: 1px solid #444; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; }
         .quiz-btn:active { transform: scale(0.98); }
         .quiz-btn.correct { background: #30D158; border-color: #30D158; }
         .quiz-btn.wrong { background: #FF453A; border-color: #FF453A; }
 
-        /* Toast 提示 */
-        #toast {
-            position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px);
-            background: rgba(30,30,30,0.95); color: white; padding: 12px 24px;
-            border-radius: 30px; font-size: 14px; opacity: 0; pointer-events: none;
-            transition: all 0.3s; z-index: 9999; border: 1px solid #555;
-            display: flex; align-items: center; gap: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-        }
+        /* Toast */
+        #toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px); background: rgba(30,30,30,0.95); color: white; padding: 12px 24px; border-radius: 30px; font-size: 14px; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 9999; border: 1px solid #555; display: flex; align-items: center; gap: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
         #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-        /* 全螢幕覆蓋 */
+        /* 全螢幕 */
         #fullscreen-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; padding: 30px; text-align: center; }
         #fs-jp { font-size: 48px; font-weight: 900; color: #fff; margin-bottom: 20px; line-height: 1.3; }
         #fs-cn { font-size: 24px; color: #888; font-weight: 500; }
         #fs-close { position: absolute; top: 50px; right: 30px; font-size: 30px; color: #666; border: 1px solid #333; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
 
-        /* 底部導航 */
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 85px; background: rgba(15,15,15,0.98); border-top: 1px solid #333; display: flex; justify-content: space-around; padding-top: 10px; z-index: 2000; }
-        .nav-btn { text-align: center; color: #666; font-size: 10px; width: 20%; cursor: pointer; }
-        .nav-btn.active { color: var(--accent-color); }
-        .nav-icon { font-size: 24px; display: block; margin-bottom: 4px; }
-        
-        /* 其他必要樣式 (特訓, 會話) */
-        .sensei-box { background: linear-gradient(135deg, #1a2a3a 0%, #1c1c1e 100%); border: 1px solid #333; border-radius: 16px; padding: 15px; margin-bottom: 20px; display: flex; gap: 15px; align-items: center; }
-        .sensei-avatar { font-size: 40px; }
-        .sensei-content { flex: 1; }
-        .sensei-title { font-size: 13px; color: #0A84FF; font-weight: bold; margin-bottom: 4px; text-transform: uppercase; }
-        .sensei-msg { font-size: 15px; line-height: 1.4; color: #fff; font-weight: 500; }
-        .week-header { margin: 30px 0 15px 0; }
-        .week-title { color: #0A84FF; font-size: 20px; font-weight: 800; margin: 0; }
-        .check-box { width: 26px; height: 26px; border-radius: 50%; border: 2px solid #555; display: flex; align-items: center; justify-content: center; cursor: pointer; color: transparent; }
-        .check-box.checked { background: #30D158; border-color: #30D158; color: white; }
+        /* 會話 */
         .dialogue-card { background: #151515; border: 1px solid #333; border-radius: 16px; margin-bottom: 20px; overflow: hidden; }
         .dialogue-header { background: #222; padding: 10px 15px; font-weight: 700; color: #fff; border-bottom: 1px solid #333; display: flex; align-items: center; gap: 8px; }
         .dialogue-body { padding: 15px; display: flex; flex-direction: column; gap: 12px; }
@@ -142,13 +99,27 @@
         .chat-row.user-row .chat-bubble { background: #0A84FF; color: #fff; border-bottom-right-radius: 4px; }
         .bubble-jp { font-size: 18px; font-weight: 700; margin-bottom: 4px; display: block; }
         .bubble-cn { font-size: 14px; opacity: 0.85; }
+
+        /* 底部導航 */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 85px; background: rgba(15,15,15,0.98); border-top: 1px solid #333; display: flex; justify-content: space-around; padding-top: 10px; z-index: 2000; }
+        .nav-btn { text-align: center; color: #666; font-size: 10px; width: 20%; cursor: pointer; }
+        .nav-btn.active { color: var(--accent-color); }
+        .nav-icon { font-size: 24px; display: block; margin-bottom: 4px; }
+        
+        .sensei-box { background: linear-gradient(135deg, #1a2a3a 0%, #1c1c1e 100%); border: 1px solid #333; border-radius: 16px; padding: 15px; margin-bottom: 20px; display: flex; gap: 15px; align-items: center; }
+        .sensei-avatar { font-size: 40px; }
+        .sensei-content { flex: 1; }
+        .sensei-title { font-size: 13px; color: #0A84FF; font-weight: bold; margin-bottom: 4px; text-transform: uppercase; }
+        .sensei-msg { font-size: 15px; line-height: 1.4; color: #fff; font-weight: 500; }
+        .week-header { margin: 30px 0 15px 0; }
+        .week-title { color: #0A84FF; font-size: 20px; font-weight: 800; margin: 0; }
     </style>
 </head>
 <body>
 
 <div class="sticky-header">
     <div class="header-top">
-        <h1>JapaneseGO <span style="font-size:12px; color:#888;">Quiz V15.0</span></h1>
+        <h1>JapaneseGO <span style="font-size:12px; color:#888;">Full V16.0</span></h1>
         <button id="speed-toggle" class="speed-btn" onclick="toggleSpeed()">🐢 龜速</button>
     </div>
     <div id="search-bar-container" class="search-box">
@@ -194,13 +165,11 @@
         <h2>👂 聽音辨義</h2>
         <div style="color:#888; font-size:13px;">點擊喇叭，選出正確的中文意思</div>
     </div>
-    
     <div class="quiz-container">
         <div class="quiz-speaker" onclick="playQuizAudio()">🔊</div>
-        <div id="quiz-options" class="quiz-options">
-            </div>
+        <div id="quiz-options" class="quiz-options"></div>
         <div id="quiz-feedback" style="margin-top:20px; font-size:18px; font-weight:bold; height:30px;"></div>
-        <button class="r-btn next" onclick="nextQuiz()" style="margin-top:20px; background:#444;">跳過 / 下一題</button>
+        <button class="r-btn next" onclick="nextQuiz()" style="margin-top:20px; background:#444; color:white; padding:10px 20px; border-radius:20px; border:none;">跳過 / 下一題</button>
     </div>
 </div>
 
@@ -242,54 +211,96 @@
         { id: "a1", cat: "airport", jp: "パスポート", romaji: "Pa-su-poo-to", cn: "護照" },
         { id: "x1", cat: "short", jp: "なるほど", romaji: "Na-ru-ho-do", cn: "原來如此" },
         { id: "x2", cat: "short", jp: "すごい", romaji: "Su-go-i", cn: "好厲害" }
-        // 請務必把所有 200+ 句資料都放進來，測驗才會豐富！
     ];
 
     const weeks = [
         { t: "Week 1 生存基礎", ids: ["s1","s2","s3","s4","x1"] },
         { t: "Week 2 點餐入門", ids: ["d1","d2","d3"] },
         { t: "Week 3 親子必備", ids: ["k1","k2","k3","k5"] }
-        // 請把完整 16 週補上
     ];
 
+    // --- 會話資料 (完整回歸) ---
     const dialogues = [
         {
-            title: "🏨 飯店入住",
-            msgs: [{r:"user",t:"チェックインお願いします。",c:"我要Check-in"},{r:"staff",t:"パスポートを。",c:"請出示護照"},{r:"user",t:"はい、これです。",c:"好的"}]
+            title: "🏨 飯店 Check-in",
+            msgs: [
+                { r: "user", t: "チェックインお願いします。", c: "我要Check-in" },
+                { r: "staff", t: "パスポートを見せてください。", c: "請出示護照" },
+                { r: "user", t: "はい、これです。", c: "好的，在這裡" },
+                { r: "user", t: "朝食は何時ですか？", c: "早餐是幾點？" }
+            ]
+        },
+        {
+            title: "🍜 餐廳客製點餐",
+            msgs: [
+                { r: "staff", t: "ご注文は？", c: "請問要點什麼？" },
+                { r: "user", t: "これください。ネギ抜きで。", c: "我要這個，不要蔥" },
+                { r: "user", t: "あと、子供椅子ありますか？", c: "還有，有兒童椅嗎？" },
+                { r: "staff", t: "はい、ありますよ。", c: "有的，這邊請" }
+            ]
+        },
+        {
+            title: "💊 藥妝店買藥",
+            msgs: [
+                { r: "user", t: "すみません、風邪薬はどこ？", c: "不好意思，感冒藥在哪？" },
+                { r: "staff", t: "熱はありますか？", c: "有發燒嗎？" },
+                { r: "user", t: "はい、少し。", c: "有，一點點" },
+                { r: "staff", t: "こちらがおすすめです。", c: "推薦這個給您" }
+            ]
+        },
+        {
+            title: "🏪 超商結帳",
+            msgs: [
+                { r: "staff", t: "袋いりますか？", c: "要袋子嗎？" },
+                { r: "user", t: "大丈夫です。", c: "不用了" },
+                { r: "staff", t: "温めますか？", c: "要加熱嗎？" },
+                { r: "user", t: "お願いします。", c: "麻煩你了" }
+            ]
+        },
+        {
+            title: "🚕 搭計程車",
+            msgs: [
+                { r: "user", t: "ここに行ってください。", c: "請去這裡(指地圖)" },
+                { r: "staff", t: "はい、わかりました。", c: "好的，知道了" },
+                { r: "user", t: "カードOKですか？", c: "可以刷卡嗎？" },
+                { r: "staff", t: "はい、OKです。", c: "可以的" }
+            ]
+        },
+        {
+            title: "🚗 加油站加油",
+            msgs: [
+                { r: "staff", t: "いらっしゃいませ。", c: "歡迎光臨" },
+                { r: "user", t: "レギュラー、満タンで。", c: "普通油，加滿" },
+                { r: "user", t: "ゴミ、捨ててもらえますか？", c: "可以幫我丟垃圾嗎？" },
+                { r: "staff", t: "はい、どうぞ。", c: "好的，請給我" }
+            ]
         }
     ];
 
     // --- 核心變數 ---
     let currentCat = 'all';
-    let speechRate = 1.0; // 預設語速
-    let currentQuiz = null; // 當前測驗題目
+    let speechRate = 1.0; 
+    let currentQuiz = null;
 
     // 初始化
     updateSenseiMsg();
     renderPlan();
-    renderDialogues();
+    renderDialogues(); // 確保呼叫會話渲染
     filterDict('all', null);
     
-    // --- 測驗功能 (Quiz) ---
+    // --- 測驗功能 ---
     function nextQuiz() {
-        // 隨機選一題
         const target = phrases[Math.floor(Math.random() * phrases.length)];
         currentQuiz = target;
-        
-        // 隨機選3個錯誤答案
         let options = [target];
         while(options.length < 4) {
             const wrong = phrases[Math.floor(Math.random() * phrases.length)];
             if (!options.includes(wrong)) options.push(wrong);
         }
-        // 洗牌選項
         options.sort(() => Math.random() - 0.5);
-        
-        // 渲染畫面
         const container = document.getElementById('quiz-options');
         container.innerHTML = '';
         document.getElementById('quiz-feedback').innerText = '';
-        
         options.forEach(opt => {
             const btn = document.createElement('div');
             btn.className = 'quiz-btn';
@@ -297,22 +308,18 @@
             btn.onclick = () => checkAnswer(opt, btn);
             container.appendChild(btn);
         });
-        
-        // 自動播放題目
         setTimeout(() => speak(target.jp), 300);
     }
     
-    function playQuizAudio() {
-        if(currentQuiz) speak(currentQuiz.jp);
-    }
+    function playQuizAudio() { if(currentQuiz) speak(currentQuiz.jp); }
     
     function checkAnswer(selected, btn) {
         if(selected.id === currentQuiz.id) {
             btn.classList.add('correct');
             document.getElementById('quiz-feedback').innerText = "⭕️ 正確！";
             document.getElementById('quiz-feedback').style.color = "#30D158";
-            speak("正解", null); // 唸出 "正解"
-            setTimeout(nextQuiz, 1500); // 自動下一題
+            speak("正解", null);
+            setTimeout(nextQuiz, 1500);
         } else {
             btn.classList.add('wrong');
             document.getElementById('quiz-feedback').innerText = "❌ 再試一次";
@@ -324,9 +331,9 @@
     function toggleSpeed() {
         const btn = document.getElementById('speed-toggle');
         if (speechRate === 1.0) {
-            speechRate = 0.7; // 變慢
+            speechRate = 0.55; // 調整為更慢，差異更明顯
             btn.innerText = "🐢 慢速";
-            showToast("已切換為慢速模式");
+            showToast("已切換為慢速 (0.55x)");
         } else {
             speechRate = 1.0; // 正常
             btn.innerText = "🐇 正常";
@@ -347,10 +354,7 @@
             isAdd = true;
         }
         localStorage.setItem('jp_favs', JSON.stringify(favs));
-        
-        // 顯示提示
         showToast(isAdd ? "已收藏 ⭐" : "已取消收藏");
-        
         if(currentCat === 'fav') filterDict('fav', null);
     }
 
@@ -372,12 +376,12 @@
         document.getElementById('tabs-bar').style.display = isDict ? 'block' : 'none';
         document.getElementById('search-bar-container').style.display = isDict ? 'block' : 'none';
         
-        if(name === 'quiz') nextQuiz(); // 進入測驗即開始
+        if(name === 'quiz') nextQuiz();
         updateSenseiMsg();
         window.scrollTo(0,0);
     }
 
-    // --- 基礎渲染 (精簡版) ---
+    // --- 渲染功能 ---
     function updateSenseiMsg() { document.getElementById('sensei-msg').innerText = cheerQuotes[Math.floor(Math.random() * cheerQuotes.length)]; }
     
     function renderPlan() {
@@ -461,7 +465,7 @@
         window.speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(txt);
         u.lang = 'ja-JP';
-        u.rate = speechRate; // 使用全域語速變數
+        u.rate = speechRate; // 使用全域語速
         if (onEnd) u.onend = onEnd;
         window.speechSynthesis.speak(u);
     }
