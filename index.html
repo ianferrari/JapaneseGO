@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>JapaneseGO V10.0</title>
+    <title>JapaneseGO V10.1</title>
     <style>
         :root {
             --bg-color: #000000;
@@ -31,7 +31,7 @@
         .header-top { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; }
         h1 { margin: 0; font-size: 22px; font-weight: 800; background: linear-gradient(90deg, #fff, #aaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        /* 搜尋框 & 分類 (字典用) */
+        /* 搜尋框 & 分類 */
         .search-box { margin: 0 15px 10px 15px; position: relative; display: none; }
         .search-input { width: 100%; background: #2c2c2e; border: none; border-radius: 10px; padding: 10px 10px 10px 35px; color: #fff; font-size: 16px; }
         .search-icon { position: absolute; left: 10px; top: 10px; color: #888; }
@@ -71,6 +71,16 @@
         .star-btn { font-size: 22px; color: #555; transition: 0.2s; padding: 5px; }
         .star-btn.fav { color: #FFD60A; transform: scale(1.2); }
 
+        /* 關鍵修復：這裡補上了打勾框框的樣式 */
+        .check-box {
+            width: 24px; height: 24px; border-radius: 50%; border: 2px solid #555;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.2s; color: transparent; /* 預設勾勾透明 */
+        }
+        .check-box.checked {
+            background: #30D158; border-color: #30D158; color: white; /* 打勾後變綠色白字 */
+        }
+
         /* 複習模式 (Review) */
         .review-stats { text-align: center; color: #888; font-size: 13px; margin-bottom: 20px; }
         .flashcard-container { perspective: 1000px; width: 100%; height: 300px; margin-top: 20px; }
@@ -94,7 +104,7 @@
 
 <div class="sticky-header">
     <div class="header-top">
-        <h1>JapaneseGO <span style="font-size:12px; color:#888;">Final V10.0</span></h1>
+        <h1>JapaneseGO <span style="font-size:12px; color:#888;">Fix V10.1</span></h1>
     </div>
     <div id="search-bar-container" class="search-box">
         <span class="search-icon">🔍</span>
@@ -185,9 +195,7 @@
 </div>
 
 <script>
-    // --- 完整資料庫 (保持 V9.0 的豐富內容) ---
-    // (為了篇幅，這裡省略中間重複的資料，請務必使用 V9.0 的完整 phrases 陣列)
-    // *** 請確保這裡包含 V9.0 所有 150+ 句單字 ***
+    // --- 完整資料庫 (包含 V9.0 所有內容) ---
     const phrases = [
         { id: "s1", cat: "survival", jp: "すみません", romaji: "Su-mi-ma-sen", cn: "不好意思" },
         { id: "s2", cat: "survival", jp: "ありがとう", romaji: "A-ri-ga-tou", cn: "謝謝" },
@@ -236,7 +244,6 @@
         { id: "a2", cat: "airport", jp: "レンタカー", romaji: "Ren-ta-kaa", cn: "租車" },
         { id: "a4", cat: "airport", jp: "国際線", romaji: "Ko-ku-sai-sen", cn: "國際線" }
     ];
-    // (上方僅列出部分，請務必補上 V9.0 的完整資料)
 
     const weeks = [
         { t: "Week 1 生存基礎", ids: ["s1","s2","s3","s4","s7"] },
@@ -323,10 +330,7 @@
             search.style.display = 'none';
         }
 
-        // 停止自動播放
         stopAllAutoPlay();
-
-        // 如果切到複習，初始化卡片
         if (name === 'review') {
             initReview();
         }
@@ -334,7 +338,7 @@
         window.scrollTo(0,0);
     }
 
-    // --- 自動播放邏輯 (Auto-Play) ---
+    // --- 自動播放邏輯 ---
     function toggleAutoPlay(btn, idsStr) {
         const ids = idsStr.split(',');
         
@@ -351,24 +355,19 @@
         
         function playNext() {
             if (!isPlaying || index >= ids.length) {
-                index = 0; // 循環播放
-                // stopAllAutoPlay(); return; // 如果不想循環，就打開這行
+                index = 0; // 循環
             }
             
             const id = ids[index];
             const p = phrases.find(x => x.id === id);
             
-            // 視覺回饋
             document.querySelectorAll('.card').forEach(c => c.classList.remove('active-playing'));
             const card = document.getElementById('card-'+id);
             if(card) card.classList.add('active-playing');
 
-            // 播放日文
             speak(p.jp, () => {
-                // 日文唸完，停 1 秒唸中文 (選用)
                 setTimeout(() => {
                     speak(p.cn, () => {
-                         // 中文唸完，停 1.5 秒換下一句
                          setTimeout(() => {
                              index++;
                              playNext();
@@ -390,7 +389,7 @@
         document.querySelectorAll('.card').forEach(c => c.classList.remove('active-playing'));
     }
 
-    // --- 複習邏輯 (Review) ---
+    // --- 複習邏輯 ---
     function initReview() {
         const saved = JSON.parse(localStorage.getItem('jp_prog')||'[]');
         document.getElementById('learned-count').innerText = saved.length;
@@ -409,15 +408,12 @@
         const saved = JSON.parse(localStorage.getItem('jp_prog')||'[]');
         if(saved.length === 0) return;
         
-        // 隨機抽一個
         const randId = saved[Math.floor(Math.random() * saved.length)];
         currentReviewCard = phrases.find(p => p.id === randId);
         
-        // 重置卡片面
         const cardEl = document.getElementById('flashcard');
         cardEl.classList.remove('flipped');
         
-        // 填入內容
         setTimeout(() => {
             document.getElementById('fc-jp').innerText = currentReviewCard.jp;
             document.getElementById('fc-romaji').innerText = currentReviewCard.romaji;
@@ -428,7 +424,6 @@
     function flipCard() {
         document.getElementById('flashcard').classList.toggle('flipped');
         if (document.getElementById('flashcard').classList.contains('flipped')) {
-            // 翻面自動播放
             setTimeout(() => speak(currentReviewCard.jp), 300);
         }
     }
@@ -443,7 +438,7 @@
         if(el) el.innerText = saved.length;
     }
 
-    // --- 其他渲染邏輯 (同前版) ---
+    // --- 通用邏輯 ---
     function renderPlan() {
         const box = document.getElementById('curriculum-container');
         const saved = JSON.parse(localStorage.getItem('jp_prog')||'[]');
@@ -463,8 +458,7 @@
                             <span class="romaji">${p.romaji}</span>
                             <div class="cn">${p.cn}</div>
                         </div>
-                        <div class="check-box ${chk}" onclick="toggleCheck('${id}', this)" 
-                             style="width:24px; height:24px; border-radius:50%; border:2px solid #555; display:flex; align-items:center; justify-content:center;">
+                        <div class="check-box ${chk}" onclick="toggleCheck('${id}', this)">
                              ✓
                         </div>
                     </div>
@@ -483,8 +477,24 @@
         const pct = Math.round(saved.length/total*100);
         document.getElementById('progress-text').innerText = pct+'%';
     }
+
+    function toggleCheck(id, el) {
+        let saved = JSON.parse(localStorage.getItem('jp_prog')||'[]');
+        if (saved.includes(id)) {
+            saved = saved.filter(x => x !== id);
+            el.classList.remove('checked');
+        } else {
+            saved.push(id);
+            el.classList.add('checked');
+        }
+        localStorage.setItem('jp_prog', JSON.stringify(saved));
+        
+        const total = weeks.reduce((a,b)=>a+b.ids.length,0);
+        const pct = Math.round(saved.length/total*100);
+        document.getElementById('progress-text').innerText = pct+'%';
+        updateReviewStats();
+    }
     
-    // (其餘 Search, Filter, Speak 等基礎功能保持不變，與 V9.0 相同)
     function handleSearch() {
         const key = document.getElementById('search-input').value.toLowerCase();
         if (document.getElementById('view-dict').classList.contains('active')) {
@@ -558,24 +568,7 @@
         isMasked = JSON.parse(localStorage.getItem('jp_mask')||'false');
         if(isMasked) document.getElementById('mask-switch').classList.add('on');
     }
-    
-    function toggleCheck(id, el) {
-        let saved = JSON.parse(localStorage.getItem('jp_prog')||'[]');
-        if (saved.includes(id)) {
-            saved = saved.filter(x => x !== id);
-            el.classList.remove('checked');
-        } else {
-            saved.push(id);
-            el.classList.add('checked');
-        }
-        localStorage.setItem('jp_prog', JSON.stringify(saved));
-        // 更新 %
-        const total = weeks.reduce((a,b)=>a+b.ids.length,0);
-        const pct = Math.round(saved.length/total*100);
-        document.getElementById('progress-text').innerText = pct+'%';
-        updateReviewStats();
-    }
-    
+
     function renderDialogues() {
         document.getElementById('dialogue-container').innerHTML = dialogues.map(d => {
             const bubbles = d.msgs.map(m => `
@@ -601,3 +594,4 @@
 </script>
 </body>
 </html>
+
