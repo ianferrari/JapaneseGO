@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>JapaneseGO V19.0</title>
+    <title>JapaneseGO V20.0</title>
     <style>
         :root {
             --bg-color: #000000;
@@ -46,7 +46,7 @@
         .search-icon { position: absolute; left: 10px; top: 10px; color: #888; }
         .tabs-container { width: 100%; overflow-x: auto; padding: 0 15px 10px 15px; white-space: nowrap; display: none; }
         .tabs-container::-webkit-scrollbar { display: none; }
-        .tab-btn { display: inline-block; appearance: none; background: #333; color: #ccc; border: 1px solid #444; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-right: 8px; transition: all 0.2s; }
+        .tab-btn { display: inline-block; appearance: none; background: #333; color: #ccc; border: 1px solid #444; padding: 8px 16px; border-radius: 20px; font-size: 14px; font-weight: 600; margin-right: 8px; transition: all 0.2s; }
         .tab-btn.active { background: var(--accent-color); color: #fff; border-color: var(--accent-color); }
 
         /* 內容區 */
@@ -82,7 +82,7 @@
         .autoplay-btn.playing { background: #0A84FF; color: white; border-color: #0A84FF; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
-        /* 會話 (豪華版) */
+        /* 會話 */
         .dialogue-card { background: #151515; border: 1px solid #333; border-radius: 16px; margin-bottom: 30px; overflow: hidden; }
         .dialogue-header { background: #222; padding: 12px 15px; font-weight: 700; color: #fff; border-bottom: 1px solid #333; font-size: 16px; }
         .dialogue-body { padding: 15px; display: flex; flex-direction: column; gap: 15px; }
@@ -105,13 +105,6 @@
         .quiz-btn.correct { background: #30D158; border-color: #30D158; }
         .quiz-btn.wrong { background: #FF453A; border-color: #FF453A; }
 
-        /* 全螢幕覆蓋 */
-        #fullscreen-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; padding: 30px; text-align: center; }
-        #fs-jp { font-size: 40px; font-weight: 900; color: #fff; margin-bottom: 20px; line-height: 1.3; word-break: break-all; }
-        #fs-cn { font-size: 24px; color: #888; font-weight: 500; margin-bottom: 10px; }
-        #fs-en { font-size: 18px; color: var(--text-en); }
-        #fs-close { position: absolute; top: 50px; right: 30px; font-size: 30px; color: #666; border: 1px solid #333; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
-
         /* 百寶箱與其他 */
         .toolbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
         .tool-card { background: #1c1c1e; border: 1px solid #333; border-radius: 20px; padding: 20px; text-align: center; cursor: pointer; height: 130px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
@@ -123,6 +116,13 @@
         .kid-icon { font-size: 50px; margin-bottom: 5px; }
         .kana-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
         .kana-cell { background: #222; border-radius: 8px; padding: 10px 0; text-align: center; cursor: pointer; border: 1px solid #333; }
+
+        /* 全螢幕覆蓋 */
+        #fullscreen-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; padding: 30px; text-align: center; }
+        #fs-jp { font-size: 40px; font-weight: 900; color: #fff; margin-bottom: 20px; line-height: 1.3; word-break: break-all; }
+        #fs-cn { font-size: 24px; color: #888; font-weight: 500; margin-bottom: 10px; }
+        #fs-en { font-size: 18px; color: var(--text-en); }
+        #fs-close { position: absolute; top: 50px; right: 30px; font-size: 30px; color: #666; border: 1px solid #333; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
 
         /* Toast */
         #toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px); background: rgba(30,30,30,0.95); color: white; padding: 12px 24px; border-radius: 30px; font-size: 14px; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 9999; border: 1px solid #555; display: flex; align-items: center; gap: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
@@ -145,26 +145,26 @@
 
 <div class="sticky-header">
     <div class="header-top">
-        <h1>JapaneseGO <span style="font-size:12px; color:#888;">Complete V18.0</span></h1>
+        <h1>JapaneseGO <span style="font-size:12px; color:#888;">Fix V20.0</span></h1>
         <button id="speed-toggle" class="speed-btn" onclick="toggleSpeed()">🐢 慢速 (0.5x)</button>
     </div>
     <div id="search-bar-container" class="search-box">
         <span class="search-icon">🔍</span>
-        <input type="text" id="search-input" class="search-input" placeholder="搜尋/Search..." oninput="handleSearch()">
+        <input type="text" id="search-input" class="search-input" placeholder="搜尋..." oninput="handleSearch()">
     </div>
     <div id="tabs-bar" class="tabs-container">
-        <button class="tab-btn active" onclick="filterDict('all', this)">All</button>
-        <button class="tab-btn" onclick="filterDict('short', this)">🗣️ Short</button>
-        <button class="tab-btn" onclick="filterDict('fav', this)">⭐ Fav</button>
-        <button class="tab-btn" onclick="filterDict('survival', this)">Survival</button>
-        <button class="tab-btn" onclick="filterDict('dining', this)">Dining</button>
-        <button class="tab-btn" onclick="filterDict('shopping', this)">Shopping</button>
-        <button class="tab-btn" onclick="filterDict('kids', this)">Kids</button>
-        <button class="tab-btn" onclick="filterDict('drug', this)">Medical</button>
-        <button class="tab-btn" onclick="filterDict('driving', this)">Driving</button>
-        <button class="tab-btn" onclick="filterDict('hotel', this)">Hotel</button>
-        <button class="tab-btn" onclick="filterDict('airport', this)">Airport</button>
-        <button class="tab-btn" onclick="filterDict('okinawa', this)" style="color:#FF2D55;">🌺 Okinawa</button>
+        <button class="tab-btn active" onclick="filterDict('all', this)">全部</button>
+        <button class="tab-btn" onclick="filterDict('short', this)">🗣️ 短句</button>
+        <button class="tab-btn" onclick="filterDict('fav', this)">⭐ 收藏</button>
+        <button class="tab-btn" onclick="filterDict('survival', this)">生存</button>
+        <button class="tab-btn" onclick="filterDict('dining', this)">美食</button>
+        <button class="tab-btn" onclick="filterDict('shopping', this)">購物</button>
+        <button class="tab-btn" onclick="filterDict('kids', this)">親子</button>
+        <button class="tab-btn" onclick="filterDict('drug', this)">藥妝</button>
+        <button class="tab-btn" onclick="filterDict('driving', this)">交通</button>
+        <button class="tab-btn" onclick="filterDict('hotel', this)">住宿</button>
+        <button class="tab-btn" onclick="filterDict('airport', this)">機場</button>
+        <button class="tab-btn" onclick="filterDict('okinawa', this)" style="color:#FF2D55;">🌺 沖繩</button>
     </div>
 </div>
 
@@ -182,7 +182,7 @@
     <div style="background:linear-gradient(135deg,#1a2a3a,#1c1c1e); border:1px solid #333; border-radius:16px; padding:15px; margin-bottom:20px; display:flex; gap:15px; align-items:center;">
         <div style="font-size:40px;">🦁</div>
         <div style="flex:1;">
-            <div style="font-size:13px; color:#0A84FF; font-weight:bold; margin-bottom:4px;">Sensei's Tips</div>
+            <div style="font-size:13px; color:#0A84FF; font-weight:bold; margin-bottom:4px;">教練叮嚀</div>
             <div id="sensei-msg" style="font-size:15px; color:#fff;">...</div>
         </div>
     </div>
@@ -190,14 +190,14 @@
     <div class="mask-toggle-area" onclick="toggleMask()">
         <div>
             <div style="font-weight:bold; color:#fff;">🫣 記憶遮擋 (Mask Mode)</div>
-            <div style="font-size:12px; color:#888;">Hide translation / 隱藏翻譯</div>
+            <div style="font-size:12px; color:#888;">隱藏中文，考考自己</div>
         </div>
         <div id="mask-switch" class="toggle-switch"><div class="toggle-knob"></div></div>
     </div>
 
     <div class="week-block" style="color:#888; text-align:center; font-size:13px; margin-bottom:10px;">
         Progress: <span id="progress-text">0%</span>
-        <div style="margin-top:15px; font-size:12px; color:#555; text-decoration:underline; cursor:pointer;" onclick="resetAllProgress()">[Reset All Data]</div>
+        <div style="margin-top:15px; font-size:12px; color:#555; text-decoration:underline; cursor:pointer;" onclick="resetAllProgress()">[清除全部進度]</div>
     </div>
     <div id="curriculum-container"></div>
 </div>
@@ -205,13 +205,13 @@
 <div id="view-quiz" class="view">
     <div style="text-align:center; margin-top:20px; margin-bottom:30px;">
         <h2>👂 聽音辨義</h2>
-        <div style="color:#888; font-size:13px;">Listen and choose the correct meaning</div>
+        <div style="color:#888; font-size:13px;">點擊喇叭，選出正確的中文意思</div>
     </div>
     <div class="quiz-container">
         <div class="quiz-speaker" onclick="playQuizAudio()">🔊</div>
         <div id="quiz-options" class="quiz-options"></div>
         <div id="quiz-feedback" style="margin-top:20px; font-size:18px; font-weight:bold; height:30px;"></div>
-        <button style="margin-top:20px; background:#444; color:white; padding:10px 20px; border-radius:20px; border:none; font-size:14px; cursor:pointer;" onclick="nextQuiz()">Skip / Next</button>
+        <button style="margin-top:20px; background:#444; color:white; padding:10px 20px; border-radius:20px; border:none; font-size:14px; cursor:pointer;" onclick="nextQuiz()">跳過 / 下一題</button>
     </div>
 </div>
 
@@ -232,11 +232,11 @@
 </div>
 
 <div id="view-medical" class="view">
-    <div style="margin-bottom:20px; cursor:pointer; color:#0A84FF;" onclick="switchView('tools', document.getElementById('nav-tools'))">⬅ Back</div>
+    <div style="margin-bottom:20px; cursor:pointer; color:#0A84FF;" onclick="switchView('tools', document.getElementById('nav-tools'))">⬅ 返回</div>
     <div class="medical-grid" id="medical-grid"></div>
 </div>
 <div id="view-kana" class="view">
-    <div style="margin-bottom:20px; cursor:pointer; color:#0A84FF;" onclick="switchView('tools', document.getElementById('nav-tools'))">⬅ Back</div>
+    <div style="margin-bottom:20px; cursor:pointer; color:#0A84FF;" onclick="switchView('tools', document.getElementById('nav-tools'))">⬅ 返回</div>
     <div style="display:flex; justify-content:center; gap:20px; margin-bottom:20px;">
         <button class="tab-btn active" onclick="renderKana('hira')">平假名</button>
         <button class="tab-btn" onclick="renderKana('kata')">片假名</button>
@@ -244,7 +244,7 @@
     <div id="kana-grid" class="kana-grid"></div>
 </div>
 <div id="view-kids" class="view" style="background:#f0f8ff; min-height:100vh;">
-    <div style="margin-bottom:20px; cursor:pointer; color:#0A84FF; font-weight:bold;" onclick="switchView('tools', document.getElementById('nav-tools'))">⬅ Back</div>
+    <div style="margin-bottom:20px; cursor:pointer; color:#0A84FF; font-weight:bold;" onclick="switchView('tools', document.getElementById('nav-tools'))">⬅ 返回</div>
     <div class="kids-grid" id="kids-grid"></div>
 </div>
 
@@ -253,7 +253,7 @@
     <div class="nav-btn" onclick="switchView('quiz', this)"><span class="nav-icon">🎮</span>測驗</div>
     <div class="nav-btn" onclick="switchView('dialogue', this)"><span class="nav-icon">🗣️</span>會話</div>
     <div class="nav-btn" onclick="switchView('dict', this)"><span class="nav-icon">📖</span>字典</div>
-    <div class="nav-btn" id="nav-tools" onclick="switchView('tools', this)"><span class="nav-icon">🧰</span>百寶</div>
+    <div class="nav-btn" id="nav-tools" onclick="switchView('tools', this)"><span class="nav-icon">🧰</span>百寶箱</div>
 </div>
 
 <script>
@@ -384,7 +384,7 @@
         { t: "Week 16 出發準備", ids: ["s2","d1","sh1","dr1","x10"] }
     ];
 
-    // --- 會話課程 (豪華長會話) ---
+    // --- 會話課程 (含英文) ---
     const dialogues = [
         {
             title: "🏨 飯店 Check-in 完整版",
@@ -462,7 +462,7 @@
     let currentCat = 'all';
     let isMasked = false;
     let isPlaying = false;
-    let speechRate = 1.0;
+    let speechRate = 1.0; // 預設語速 1.0
     let currentQuiz = null;
 
     // 工具箱資料
@@ -479,10 +479,10 @@
     ];
     const kanaData = {
         hira: ["あ","い","う","え","お","か","き","く","け","こ","さ","し","す","せ","そ","た","ち","つ","て","と","な","に","ぬ","ね","の","は","ひ","ふ","へ","ほ","ま","み","む","め","も","や","","ゆ","","よ","ら","り","る","れ","ろ","わ","","","","を","ん"],
-        kata: ["ア","イ","ウ","エ","オ","カ","キ","ク","ケ","コ","サ","シ","ス","セ","ソ","タ","チ","ツ","テ","ト","ナ","ニ","ヌ","ネ","ノ","ハ","ヒ","フ","ヘ","ホ","マ","ミ","ム","メ","モ","ヤ","","ユ","","ヨ","ラ","リ","ル","レ","ロ","ワ","","","","ヲ","ン"],
-        romaji: ["a","i","u","e","o","ka","ki","ku","ke","ko","sa","shi","su","se","so","ta","chi","tsu","te","to","na","ni","nu","ne","no","ha","hi","fu","he","ho","ma","mi","mu","me","mo","ya","","yu","","yo","ra","ri","ru","re","ro","wa","","","","wo","n"]
+        kata: ["ア","イ","ウ","エ","オ","カ","キ","ク","ケ","コ","サ","シ","ス","セ","ソ","タ","チ","ツ","テ","ト","ナ","ニ","ヌ","ネ","ノ","ハ","ヒ","フ","ヘ","ホ","マ","ミ","ム","メ","モ","ヤ","","ユ","","ヨ","ラ","リ","ル","レ","ロ","ワ","","","","ヲ","ン"]
     };
 
+    // 初始化
     init();
 
     function init() {
@@ -493,28 +493,39 @@
         loadMaskState();
         updateAllStats();
         
-        document.getElementById('medical-grid').innerHTML = medicalItems.map(i => 
-            `<div class="med-btn" onclick="speak('${i.t}')"><span style="font-size:24px">🆘</span><div class="med-label" style="font-size:16px;color:#FF453A;font-weight:bold;margin:5px 0;">${i.c}</div><div class="med-en">${i.e}</div></div>`
-        ).join('');
-        document.getElementById('kids-grid').innerHTML = kidsItems.map(i => 
-            `<div class="kid-card" onclick="speak('${i.t}')"><div class="kid-icon">${i.i}</div><div class="kid-label">${i.c}</div></div>`
-        ).join('');
+        // 渲染百寶箱 (修正：確保資料載入)
+        const medGrid = document.getElementById('medical-grid');
+        if(medGrid) {
+            medGrid.innerHTML = medicalItems.map(i => 
+                `<div class="med-btn" onclick="speak('${i.t}')"><span style="font-size:24px">🆘</span><div class="med-label" style="font-size:16px;color:#FF453A;font-weight:bold;margin:5px 0;">${i.c}</div><div class="med-en">${i.e}</div></div>`
+            ).join('');
+        }
+        
+        const kidGrid = document.getElementById('kids-grid');
+        if(kidGrid) {
+            kidGrid.innerHTML = kidsItems.map(i => 
+                `<div class="kid-card" onclick="speak('${i.t}')"><div class="kid-icon">${i.i}</div><div class="kid-label">${i.c}</div></div>`
+            ).join('');
+        }
+        
         renderKana('hira');
     }
 
+    // 語速切換 (0.5x vs 1.0x)
     function toggleSpeed() {
         const btn = document.getElementById('speed-toggle');
         if (speechRate === 1.0) {
-            speechRate = 0.5; 
+            speechRate = 0.5; // 超慢
             btn.innerText = "🐢 慢速 (0.5x)";
-            showToast("已切換慢速");
+            showToast("已切換為慢速");
         } else {
-            speechRate = 1.0; 
+            speechRate = 1.0; // 正常
             btn.innerText = "🐇 正常 (1.0x)";
-            showToast("已切換正常語速");
+            showToast("已切換為正常語速");
         }
     }
 
+    // 切換頁面
     function switchView(name, btn) {
         document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
@@ -538,9 +549,10 @@
 
     function openTool(name) { switchView(name); }
 
+    // 特訓渲染
     function renderPlan() {
         const box = document.getElementById('curriculum-container');
-        const saved = JSON.parse(localStorage.getItem('jp_v19_prog')||'[]');
+        const saved = JSON.parse(localStorage.getItem('jp_v20_prog')||'[]');
         const maskClass = isMasked ? 'masked' : '';
         box.innerHTML = weeks.map((w, idx) => {
             const idsStr = w.ids.join(',');
@@ -569,19 +581,19 @@
     }
 
     function toggleCheck(id, el) {
-        let saved = JSON.parse(localStorage.getItem('jp_v19_prog')||'[]');
+        let saved = JSON.parse(localStorage.getItem('jp_v20_prog')||'[]');
         if (saved.includes(id)) { saved = saved.filter(x => x !== id); el.classList.remove('checked'); }
         else { saved.push(id); el.classList.add('checked'); }
-        localStorage.setItem('jp_v19_prog', JSON.stringify(saved));
+        localStorage.setItem('jp_v20_prog', JSON.stringify(saved));
         updateAllStats();
     }
 
     function resetWeek(idx) {
         if(!confirm("重置本週進度？")) return;
-        let saved = JSON.parse(localStorage.getItem('jp_v19_prog')||'[]');
+        let saved = JSON.parse(localStorage.getItem('jp_v20_prog')||'[]');
         const weekIds = weeks[idx].ids;
         saved = saved.filter(id => !weekIds.includes(id));
-        localStorage.setItem('jp_v19_prog', JSON.stringify(saved));
+        localStorage.setItem('jp_v20_prog', JSON.stringify(saved));
         renderPlan(); updateAllStats();
     }
 
@@ -592,13 +604,13 @@
     }
 
     function updateAllStats() {
-        const saved = JSON.parse(localStorage.getItem('jp_v19_prog')||'[]');
+        const saved = JSON.parse(localStorage.getItem('jp_v20_prog')||'[]');
         const total = weeks.reduce((a,b)=>a+b.ids.length,0);
         const pct = Math.round(saved.length/total*100);
         document.getElementById('progress-text').innerText = pct+'%';
-        document.getElementById('vocab-prog-fill').style.width = pct+'%';
     }
 
+    // 字典渲染
     function filterDict(cat, btn) {
         if(btn) { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
         document.getElementById('search-input').value = '';
@@ -625,6 +637,7 @@
         else { favs.push(id); el.classList.add('fav'); isAdd = true; }
         localStorage.setItem('jp_favs', JSON.stringify(favs));
         showToast(isAdd ? "已收藏 ⭐" : "取消收藏");
+        if(currentCat==='fav') filterDict('fav',null); // Refresh list if in Fav tab
     }
 
     function handleSearch() {
@@ -693,20 +706,19 @@
 
     function toggleMask() { isMasked = !isMasked; document.getElementById('mask-switch').classList.toggle('on'); renderPlan(); }
     function loadMaskState() { isMasked = false; }
+    
     function renderKana(type) {
-        const grid = document.getElementById('kana-grid'); grid.innerHTML = '';
-        const chars = kanaData[type];
-        chars.forEach((char, i) => {
-            if(char === "") { grid.innerHTML += `<div></div>`; } 
-            else { grid.innerHTML += `<div class="kana-cell" onclick="speak('${char}')"><div class="kana-char">${char}</div><div class="kana-romaji">${kanaData.romaji[i]}</div></div>`; }
-        });
+        const grid = document.getElementById('kana-grid');
+        grid.innerHTML = kanaData[type].map(char => 
+            char ? `<div class="kana-cell" onclick="speak('${char}')"><div style="font-size:20px;font-weight:bold;color:white;">${char}</div></div>` : `<div></div>`
+        ).join('');
     }
 
     function speak(txt, onEnd=null, lang='ja-JP') {
         window.speechSynthesis.cancel();
         const u = new SpeechSynthesisUtterance(txt);
         u.lang = lang;
-        u.rate = speechRate; // 使用全域語速
+        u.rate = speechRate;
         if (onEnd) u.onend = onEnd;
         window.speechSynthesis.speak(u);
     }
