@@ -1,152 +1,137 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>JapaneseGO V21.0</title>
-    <style>
-        :root {
-            --bg-color: #000000;
-            --card-bg: #1c1c1e;
-            --accent-color: #0A84FF;
-            --text-primary: #FFFFFF;
-            --text-secondary: #8E8E93;
-            --text-romaji: #FFD60A;
-            --text-en: #30D158;
-            --safe-top: env(safe-area-inset-top);
-            --safe-bottom: env(safe-area-inset-bottom);
-        }
-        * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
-        body {
-            background-color: var(--bg-color); color: var(--text-primary);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            margin: 0; padding: 0; padding-bottom: calc(90px + var(--safe-bottom));
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>JapaneseGO V22.0</title>
+<style>
+    :root { --bg:#000; --card:#1c1c1e; --acc:#0A84FF; --txt:#FFF; --sub:#8E8E93; --rom:#FFD60A; --en:#30D158; --err:#FF453A; --ok:#30D158; --safe-t:env(safe-area-inset-top); --safe-b:env(safe-area-inset-bottom); }
+    *{ -webkit-tap-highlight-color:transparent; box-sizing:border-box; }
+    body{ background:var(--bg); color:var(--txt); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; margin:0; padding:0; padding-bottom:calc(90px + var(--safe-b)); }
+    
+    /* Header */
+    .sticky-header{ position:sticky; top:0; z-index:1000; background:rgba(0,0,0,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-bottom:1px solid #333; padding-top:var(--safe-t); }
+    .header-top{ display:flex; justify-content:space-between; align-items:center; padding:10px 15px; }
+    h1{ margin:0; font-size:20px; font-weight:800; background:linear-gradient(90deg,#fff,#aaa); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+    .speed-btn{ background:#333; border:1px solid #555; color:#fff; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600; cursor:pointer; }
+    
+    /* Search & Tabs */
+    .search-box{ margin:0 15px 10px; display:none; position:relative; }
+    .search-input{ width:100%; background:#2c2c2e; border:none; border-radius:10px; padding:10px 10px 10px 35px; color:#fff; font-size:16px; }
+    .search-icon{ position:absolute; left:10px; top:10px; color:#888; }
+    .tabs-container{ width:100%; overflow-x:auto; padding:0 15px 10px; white-space:nowrap; display:none; }
+    .tabs-container::-webkit-scrollbar{ display:none; }
+    .tab-btn{ display:inline-block; background:#333; color:#ccc; border:1px solid #444; padding:8px 16px; border-radius:20px; font-size:13px; font-weight:600; margin-right:8px; transition:0.2s; }
+    .tab-btn.active{ background:var(--acc); color:#fff; border-color:var(--acc); }
 
-        /* 頂部區 */
-        .sticky-header {
-            position: sticky; top: 0; z-index: 1000;
-            background: rgba(0,0,0,0.95); backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border-bottom: 1px solid #333;
-            padding-top: var(--safe-top);
-        }
-        .header-top { display: flex; justify-content: space-between; align-items: center; padding: 10px 15px; }
-        h1 { margin: 0; font-size: 20px; font-weight: 800; background: linear-gradient(90deg, #fff, #aaa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        
-        .speed-btn { background: #333; border: 1px solid #555; color: #fff; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .speed-btn:active { transform: scale(0.95); background: #444; }
+    /* Views */
+    .view{ display:none; padding:15px; max-width:600px; margin:0 auto; animation:fadeIn 0.3s; }
+    .view.active{ display:block; }
+    @keyframes fadeIn{ from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 
-        /* 搜尋 & 分類 */
-        .search-box { margin: 0 15px 10px 15px; position: relative; display: none; }
-        .search-input { width: 100%; background: #2c2c2e; border: none; border-radius: 10px; padding: 10px 10px 10px 35px; color: #fff; font-size: 16px; }
-        .search-icon { position: absolute; left: 10px; top: 10px; color: #888; }
-        .tabs-container { width: 100%; overflow-x: auto; padding: 0 15px 10px 15px; white-space: nowrap; display: none; }
-        .tabs-container::-webkit-scrollbar { display: none; }
-        .tab-btn { display: inline-block; appearance: none; background: #333; color: #ccc; border: 1px solid #444; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600; margin-right: 8px; transition: all 0.2s; }
-        .tab-btn.active { background: var(--accent-color); color: #fff; border-color: var(--accent-color); }
+    /* Sensei & Badges */
+    .sensei-box{ background:linear-gradient(135deg,#1a2a3a,#1c1c1e); border:1px solid #333; border-radius:16px; padding:15px; margin-bottom:20px; display:flex; gap:15px; align-items:center; }
+    .badges-container{ display:flex; justify-content:space-between; background:#222; padding:15px; border-radius:16px; margin:20px 0; border:1px solid #333; }
+    .badge-item{ text-align:center; opacity:0.3; filter:grayscale(100%); transition:0.5s; }
+    .badge-item.unlocked{ opacity:1; filter:grayscale(0%); transform:scale(1.1); }
+    .badge-icon{ font-size:32px; display:block; margin-bottom:5px; }
+    .badge-text{ font-size:10px; color:#aaa; }
 
-        /* 內容區 */
-        .view { display: none; padding: 15px; max-width: 600px; margin: 0 auto; animation: fadeIn 0.3s; }
-        .view.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    /* Card */
+    .card{ background:var(--card); border:1px solid #333; border-radius:18px; padding:18px; margin-bottom:14px; position:relative; transition:0.2s; }
+    .card.active-playing{ border-color:var(--acc); background:#15202b; transform:scale(1.02); }
+    .card-top{ display:flex; justify-content:space-between; align-items:flex-start; }
+    .jp-big{ font-size:20px; font-weight:700; margin-bottom:4px; line-height:1.3; }
+    .romaji{ font-family:monospace; color:var(--rom); font-size:13px; margin-bottom:8px; display:block; }
+    .cn{ font-size:16px; color:#ddd; display:block; margin-bottom:2px; }
+    .en{ font-size:13px; color:var(--en); font-weight:500; }
+    .masked .romaji, .masked .cn, .masked .en{ opacity:0; filter:blur(6px); }
+    .masked:active .romaji, .masked:active .cn, .masked:active .en{ opacity:1; filter:none; }
+    
+    .card-actions{ display:flex; gap:15px; align-items:center; margin-left:10px; flex-shrink:0; }
+    .check-box{ width:28px; height:28px; border-radius:50%; border:2px solid #555; display:flex; align-items:center; justify-content:center; cursor:pointer; color:transparent; }
+    .check-box.checked{ background:var(--ok); border-color:var(--ok); color:white; }
+    .star-btn{ font-size:26px; color:#444; padding:5px; cursor:pointer; }
+    .star-btn.fav{ color:var(--rom); }
+    .show-btn{ font-size:22px; color:#666; cursor:pointer; }
 
-        /* 卡片樣式 */
-        .card { background: #1c1c1e; border: 1px solid #333; border-radius: 18px; padding: 18px; margin-bottom: 14px; position: relative; transition: 0.2s; }
-        .card.active-playing { border-color: #0A84FF; background: #15202b; transform: scale(1.02); }
-        .card-top { display: flex; justify-content: space-between; align-items: flex-start; }
-        .jp-big { font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 4px; line-height: 1.3; }
-        .romaji { font-family: monospace; color: var(--text-romaji); font-size: 13px; margin-bottom: 8px; display: block; }
-        .cn { font-size: 16px; color: #ddd; display: block; margin-bottom: 2px; }
-        .en { font-size: 13px; color: var(--text-en); font-weight: 500; }
-        .masked .romaji, .masked .cn, .masked .en { opacity: 0; filter: blur(6px); }
-        .masked:active .romaji, .masked:active .cn, .masked:active .en { opacity: 1; filter: none; }
-        .card-actions { display: flex; gap: 15px; align-items: center; margin-left: 10px; flex-shrink: 0; }
-        .check-box { width: 28px; height: 28px; border-radius: 50%; border: 2px solid #555; display: flex; align-items: center; justify-content: center; cursor: pointer; color: transparent; }
-        .check-box.checked { background: #30D158; border-color: #30D158; color: white; }
-        .star-btn { font-size: 26px; color: #444; padding: 5px; cursor: pointer; }
-        .star-btn.fav { color: #FFD60A; }
-        .show-btn { font-size: 22px; color: #666; cursor: pointer; }
+    /* Week Header */
+    .week-header{ margin:30px 0 15px; }
+    .week-title-row{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+    .week-title{ color:var(--acc); font-size:18px; font-weight:800; margin:0; }
+    .week-actions{ display:flex; gap:8px; }
+    .action-btn{ background:#222; border:1px solid #444; color:#ccc; padding:6px 12px; border-radius:15px; font-size:12px; font-weight:600; display:flex; align-items:center; gap:5px; cursor:pointer; }
+    .autoplay-btn.playing{ background:var(--acc); color:#fff; border-color:var(--acc); animation:pulse 1.5s infinite; }
+    @keyframes pulse{ 0%{opacity:1} 50%{opacity:0.7} 100%{opacity:1} }
 
-        /* 特訓週次 & 成就 */
-        .week-header { margin: 30px 0 15px 0; }
-        .week-title-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
-        .week-title { color: #0A84FF; font-size: 18px; font-weight: 800; margin: 0; }
-        .week-actions { display: flex; gap: 8px; }
-        .action-btn { background: #222; border: 1px solid #444; color: #ccc; padding: 6px 12px; border-radius: 15px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 5px; cursor: pointer; }
-        .autoplay-btn.playing { background: #0A84FF; color: white; border-color: #0A84FF; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+    /* Quiz */
+    .quiz-container{ text-align:center; margin-top:20px; }
+    .quiz-speaker{ width:120px; height:120px; background:#222; border-radius:50%; margin:0 auto 30px; display:flex; align-items:center; justify-content:center; font-size:50px; border:2px solid var(--acc); cursor:pointer; box-shadow:0 0 20px rgba(10,132,255,0.2); }
+    .quiz-options{ display:grid; gap:12px; }
+    .quiz-btn{ background:#2c2c2e; padding:15px; border-radius:12px; border:1px solid #444; font-size:16px; font-weight:600; cursor:pointer; }
+    .quiz-btn.correct{ background:var(--ok); border-color:var(--ok); }
+    .quiz-btn.wrong{ background:var(--err); border-color:var(--err); }
+    .quiz-type-selector{ display:flex; justify-content:center; gap:15px; margin-bottom:20px; }
+    .q-type-btn{ padding:5px 15px; border-radius:15px; border:1px solid #555; background:#222; color:#888; font-size:13px; cursor:pointer; }
+    .q-type-btn.active{ background:var(--acc); color:#fff; border-color:var(--acc); }
 
-        /* 成就徽章區 (NEW) */
-        .badges-container { display: flex; justify-content: space-between; background: #222; padding: 15px; border-radius: 16px; margin-top: 30px; border: 1px solid #333; }
-        .badge-item { text-align: center; opacity: 0.3; filter: grayscale(100%); transition: 0.5s; }
-        .badge-item.unlocked { opacity: 1; filter: grayscale(0%); transform: scale(1.1); }
-        .badge-icon { font-size: 32px; margin-bottom: 5px; display: block; }
-        .badge-text { font-size: 10px; color: #aaa; }
+    /* Chat */
+    .dialogue-card{ background:#151515; border:1px solid #333; border-radius:16px; margin-bottom:30px; overflow:hidden; }
+    .dialogue-header{ background:#222; padding:12px 15px; font-weight:700; border-bottom:1px solid #333; }
+    .chat-row{ display:flex; align-items:flex-end; gap:10px; margin:15px; }
+    .chat-row.user-row{ flex-direction:row-reverse; }
+    .avatar{ width:38px; height:38px; border-radius:50%; background:#333; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; border:1px solid #444; }
+    .chat-bubble{ max-width:85%; padding:12px; border-radius:18px; font-size:15px; line-height:1.4; cursor:pointer; position:relative; }
+    .chat-row.staff-row .chat-bubble{ background:#2c2c2e; color:#eee; border-bottom-left-radius:4px; }
+    .chat-row.user-row .chat-bubble{ background:var(--acc); color:#fff; border-bottom-right-radius:4px; }
+    .bubble-meta{ font-size:12px; opacity:0.8; margin-top:4px; display:block; }
 
-        /* 測驗模式 (智慧錯題) */
-        .quiz-container { text-align: center; margin-top: 20px; }
-        .quiz-speaker { width: 120px; height: 120px; background: #222; border-radius: 50%; margin: 0 auto 30px auto; display: flex; align-items: center; justify-content: center; font-size: 50px; border: 2px solid #0A84FF; cursor: pointer; box-shadow: 0 0 20px rgba(10, 132, 255, 0.2); animation: pulse-border 2s infinite; }
-        @keyframes pulse-border { 0% { box-shadow: 0 0 0 0 rgba(10,132,255, 0.4); } 70% { box-shadow: 0 0 0 15px rgba(10,132,255, 0); } 100% { box-shadow: 0 0 0 0 rgba(10,132,255, 0); } }
-        .quiz-options { display: grid; grid-template-columns: 1fr; gap: 12px; }
-        .quiz-btn { background: #2c2c2e; color: #fff; padding: 15px; border-radius: 12px; border: 1px solid #444; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; }
-        .quiz-btn.correct { background: #30D158; border-color: #30D158; }
-        .quiz-btn.wrong { background: #FF453A; border-color: #FF453A; }
-        .quiz-type-selector { display: flex; justify-content: center; gap: 15px; margin-bottom: 20px; }
-        .q-type-btn { padding: 5px 15px; border-radius: 15px; border: 1px solid #555; background: #222; color: #888; font-size: 13px; cursor: pointer; }
-        .q-type-btn.active { background: #0A84FF; color: white; border-color: #0A84FF; }
+    /* Toolbox */
+    .toolbox-grid{ display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-top:10px; }
+    .tool-card{ background:var(--card); border:1px solid #333; border-radius:20px; padding:20px; text-align:center; cursor:pointer; height:130px; display:flex; flex-direction:column; justify-content:center; align-items:center; }
+    .medical-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .med-btn{ background:#2c1a1a; border:1px solid #5a2a2a; border-radius:16px; padding:15px; text-align:center; cursor:pointer; }
+    .kids-grid{ display:grid; grid-template-columns:1fr 1fr; gap:15px; padding:10px; }
+    .kid-card{ background:#fff; border-radius:20px; padding:15px; text-align:center; color:#333; cursor:pointer; }
+    .kana-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:6px; }
+    .kana-cell{ background:#222; border-radius:8px; padding:10px 0; text-align:center; cursor:pointer; border:1px solid #333; }
 
-        /* 全螢幕 & Toast */
-        #fullscreen-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: none; flex-direction: column; justify-content: center; align-items: center; padding: 30px; text-align: center; }
-        #fs-jp { font-size: 40px; font-weight: 900; color: #fff; margin-bottom: 20px; line-height: 1.3; word-break: break-all; }
-        #fs-cn { font-size: 24px; color: #888; font-weight: 500; margin-bottom: 10px; }
-        #fs-en { font-size: 18px; color: var(--text-en); }
-        #fs-close { position: absolute; top: 50px; right: 30px; font-size: 30px; color: #666; border: 1px solid #333; border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; }
-        #toast { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%) translateY(20px); background: rgba(30,30,30,0.95); color: white; padding: 12px 24px; border-radius: 30px; font-size: 14px; opacity: 0; pointer-events: none; transition: all 0.3s; z-index: 9999; border: 1px solid #555; display: flex; align-items: center; gap: 8px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
-        #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    /* Overlay & Toast */
+    #fullscreen-overlay{ position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:9999; display:none; flex-direction:column; justify-content:center; align-items:center; padding:30px; text-align:center; }
+    #fs-jp{ font-size:40px; font-weight:900; margin-bottom:20px; }
+    #fs-cn{ font-size:24px; color:#888; margin-bottom:10px; }
+    #fs-en{ font-size:18px; color:var(--en); }
+    #toast{ position:fixed; bottom:100px; left:50%; transform:translateX(-50%) translateY(20px); background:rgba(30,30,30,0.95); padding:12px 24px; border-radius:30px; font-size:14px; opacity:0; pointer-events:none; transition:0.3s; z-index:9999; border:1px solid #555; display:flex; align-items:center; gap:8px; }
+    #toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
 
-        /* 其他通用 */
-        .toolbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
-        .tool-card { background: #1c1c1e; border: 1px solid #333; border-radius: 20px; padding: 20px; text-align: center; cursor: pointer; height: 130px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        .medical-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .med-btn { background: #2c1a1a; border: 1px solid #5a2a2a; border-radius: 16px; padding: 15px; text-align: center; cursor: pointer; }
-        .kids-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 10px; }
-        .kid-card { background: #fff; border-radius: 20px; padding: 15px; text-align: center; color: #333; cursor: pointer; }
-        .kana-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
-        .kana-cell { background: #222; border-radius: 8px; padding: 10px 0; text-align: center; cursor: pointer; border: 1px solid #333; }
-        .dialogue-card { background: #151515; border: 1px solid #333; border-radius: 16px; margin-bottom: 20px; overflow: hidden; }
-        .chat-row { display: flex; align-items: flex-end; gap: 10px; margin-bottom: 10px; }
-        .chat-row.user-row { flex-direction: row-reverse; }
-        .chat-bubble { max-width: 80%; padding: 12px; border-radius: 18px; font-size: 15px; line-height: 1.4; cursor: pointer; position: relative; }
-        .chat-row.staff-row .chat-bubble { background: #2c2c2e; color: #eee; border-bottom-left-radius: 4px; }
-        .chat-row.user-row .chat-bubble { background: #0A84FF; color: #fff; border-bottom-right-radius: 4px; }
-        
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; height: 85px; background: rgba(15,15,15,0.98); border-top: 1px solid #333; display: flex; justify-content: space-around; padding-top: 10px; z-index: 2000; padding-bottom: var(--safe-bottom); }
-        .nav-btn { text-align: center; color: #666; font-size: 10px; width: 20%; cursor: pointer; }
-        .nav-btn.active { color: var(--accent-color); }
-        .nav-icon { font-size: 24px; display: block; margin-bottom: 4px; }
-        .sensei-box { background: linear-gradient(135deg, #1a2a3a 0%, #1c1c1e 100%); border: 1px solid #333; border-radius: 16px; padding: 15px; margin-bottom: 20px; display: flex; gap: 15px; align-items: center; }
-        .mask-toggle-area { display: flex; justify-content: space-between; align-items: center; background: #222; padding: 10px 15px; border-radius: 12px; margin-bottom: 20px; border: 1px solid #333; }
-        .toggle-switch { position: relative; width: 50px; height: 30px; background: #444; border-radius: 15px; transition: 0.3s; }
-        .toggle-switch.on { background: #30D158; }
-        .toggle-knob { position: absolute; top: 2px; left: 2px; width: 26px; height: 26px; background: #fff; border-radius: 50%; transition: 0.3s; }
-        .toggle-switch.on .toggle-knob { transform: translateX(20px); }
-    </style>
+    /* Nav */
+    .bottom-nav{ position:fixed; bottom:0; left:0; right:0; height:85px; background:rgba(15,15,15,0.98); border-top:1px solid #333; display:flex; justify-content:space-around; padding-top:10px; z-index:2000; }
+    .nav-btn{ text-align:center; color:#666; font-size:10px; width:20%; cursor:pointer; }
+    .nav-btn.active{ color:var(--acc); }
+    .nav-icon{ font-size:24px; display:block; margin-bottom:4px; }
+    
+    .mask-toggle-area{ display:flex; justify-content:space-between; align-items:center; background:#222; padding:10px 15px; border-radius:12px; margin-bottom:20px; border:1px solid #333; }
+    .toggle-switch{ position:relative; width:50px; height:30px; background:#444; border-radius:15px; transition:0.3s; }
+    .toggle-switch.on{ background:var(--ok); }
+    .toggle-knob{ position:absolute; top:2px; left:2px; width:26px; height:26px; background:#fff; border-radius:50%; transition:0.3s; }
+    .toggle-switch.on .toggle-knob{ transform:translateX(20px); }
+</style>
 </head>
 <body>
 
 <div class="sticky-header">
     <div class="header-top">
-        <h1>JapaneseGO <span style="font-size:12px; color:#888;">Smart V21.0</span></h1>
+        <h1>JapaneseGO <span style="font-size:12px; color:#888;">Ultimate V22.0</span></h1>
         <button id="speed-toggle" class="speed-btn" onclick="toggleSpeed()">🐢 慢速 (0.5x)</button>
     </div>
     <div id="search-bar-container" class="search-box">
         <span class="search-icon">🔍</span>
-        <input type="text" id="search-input" class="search-input" placeholder="搜尋/Search..." oninput="handleSearch()">
+        <input type="text" id="search-input" class="search-input" placeholder="搜尋..." oninput="handleSearch()">
     </div>
     <div id="tabs-bar" class="tabs-container">
         <button class="tab-btn active" onclick="filterDict('all', this)">全部</button>
-        <button class="tab-btn" onclick="filterDict('mistake', this)" style="color:#FF453A; border-color:#FF453A;">💀 弱點</button> <button class="tab-btn" onclick="filterDict('short', this)">🗣️ 短句</button>
+        <button class="tab-btn" onclick="filterDict('mistake', this)" style="color:#FF453A;border-color:#FF453A;">💀 弱點</button>
+        <button class="tab-btn" onclick="filterDict('short', this)">🗣️ 短句</button>
         <button class="tab-btn" onclick="filterDict('fav', this)">⭐ 收藏</button>
         <button class="tab-btn" onclick="filterDict('survival', this)">生存</button>
         <button class="tab-btn" onclick="filterDict('dining', this)">美食</button>
@@ -161,52 +146,29 @@
 </div>
 
 <div id="toast">已收藏 ⭐</div>
-
 <div id="fullscreen-overlay" onclick="closeFullscreen()">
-    <div id="fs-close">✕</div>
-    <div id="fs-jp">JP</div>
-    <div id="fs-cn">CN</div>
-    <div id="fs-en">EN</div>
-    <div style="margin-top:30px; font-size:12px; color:#555;">(Tap to close)</div>
+    <div id="fs-close">✕</div><div id="fs-jp">JP</div><div id="fs-cn">CN</div><div id="fs-en">EN</div><div style="margin-top:30px;color:#555;">(Tap to close)</div>
 </div>
 
 <div id="view-learn" class="view active">
     <div class="sensei-box">
         <div style="font-size:40px;">🦁</div>
-        <div style="flex:1;">
-            <div style="font-size:13px; color:#0A84FF; font-weight:bold; margin-bottom:4px;">教練叮嚀</div>
-            <div id="sensei-msg" style="font-size:15px; color:#fff;">...</div>
-        </div>
+        <div style="flex:1;"><div style="font-size:13px;color:#0A84FF;font-weight:bold;margin-bottom:4px;">教練叮嚀</div><div id="sensei-msg" style="font-size:15px;">...</div></div>
     </div>
-    
     <div class="mask-toggle-area" onclick="toggleMask()">
-        <div>
-            <div style="font-weight:bold; color:#fff;">🫣 記憶遮擋 (Mask Mode)</div>
-            <div style="font-size:12px; color:#888;">Hide translation / 隱藏翻譯</div>
-        </div>
+        <div><div style="font-weight:bold;">🫣 記憶遮擋 (Mask Mode)</div><div style="font-size:12px;color:#888;">隱藏中文，考考自己</div></div>
         <div id="mask-switch" class="toggle-switch"><div class="toggle-knob"></div></div>
     </div>
-
-    <div class="week-block" style="color:#888; text-align:center; font-size:13px; margin-bottom:10px;">
-        Progress: <span id="progress-text">0%</span>
-        <div style="margin-top:15px; font-size:12px; color:#555; text-decoration:underline; cursor:pointer;" onclick="resetAllProgress()">[Reset All Data]</div>
+    <div class="week-block" style="text-align:center;margin-bottom:10px;">
+        特訓進度: <span id="progress-text">0%</span>
+        <div style="margin-top:10px;font-size:12px;color:#555;text-decoration:underline;cursor:pointer;" onclick="resetAllProgress()">[清除全部資料]</div>
     </div>
-
     <div class="badges-container">
-        <div id="badge-25" class="badge-item">
-            <span class="badge-icon">🌺</span><div class="badge-text">新手</div>
-        </div>
-        <div id="badge-50" class="badge-item">
-            <span class="badge-icon">🦁</span><div class="badge-text">熟練</div>
-        </div>
-        <div id="badge-75" class="badge-item">
-            <span class="badge-icon">🐋</span><div class="badge-text">達人</div>
-        </div>
-        <div id="badge-100" class="badge-item">
-            <span class="badge-icon">🏰</span><div class="badge-text">沖繩通</div>
-        </div>
+        <div id="badge-25" class="badge-item"><span class="badge-icon">🌺</span><div class="badge-text">新手</div></div>
+        <div id="badge-50" class="badge-item"><span class="badge-icon">🦁</span><div class="badge-text">熟練</div></div>
+        <div id="badge-75" class="badge-item"><span class="badge-icon">🐋</span><div class="badge-text">達人</div></div>
+        <div id="badge-100" class="badge-item"><span class="badge-icon">🏰</span><div class="badge-text">沖繩通</div></div>
     </div>
-
     <div id="curriculum-container" style="margin-top:20px;"></div>
 </div>
 
@@ -215,26 +177,19 @@
         <div class="q-type-btn active" id="q-type-word" onclick="setQuizType('word')">單字測驗</div>
         <div class="q-type-btn" id="q-type-kana" onclick="setQuizType('kana')">五十音測驗</div>
     </div>
-
-    <div style="text-align:center; margin-top:10px; margin-bottom:20px;">
-        <h2 id="quiz-title">👂 聽音辨義</h2>
-        <div style="color:#888; font-size:13px;">錯題會自動加入「弱點」字典</div>
-    </div>
+    <div style="text-align:center;margin:10px 0 20px;"><h2 id="quiz-title">👂 聽音辨義</h2><div style="color:#888;font-size:13px;">錯題會自動加入「弱點」字典</div></div>
     <div class="quiz-container">
         <div class="quiz-speaker" onclick="playQuizAudio()">🔊</div>
-        <div id="quiz-txt-display" style="font-size:40px; font-weight:bold; margin-bottom:20px; display:none;">?</div> <div id="quiz-options" class="quiz-options"></div>
-        <div id="quiz-feedback" style="margin-top:20px; font-size:18px; font-weight:bold; height:30px;"></div>
-        <button style="margin-top:20px; background:#444; color:white; padding:10px 20px; border-radius:20px; border:none; font-size:14px; cursor:pointer;" onclick="nextQuiz()">Skip / Next</button>
+        <div id="quiz-txt-display" style="font-size:40px;font-weight:bold;margin-bottom:20px;display:none;">?</div>
+        <div id="quiz-options" class="quiz-options"></div>
+        <div id="quiz-feedback" style="margin-top:20px;font-size:18px;font-weight:bold;height:30px;"></div>
+        <button style="margin-top:20px;background:#444;color:white;padding:10px 20px;border-radius:20px;border:none;" onclick="nextQuiz()">Skip / Next</button>
     </div>
 </div>
 
-<div id="view-dialogue" class="view">
-    <div id="dialogue-container"></div>
-</div>
+<div id="view-dialogue" class="view"><div id="dialogue-container"></div></div>
 
-<div id="view-dict" class="view">
-    <div id="dict-container"></div>
-</div>
+<div id="view-dict" class="view"><div id="dict-container"></div></div>
 
 <div id="view-tools" class="view">
     <div class="toolbox-grid">
@@ -243,21 +198,19 @@
         <div class="tool-card" onclick="openTool('kids')"><div style="font-size:40px;">👶</div><div style="font-weight:bold;margin-top:10px;">Kids Mode</div><div style="font-size:12px;color:#888;">奎奎專區</div></div>
     </div>
 </div>
-
 <div id="view-medical" class="view">
-    <div style="margin-bottom:20px; cursor:pointer; color:#0A84FF;" onclick="switchView('tools', document.getElementById('nav-tools'))">⬅ Back</div>
+    <div style="margin-bottom:20px;cursor:pointer;color:#0A84FF;" onclick="switchView('tools', document.getElementById('nav-tools'))">⬅ Back</div>
     <div class="medical-grid" id="medical-grid"></div>
 </div>
 <div id="view-kana" class="view">
-    <div style="margin-bottom:20px; cursor:pointer; color:#0A84FF;" onclick="switchView('tools', document.getElementById('nav-tools'))">⬅ Back</div>
-    <div style="display:flex; justify-content:center; gap:20px; margin-bottom:20px;">
-        <button class="tab-btn active" onclick="renderKana('hira')">平假名</button>
-        <button class="tab-btn" onclick="renderKana('kata')">片假名</button>
+    <div style="margin-bottom:20px;cursor:pointer;color:#0A84FF;" onclick="switchView('tools', document.getElementById('nav-tools'))">⬅ Back</div>
+    <div style="display:flex;justify-content:center;gap:20px;margin-bottom:20px;">
+        <button class="tab-btn active" onclick="renderKana('hira')">平假名</button><button class="tab-btn" onclick="renderKana('kata')">片假名</button>
     </div>
     <div id="kana-grid" class="kana-grid"></div>
 </div>
-<div id="view-kids" class="view" style="background:#f0f8ff; min-height:100vh;">
-    <div style="margin-bottom:20px; cursor:pointer; color:#0A84FF; font-weight:bold;" onclick="switchView('tools', document.getElementById('nav-tools'))">⬅ Back</div>
+<div id="view-kids" class="view" style="background:#f0f8ff;min-height:100vh;">
+    <div style="margin-bottom:20px;cursor:pointer;color:#0A84FF;font-weight:bold;" onclick="switchView('tools', document.getElementById('nav-tools'))">⬅ Back</div>
     <div class="kids-grid" id="kids-grid"></div>
 </div>
 
@@ -270,34 +223,183 @@
 </div>
 
 <script>
-    // --- 完整資料庫 (請填入 V18.0 的完整 200+ 句，此處為範例) ---
+    // --- 完整資料庫 (V22.0 Full) ---
     const phrases = [
+        // Short Phrases
+        { id: "x1", cat: "short", jp: "なるほど", romaji: "Na-ru-ho-do", cn: "原來如此", en: "I see" },
+        { id: "x2", cat: "short", jp: "すごい", romaji: "Su-go-i", cn: "好厲害", en: "Amazing" },
+        { id: "x3", cat: "short", jp: "本当？", romaji: "Hon-tou?", cn: "真的嗎？", en: "Really?" },
+        { id: "x4", cat: "short", jp: "ちょっと...", romaji: "Chot-to...", cn: "有點...(婉拒)", en: "It's a bit..." },
+        { id: "x5", cat: "short", jp: "もちろんです", romaji: "Mo-chi-ron", cn: "當然", en: "Of course" },
+        { id: "x6", cat: "short", jp: "いいですよ", romaji: "Ii de-su yo", cn: "可以喔", en: "That's fine" },
+        { id: "x7", cat: "short", jp: "お腹すいた", romaji: "O-na-ka su-i-ta", cn: "肚子餓了", en: "I'm hungry" },
+        { id: "x8", cat: "short", jp: "疲れた", romaji: "Tsu-ka-re-ta", cn: "累了", en: "I'm tired" },
+        { id: "x9", cat: "short", jp: "可愛い！", romaji: "Ka-wai-i!", cn: "好可愛！", en: "So cute!" },
+        { id: "x10", cat: "short", jp: "やばい", romaji: "Ya-bai", cn: "糟糕/厲害", en: "OMG" },
+        // Survival
         { id: "s1", cat: "survival", jp: "すみません", romaji: "Su-mi-ma-sen", cn: "不好意思", en: "Excuse me" },
-        { id: "s2", cat: "survival", jp: "ありがとう", romaji: "A-ri-ga-tou", cn: "謝謝", en: "Thank you" },
-        // ... (務必補上所有資料) ...
-        { id: "x1", cat: "short", jp: "なるほど", romaji: "Na-ru-ho-do", cn: "原來如此", en: "I see" }
+        { id: "s2", cat: "survival", jp: "ありがとうございます", romaji: "A-ri-ga-tou", cn: "謝謝", en: "Thank you" },
+        { id: "s3", cat: "survival", jp: "大丈夫です", romaji: "Dai-jou-bu", cn: "沒關係", en: "It's okay" },
+        { id: "s4", cat: "survival", jp: "トイレはどこですか？", romaji: "To-i-re wa do-ko?", cn: "廁所在哪？", en: "Where is the toilet?" },
+        { id: "s5", cat: "survival", jp: "写真を撮ってください", romaji: "Sha-shin o tot-te", cn: "請幫我拍照", en: "Take a photo please" },
+        { id: "s6", cat: "survival", jp: "わかりません", romaji: "Wa-ka-ri-ma-sen", cn: "聽不懂", en: "I don't understand" },
+        { id: "s7", cat: "survival", jp: "これ", romaji: "Ko-re", cn: "這個", en: "This one" },
+        { id: "s8", cat: "survival", jp: "はい / いいえ", romaji: "Hai / Ii-e", cn: "是 / 不是", en: "Yes / No" },
+        // Dining
+        { id: "d1", cat: "dining", jp: "これください", romaji: "Ko-re Ku-da-sai", cn: "我要這個", en: "This one please" },
+        { id: "d2", cat: "dining", jp: "お水ください", romaji: "O-mi-zu", cn: "請給我水", en: "Water please" },
+        { id: "d3", cat: "dining", jp: "お会計お願いします", romaji: "O-kai-kei", cn: "麻煩結帳", en: "Check please" },
+        { id: "d4", cat: "dining", jp: "ネギ抜きで", romaji: "Ne-gi nu-ki de", cn: "不要加蔥", en: "No green onions" },
+        { id: "d5", cat: "dining", jp: "氷なし", romaji: "Koo-ri na-shi", cn: "去冰", en: "No ice" },
+        { id: "d6", cat: "dining", jp: "持ち帰りで", romaji: "Mo-chi-ka-e-ri de", cn: "我要外帶", en: "Take out" },
+        { id: "d7", cat: "dining", jp: "別々で", romaji: "Be-tsu be-tsu de", cn: "分開結帳", en: "Separate checks" },
+        { id: "d8", cat: "dining", jp: "おすすめは？", romaji: "O-su-su-me wa?", cn: "有推薦的嗎？", en: "Recommendation?" },
+        { id: "d9", cat: "dining", jp: "メニュー", romaji: "Me-nyuu", cn: "菜單", en: "Menu" },
+        { id: "d10", cat: "dining", jp: "豚肉", romaji: "Bu-ta ni-ku", cn: "豬肉", en: "Pork" },
+        { id: "d11", cat: "dining", jp: "牛肉", romaji: "Gyuu ni-ku", cn: "牛肉", en: "Beef" },
+        { id: "d12", cat: "dining", jp: "鶏肉", romaji: "To-ri ni-ku", cn: "雞肉", en: "Chicken" },
+        { id: "d13", cat: "dining", jp: "魚", romaji: "Sa-ka-na", cn: "魚", en: "Fish" },
+        { id: "d14", cat: "dining", jp: "生ビール", romaji: "Na-ma bii-ru", cn: "生啤酒", en: "Draft beer" },
+        // Shopping
+        { id: "sh1", cat: "shopping", jp: "いくらですか？", romaji: "I-ku-ra?", cn: "多少錢？", en: "How much?" },
+        { id: "sh2", cat: "shopping", jp: "カード使えますか？", romaji: "Kaa-do OK?", cn: "可以刷卡嗎？", en: "Card OK?" },
+        { id: "sh3", cat: "shopping", jp: "免税できますか？", romaji: "Men-zei", cn: "可以退稅嗎？", en: "Tax free?" },
+        { id: "sh4", cat: "shopping", jp: "新しいのありますか？", romaji: "A-ta-ra-shii no", cn: "有新的嗎？", en: "New one?" },
+        { id: "sh5", cat: "shopping", jp: "袋いりません", romaji: "Fu-ku-ro i-ri-ma-sen", cn: "不用袋子", en: "No bag" },
+        { id: "sh6", cat: "shopping", jp: "レシート", romaji: "Re-shii-to", cn: "收據", en: "Receipt" },
+        { id: "sh7", cat: "shopping", jp: "大きいサイズ", romaji: "Oo-kii sa-i-zu", cn: "大尺寸", en: "Bigger size" },
+        { id: "sh8", cat: "shopping", jp: "小さいサイズ", romaji: "Chii-sai sa-i-zu", cn: "小尺寸", en: "Smaller size" },
+        { id: "sh9", cat: "shopping", jp: "プレゼント", romaji: "Pu-re-zen-to", cn: "禮物", en: "Gift" },
+        // Kids
+        { id: "k1", cat: "kids", jp: "子供椅子", romaji: "Ko-do-mo Isu", cn: "兒童椅", en: "High chair" },
+        { id: "k2", cat: "kids", jp: "スプーン", romaji: "Su-puu-n", cn: "湯匙", en: "Spoon" },
+        { id: "k3", cat: "kids", jp: "お湯", romaji: "O-yu", cn: "熱水(泡奶)", en: "Hot water" },
+        { id: "k4", cat: "kids", jp: "かわいい", romaji: "Ka-wai-i", cn: "好可愛", en: "Cute" },
+        { id: "k5", cat: "kids", jp: "オムツ", romaji: "O-mu-tsu", cn: "尿布", en: "Diaper" },
+        { id: "k6", cat: "kids", jp: "おしりふき", romaji: "O-shi-ri fu-ki", cn: "濕紙巾", en: "Wipes" },
+        { id: "k7", cat: "kids", jp: "ベビーカー", romaji: "Be-bii kaa", cn: "嬰兒車", en: "Stroller" },
+        { id: "k8", cat: "kids", jp: "ミルク", romaji: "Mi-ru-ku", cn: "牛奶", en: "Milk" },
+        { id: "k9", cat: "kids", jp: "授乳室", romaji: "Ju-nyuu shi-tsu", cn: "哺乳室", en: "Nursing room" },
+        // Medical
+        { id: "m1", cat: "drug", jp: "風邪薬", romaji: "Ka-ze gu-su-ri", cn: "感冒藥", en: "Cold medicine" },
+        { id: "m2", cat: "drug", jp: "頭痛薬", romaji: "Zu-tsuu ya-ku", cn: "頭痛藥", en: "Headache med" },
+        { id: "m3", cat: "drug", jp: "絆創膏", romaji: "Ban-sou-kou", cn: "OK繃", en: "Band-aid" },
+        { id: "m4", cat: "drug", jp: "虫除け", romaji: "Mu-shi yo-ke", cn: "防蚊液", en: "Bug spray" },
+        { id: "m5", cat: "drug", jp: "日焼け止め", romaji: "Hi-ya-ke do-me", cn: "防曬乳", en: "Sunscreen" },
+        { id: "m6", cat: "drug", jp: "熱があります", romaji: "Ne-tsu ga a-ri-ma-su", cn: "發燒", en: "Has fever" },
+        { id: "m7", cat: "drug", jp: "咳", romaji: "Se-ki", cn: "咳嗽", en: "Cough" },
+        { id: "m8", cat: "drug", jp: "鼻水", romaji: "Ha-na mi-zu", cn: "流鼻水", en: "Runny nose" },
+        { id: "m9", cat: "drug", jp: "薬局", romaji: "Yak-kyo-ku", cn: "藥局", en: "Pharmacy" },
+        { id: "m10", cat: "drug", jp: "病院", romaji: "Byou-in", cn: "醫院", en: "Hospital" },
+        // Driving
+        { id: "dr1", cat: "driving", jp: "満タン", romaji: "Man-tan", cn: "加滿油", en: "Full tank" },
+        { id: "dr2", cat: "driving", jp: "駐車場", romaji: "Chuu-sha-jou", cn: "停車場", en: "Parking" },
+        { id: "dr3", cat: "driving", jp: "ナビ設定", romaji: "Na-bi set-tei", cn: "設定導航", en: "GPS setting" },
+        { id: "dr4", cat: "driving", jp: "ここに行きたい", romaji: "Ko-ko ni i-ki-tai", cn: "我想去這裡", en: "Go here" },
+        { id: "dr5", cat: "driving", jp: "タクシー", romaji: "Ta-ku-shii", cn: "計程車", en: "Taxi" },
+        { id: "dr6", cat: "driving", jp: "バス停", romaji: "Ba-su tei", cn: "公車站", en: "Bus stop" },
+        { id: "dr7", cat: "driving", jp: "まっすぐ", romaji: "Mas-su-gu", cn: "直走", en: "Straight" },
+        // Hotel
+        { id: "h1", cat: "hotel", jp: "チェックイン", romaji: "Chek-ku-in", cn: "Check-in", en: "Check-in" },
+        { id: "h2", cat: "hotel", jp: "荷物預かり", romaji: "Ni-mo-tsu a-zu-ka-ri", cn: "寄放行李", en: "Keep luggage" },
+        { id: "h3", cat: "hotel", jp: "Wi-Fiパスワード", romaji: "Wi-Fi pa-su-waa-do", cn: "Wi-Fi密碼", en: "Wi-Fi Password" },
+        { id: "h4", cat: "hotel", jp: "朝食", romaji: "Chou-sho-ku", cn: "早餐", en: "Breakfast" },
+        // Airport
+        { id: "a1", cat: "airport", jp: "パスポート", romaji: "Pa-su-poo-to", cn: "護照", en: "Passport" },
+        { id: "a2", cat: "airport", jp: "レンタカー", romaji: "Ren-ta-kaa", cn: "租車", en: "Rental car" },
+        { id: "a3", cat: "airport", jp: "バス乗り場", romaji: "Ba-su no-ri-ba", cn: "巴士搭乘處", en: "Bus stop" },
+        { id: "a4", cat: "airport", jp: "国際線", romaji: "Ko-ku-sai-sen", cn: "國際線", en: "International" },
+        { id: "a5", cat: "airport", jp: "落とし物", romaji: "O-to-shi mo-no", cn: "遺失物", en: "Lost item" },
+        // Okinawa
+        { id: "o1", cat: "okinawa", jp: "はいさい", romaji: "Hai-sai", cn: "你好", en: "Hello" },
+        { id: "o2", cat: "okinawa", jp: "めんそーれ", romaji: "Men-so-re", cn: "歡迎光臨", en: "Welcome" },
+        { id: "o3", cat: "okinawa", jp: "にふぇーでーびる", romaji: "Ni-fee-dee-bi-ru", cn: "謝謝", en: "Thank you" },
+        { id: "o4", cat: "okinawa", jp: "なんくるないさ", romaji: "Nan-ku-ru nai-sa", cn: "船到橋頭自然直", en: "It will be fine" },
+        { id: "o5", cat: "okinawa", jp: "ゴーヤ", romaji: "Goo-ya", cn: "苦瓜", en: "Bitter melon" },
+        { id: "o6", cat: "okinawa", jp: "オリオンビール", romaji: "O-ri-on Bii-ru", cn: "Orion 啤酒", en: "Orion Beer" },
+        { id: "o7", cat: "okinawa", jp: "ソーキそば", romaji: "Soo-ki So-ba", cn: "排骨麵", en: "Soki Soba" },
+        { id: "o8", cat: "okinawa", jp: "アグー豚", romaji: "A-guu Bu-ta", cn: "阿古豬", en: "Agu Pork" }
     ];
 
+    // --- 完整16週特訓 ---
     const weeks = [
-        { t: "Week 1 生存基礎", ids: ["s1","s2"] }
-        // ... (務必補上所有週次) ...
+        { t: "Week 1 生存基礎", ids: ["s1","s2","s3","s4","x1"] },
+        { t: "Week 2 溝通回應", ids: ["s6","s8","s5","d1","x3"] },
+        { t: "Week 3 點餐入門", ids: ["d2","d3","d5","d9","x7"] },
+        { t: "Week 4 點餐高手", ids: ["d4","d6","d7","d8","x5"] },
+        { t: "Week 5 點餐進階", ids: ["d10","d11","d12","d13","d14"] },
+        { t: "Week 6 購物基礎", ids: ["sh1","sh2","sh3","sh5","x2"] },
+        { t: "Week 7 購物進階", ids: ["sh4","sh6","sh7","sh8","sh9"] },
+        { t: "Week 8 親子必備(1)", ids: ["k1","k2","k3","k4","x9"] },
+        { t: "Week 9 親子必備(2)", ids: ["k5","k6","k7","k8"] },
+        { t: "Week 10 藥妝症狀(1)", ids: ["m1","m2","m3","m6","x4"] },
+        { t: "Week 11 藥妝症狀(2)", ids: ["m4","m5","m7","m8"] },
+        { t: "Week 12 交通移動", ids: ["dr5","dr6","dr7","a3"] },
+        { t: "Week 13 自駕租車", ids: ["a2","dr1","dr2","dr3"] },
+        { t: "Week 14 飯店住宿", ids: ["h1","h2","h3","h4","x6"] },
+        { t: "Week 15 機場通關", ids: ["a1","a4","a5","s5","s1"] },
+        { t: "Week 16 出發準備", ids: ["s2","d1","sh1","dr1","x10"] }
     ];
 
+    // --- 9大情境會話 ---
     const dialogues = [
-        { title: "🏨 飯店 Check-in", msgs: [{r:"user",t:"チェックイン",c:"Check-in",e:"Check-in"}] }
-        // ... (務必補上所有會話) ...
+        {
+            title: "🏨 飯店 Check-in",
+            msgs: [{ r: "user", t: "チェックインお願いします。", c: "我要Check-in", e: "Check-in, please." }, { r: "staff", t: "パスポートを見せてください。", c: "請出示護照", e: "Passport, please." }, { r: "user", t: "はい、これです。", c: "好的，在這裡", e: "Here it is." }, { r: "staff", t: "朝食は7時から10時です。", c: "早餐是7點到10點", e: "Breakfast is 7-10." }, { r: "user", t: "Wi-Fiのパスワードは？", c: "Wi-Fi密碼是？", e: "Wi-Fi password?" }, { r: "staff", t: "カードに書いてあります。", c: "寫在卡片上", e: "It's on the card." }]
+        },
+        {
+            title: "🍜 餐廳用餐",
+            msgs: [{ r: "staff", t: "いらっしゃいませ。何名様？", c: "歡迎光臨，幾位？", e: "Welcome. How many?" }, { r: "user", t: "大人2人、子供1人です。", c: "大人2位，小孩1位", e: "2 adults, 1 child." }, { r: "user", t: "子供椅子ありますか？", c: "有兒童椅嗎？", e: "High chair?" }, { r: "user", t: "これとこれをください。", c: "我要這個跟這個", e: "This and this." }, { r: "user", t: "ネギ抜きでお願いします。", c: "請不要加蔥", e: "No onions." }, { r: "user", t: "お会計お願いします。", c: "麻煩結帳", e: "Check please." }]
+        },
+        {
+            title: "💊 藥妝店免稅",
+            msgs: [{ r: "user", t: "すみません、風邪薬はどこ？", c: "不好意思，感冒藥在哪？", e: "Cold medicine?" }, { r: "staff", t: "熱はありますか？", c: "有發燒嗎？", e: "Any fever?" }, { r: "user", t: "はい、少し。", c: "有，一點點", e: "A little." }, { r: "staff", t: "こちらがおすすめです。", c: "推薦這個給您", e: "Recommend this." }, { r: "user", t: "免税できますか？", c: "可以退稅嗎？", e: "Tax free?" }, { r: "staff", t: "はい、パスポートを。", c: "可以，請出示護照", e: "Passport please." }]
+        },
+        {
+            title: "🚗 租車與加油",
+            msgs: [{ r: "user", t: "予約しています。", c: "我有預約", e: "I have a reservation." }, { r: "staff", t: "免許証とパスポートを。", c: "請出示駕照和護照", e: "License & Passport." }, { r: "user", t: "ナビの設定をお願いします。", c: "請幫我設定導航", e: "Set GPS please." }, { r: "staff", t: "返却は満タンで。", c: "還車時請加滿油", e: "Return full tank." }, { r: "staff", t: "レギュラーですか？", c: "(加油站) 加普通油嗎？", e: "Regular gas?" }, { r: "user", t: "はい、満タンで。", c: "對，加滿", e: "Full tank." }]
+        },
+        {
+            title: "👶 親子突發",
+            msgs: [{ r: "user", t: "すみません！水をこぼしました。", c: "對不起！打翻水了", e: "Spilled water!" }, { r: "staff", t: "大丈夫ですか？", c: "沒事吧？", e: "Are you OK?" }, { r: "user", t: "すみません、タオルください。", c: "抱歉，請給我毛巾", e: "Towel please." }, { r: "staff", t: "はい、どうぞ。", c: "好的，給您", e: "Here you go." }, { r: "user", t: "本当にすみません。", c: "真的很抱歉", e: "So sorry." }]
+        },
+        {
+            title: "🚕 計程車",
+            msgs: [{ r: "user", t: "ここに行ってください。", c: "請去這裡(指地圖)", e: "Go here please." }, { r: "staff", t: "はい、わかりました。", c: "好的，知道了", e: "Okay." }, { r: "user", t: "どのくらいかかりますか？", c: "大概要多久？", e: "How long?" }, { r: "staff", t: "20分くらいです。", c: "大概20分鐘", e: "About 20 mins." }, { r: "user", t: "ここで止めてください。", c: "請在這裡停", e: "Stop here." }, { r: "user", t: "レシートください。", c: "請給我收據", e: "Receipt please." }]
+        },
+        {
+            title: "🏪 超商結帳",
+            msgs: [{ r: "staff", t: "袋いりますか？", c: "要袋子嗎？", e: "Need a bag?" }, { r: "user", t: "大丈夫です。", c: "不用了", e: "No thanks." }, { r: "staff", t: "温めますか？", c: "要加熱嗎？", e: "Warm it up?" }, { r: "user", t: "お願いします。", c: "麻煩你了", e: "Yes, please." }]
+        },
+        {
+            title: "✈️ 機場/租車櫃檯",
+            msgs: [{ r: "user", t: "予約しています。", c: "我有預約", e: "I have a reservation." }, { r: "staff", t: "お名前をお願いします。", c: "請告訴我大名", e: "Name please." }, { r: "user", t: "台湾の〇〇です。", c: "我是台灣的〇〇", e: "I am OO from Taiwan." }, { r: "staff", t: "バスでお待ちください。", c: "請在巴士上稍等", e: "Wait on the bus." }]
+        },
+        {
+            title: "🌺 沖繩麵店",
+            msgs: [{ r: "staff", t: "めんそーれ！", c: "歡迎光臨(沖繩話)", e: "Welcome!" }, { r: "user", t: "ソーキそばください。", c: "我要排骨麵", e: "Soki soba please." }, { r: "staff", t: "はいよ！", c: "好喔！", e: "Sure!" }, { r: "user", t: "にふぇーでーびる！", c: "謝謝(沖繩話)", e: "Thank you!" }]
+        }
     ];
 
-    // --- 程式變數 ---
+    // --- 核心變數 ---
     let currentCat = 'all';
     let isMasked = false;
     let isPlaying = false;
     let speechRate = 1.0;
     let currentQuiz = null;
-    let quizType = 'word'; // 'word' or 'kana'
+    let quizType = 'word';
 
-    const medicalItems = [{t:"熱があります",c:"發燒",e:"Fever"}, {t:"薬局はどこ",c:"藥局在哪",e:"Pharmacy?"}]; // ... 補全
-    const kidsItems = [{t:"きょうりゅう",c:"恐龍",i:"🦖"}, {t:"アイス",c:"冰淇淋",i:"🍦"}]; // ... 補全
+    const medicalItems = [
+        {t:"熱があります",c:"發燒",e:"Fever"}, {t:"お腹が痛い",c:"肚子痛",e:"Stomachache"},
+        {t:"吐き気がします",c:"想吐",e:"Nausea"}, {t:"怪我をしました",c:"受傷",e:"Injured"},
+        {t:"卵アレルギー",c:"蛋過敏",e:"Egg Allergy"}, {t:"牛乳アレルギー",c:"奶過敏",e:"Milk Allergy"},
+        {t:"救急車を呼んで",c:"叫救護車",e:"Call Ambulance"}, {t:"薬局はどこ",c:"藥局在哪",e:"Pharmacy?"}
+    ];
+    const kidsItems = [
+        {t:"きょうりゅう",c:"恐龍",i:"🦖"}, {t:"ぞう",c:"大象",i:"🐘"},
+        {t:"アイス",c:"冰淇淋",i:"🍦"}, {t:"バス",c:"公車",i:"🚌"},
+        {t:"ひこうき",c:"飛機",i:"✈️"}, {t:"バナナ",c:"香蕉",i:"🍌"}
+    ];
     const kanaData = {
         hira: ["あ","い","う","え","お","か","き","く","け","こ","さ","し","す","せ","そ","た","ち","つ","て","と","な","に","ぬ","ね","の","は","ひ","ふ","へ","ほ","ま","み","む","め","も","や","","ゆ","","よ","ら","り","る","れ","ろ","わ","","","","を","ん"],
         kata: ["ア","イ","ウ","エ","オ","カ","キ","ク","ケ","コ","サ","シ","ス","セ","ソ","タ","チ","ツ","テ","ト","ナ","ニ","ヌ","ネ","ノ","ハ","ヒ","フ","ヘ","ホ","マ","ミ","ム","メ","モ","ヤ","","ユ","","ヨ","ラ","リ","ル","レ","ロ","ワ","","","","ヲ","ン"],
@@ -307,131 +409,19 @@
     init();
 
     function init() {
-        document.getElementById('sensei-msg').innerText = "目標是沖繩通！加油！";
+        document.getElementById('sensei-msg').innerText = ["加油！💪","每天5分鐘！⏰","奎奎等你帶他玩！👶","沖繩我來了！🌺"][Math.floor(Math.random()*4)];
         renderPlan(); renderDialogues(); filterDict('all', null); loadMaskState(); updateAllStats();
-        
-        // Render Tools (略微簡化，請確保資料完整時取消註解或補齊)
-        document.getElementById('medical-grid').innerHTML = medicalItems.map(i => `<div class="med-btn" onclick="speak('${i.t}')"><span style="font-size:24px">🆘</span><div class="med-label" style="font-size:16px;color:#FF453A;font-weight:bold;">${i.c}</div></div>`).join('');
-        document.getElementById('kids-grid').innerHTML = kidsItems.map(i => `<div class="kid-card" onclick="speak('${i.t}')"><div class="kid-icon">${i.i}</div><div class="kid-label">${i.c}</div></div>`).join('');
+        document.getElementById('medical-grid').innerHTML = medicalItems.map(i => `<div class="med-btn" onclick="speak('${i.t}')"><span style="font-size:24px">🆘</span><div style="font-size:16px;color:#FF453A;font-weight:bold;margin:5px 0;">${i.c}</div><div style="font-size:10px;color:#999;">${i.e}</div></div>`).join('');
+        document.getElementById('kids-grid').innerHTML = kidsItems.map(i => `<div class="kid-card" onclick="speak('${i.t}')"><div style="font-size:50px;">${i.i}</div><div style="font-size:20px;font-weight:900;">${i.c}</div></div>`).join('');
         renderKana('hira');
     }
 
-    // --- 測驗系統 (升級版) ---
-    function setQuizType(type) {
-        quizType = type;
-        document.querySelectorAll('.q-type-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('q-type-'+type).classList.add('active');
-        document.getElementById('quiz-title').innerText = type === 'word' ? "👂 聽音辨義" : "👀 五十音認字";
-        document.getElementById('quiz-speaker').style.display = type === 'word' ? 'flex' : 'none';
-        document.getElementById('quiz-txt-display').style.display = type === 'word' ? 'none' : 'block';
-        nextQuiz();
+    function toggleSpeed() {
+        speechRate = (speechRate === 1.0) ? 0.5 : 1.0;
+        document.getElementById('speed-toggle').innerText = (speechRate === 1.0) ? "🐢 慢速 (0.5x)" : "🐇 正常 (1.0x)";
+        showToast(speechRate === 1.0 ? "已切換正常語速" : "已切換慢速");
     }
 
-    function nextQuiz() {
-        document.getElementById('quiz-feedback').innerText = '';
-        const container = document.getElementById('quiz-options');
-        container.innerHTML = '';
-
-        if (quizType === 'word') {
-            const target = phrases[Math.floor(Math.random() * phrases.length)];
-            currentQuiz = target;
-            let options = [target];
-            while(options.length < 4) { const w = phrases[Math.floor(Math.random()*phrases.length)]; if(!options.includes(w)) options.push(w); }
-            options.sort(() => Math.random() - 0.5);
-            options.forEach(opt => {
-                const btn = document.createElement('div'); btn.className = 'quiz-btn'; btn.innerText = opt.cn;
-                btn.onclick = () => checkAnswer(opt, btn, 'word');
-                container.appendChild(btn);
-            });
-            setTimeout(() => speak(target.jp), 300);
-        } else {
-            // Kana Quiz
-            const type = Math.random() > 0.5 ? 'hira' : 'kata';
-            const idx = Math.floor(Math.random() * 46); // Basic chars
-            const char = kanaData[type][idx];
-            const ans = kanaData.romaji[idx];
-            if (!char || char === "") { nextQuiz(); return; } // Skip empty
-            
-            currentQuiz = { jp: char, ans: ans, type: 'kana' };
-            document.getElementById('quiz-txt-display').innerText = char;
-            
-            let options = [ans];
-            while(options.length < 4) {
-                const r = kanaData.romaji[Math.floor(Math.random()*46)];
-                if(r && !options.includes(r) && r !== "") options.push(r);
-            }
-            options.sort(() => Math.random() - 0.5);
-            
-            options.forEach(opt => {
-                const btn = document.createElement('div'); btn.className = 'quiz-btn'; btn.innerText = opt;
-                btn.onclick = () => checkAnswer(opt, btn, 'kana');
-                container.appendChild(btn);
-            });
-        }
-    }
-
-    function playQuizAudio() { if(quizType === 'word' && currentQuiz) speak(currentQuiz.jp); }
-
-    function checkAnswer(selected, btn, type) {
-        const isCorrect = (type === 'word' && selected.id === currentQuiz.id) || (type === 'kana' && selected === currentQuiz.ans);
-        
-        if(isCorrect) {
-            btn.classList.add('correct');
-            document.getElementById('quiz-feedback').innerText = "⭕️ 正確！";
-            speak("正解", null);
-            setTimeout(nextQuiz, 1500);
-        } else {
-            btn.classList.add('wrong');
-            document.getElementById('quiz-feedback').innerText = "❌ 已加入弱點";
-            
-            // ⭐️ 智慧錯題邏輯
-            if (type === 'word') {
-                let mistakes = JSON.parse(localStorage.getItem('jp_mistakes')||'[]');
-                if(!mistakes.includes(currentQuiz.id)) {
-                    mistakes.push(currentQuiz.id);
-                    localStorage.setItem('jp_mistakes', JSON.stringify(mistakes));
-                    showToast("已加入弱點 💀");
-                }
-            }
-        }
-    }
-
-    // --- 成就系統 ---
-    function updateAllStats() {
-        const saved = JSON.parse(localStorage.getItem('jp_v21_prog')||'[]');
-        const total = weeks.reduce((a,b)=>a+b.ids.length,0);
-        const pct = Math.round(saved.length/total*100);
-        document.getElementById('progress-text').innerText = pct+'%';
-        
-        // 徽章解鎖邏輯
-        if(pct >= 25) document.getElementById('badge-25').classList.add('unlocked');
-        if(pct >= 50) document.getElementById('badge-50').classList.add('unlocked');
-        if(pct >= 75) document.getElementById('badge-75').classList.add('unlocked');
-        if(pct >= 100) document.getElementById('badge-100').classList.add('unlocked');
-    }
-
-    // --- 字典過濾 (含弱點) ---
-    function filterDict(cat, btn) {
-        if(btn) { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
-        document.getElementById('search-input').value = '';
-        let data = phrases;
-        
-        if (cat === 'fav') { 
-            const favs = JSON.parse(localStorage.getItem('jp_favs')||'[]'); 
-            data = phrases.filter(p => favs.includes(p.id)); 
-        } else if (cat === 'mistake') { // NEW
-            const errs = JSON.parse(localStorage.getItem('jp_mistakes')||'[]');
-            data = phrases.filter(p => errs.includes(p.id));
-        } else if (cat !== 'all') { 
-            data = phrases.filter(p => p.cat === cat); 
-        }
-        renderDictRaw(data);
-    }
-
-    // (其餘基本功能：切換頁面、渲染列表、發音、全螢幕等，請複製 V18.0 的代碼並保持不變)
-    // 為了節省空間，請確保將 V18.0 的 switchView, renderPlan, toggleCheck, speak, openFullscreen 等函數完整貼在此處。
-    // 記得將 localStorage key 改為 jp_v21_prog 以防衝突。
-    
     function switchView(name, btn) {
         document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
@@ -445,21 +435,15 @@
         const isDict = name === 'dict';
         document.getElementById('tabs-bar').style.display = isDict ? 'block' : 'none';
         document.getElementById('search-bar-container').style.display = isDict ? 'block' : 'none';
+        stopAllAutoPlay();
         if(name==='quiz') nextQuiz();
         window.scrollTo(0,0);
     }
-    function renderDictRaw(data) {
-        const box = document.getElementById('dict-container');
-        const favs = JSON.parse(localStorage.getItem('jp_favs')||'[]');
-        if (data.length === 0) { box.innerHTML = '<div style="text-align:center;color:#666;padding:20px;">無結果</div>'; return; }
-        box.innerHTML = data.map(p => {
-            const isFav = favs.includes(p.id) ? 'fav' : '';
-            return `<div class="card" onclick="speak('${p.jp}')"><div class="card-top"><div style="flex:1"><div class="jp-big">${p.jp} 🔊</div><span class="romaji">${p.romaji}</span><div class="cn">${p.cn}</div><div class="en">${p.en}</div></div><div class="card-actions"><div class="show-btn" onclick="openFullscreen('${p.jp}', '${p.cn}', '${p.en}')">🔍</div><div class="star-btn ${isFav}" onclick="event.stopPropagation(); toggleFav('${p.id}', this)">★</div></div></div></div>`;
-        }).join('');
-    }
+    function openTool(name) { switchView(name); }
+
     function renderPlan() {
         const box = document.getElementById('curriculum-container');
-        const saved = JSON.parse(localStorage.getItem('jp_v21_prog')||'[]'); // Key updated
+        const saved = JSON.parse(localStorage.getItem('jp_v22_prog')||'[]');
         const maskClass = isMasked ? 'masked' : '';
         box.innerHTML = weeks.map((w, idx) => {
             const idsStr = w.ids.join(',');
@@ -472,38 +456,117 @@
             return `<div class="week-header"><div class="week-title-row"><h3 class="week-title">${w.t}</h3><div class="week-actions"><div class="action-btn autoplay-btn" onclick="toggleAutoPlay(this, '${idsStr}')">▶ Play</div><div class="action-btn reset-btn" onclick="resetWeek(${idx})">↺</div></div></div></div>${lessons}`;
         }).join('');
     }
+
     function toggleCheck(id, el) {
-        let saved = JSON.parse(localStorage.getItem('jp_v21_prog')||'[]');
-        if (saved.includes(id)) { saved = saved.filter(x => x !== id); el.classList.remove('checked'); }
-        else { saved.push(id); el.classList.add('checked'); }
-        localStorage.setItem('jp_v21_prog', JSON.stringify(saved));
+        let saved = JSON.parse(localStorage.getItem('jp_v22_prog')||'[]');
+        if (saved.includes(id)) { saved = saved.filter(x => x !== id); el.classList.remove('checked'); } else { saved.push(id); el.classList.add('checked'); }
+        localStorage.setItem('jp_v22_prog', JSON.stringify(saved));
         updateAllStats();
     }
     function resetWeek(idx) {
-        if(!confirm("重置？")) return;
-        let saved = JSON.parse(localStorage.getItem('jp_v21_prog')||'[]');
+        if(!confirm("重置本週？")) return;
+        let saved = JSON.parse(localStorage.getItem('jp_v22_prog')||'[]');
         const weekIds = weeks[idx].ids;
         saved = saved.filter(id => !weekIds.includes(id));
-        localStorage.setItem('jp_v21_prog', JSON.stringify(saved));
+        localStorage.setItem('jp_v22_prog', JSON.stringify(saved));
         renderPlan(); updateAllStats();
     }
-    function resetAllProgress() { if(confirm("清除？")) { localStorage.clear(); location.reload(); } }
+    function resetAllProgress() { if(confirm("清除所有進度？")) { localStorage.clear(); location.reload(); } }
+    function updateAllStats() {
+        const saved = JSON.parse(localStorage.getItem('jp_v22_prog')||'[]');
+        const total = weeks.reduce((a,b)=>a+b.ids.length,0);
+        const pct = Math.round(saved.length/total*100);
+        document.getElementById('progress-text').innerText = pct+'%';
+        if(pct >= 25) document.getElementById('badge-25').classList.add('unlocked');
+        if(pct >= 50) document.getElementById('badge-50').classList.add('unlocked');
+        if(pct >= 75) document.getElementById('badge-75').classList.add('unlocked');
+        if(pct >= 100) document.getElementById('badge-100').classList.add('unlocked');
+    }
+
+    function filterDict(cat, btn) {
+        if(btn) { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+        document.getElementById('search-input').value = '';
+        let data = phrases;
+        if (cat === 'fav') { const favs = JSON.parse(localStorage.getItem('jp_favs')||'[]'); data = phrases.filter(p => favs.includes(p.id)); }
+        else if (cat === 'mistake') { const errs = JSON.parse(localStorage.getItem('jp_mistakes')||'[]'); data = phrases.filter(p => errs.includes(p.id)); }
+        else if (cat !== 'all') { data = phrases.filter(p => p.cat === cat); }
+        renderDictRaw(data);
+    }
+    function renderDictRaw(data) {
+        const box = document.getElementById('dict-container');
+        const favs = JSON.parse(localStorage.getItem('jp_favs')||'[]');
+        if (data.length === 0) { box.innerHTML = '<div style="text-align:center;color:#666;padding:20px;">無結果</div>'; return; }
+        box.innerHTML = data.map(p => {
+            const isFav = favs.includes(p.id) ? 'fav' : '';
+            return `<div class="card" onclick="speak('${p.jp}')"><div class="card-top"><div style="flex:1"><div class="jp-big">${p.jp} 🔊</div><span class="romaji">${p.romaji}</span><div class="cn">${p.cn}</div><div class="en">${p.en}</div></div><div class="card-actions"><div class="show-btn" onclick="openFullscreen('${p.jp}', '${p.cn}', '${p.en}')">🔍</div><div class="star-btn ${isFav}" onclick="event.stopPropagation(); toggleFav('${p.id}', this)">★</div></div></div></div>`;
+        }).join('');
+    }
     function toggleFav(id, el) {
         let favs = JSON.parse(localStorage.getItem('jp_favs')||'[]');
-        if (favs.includes(id)) { favs = favs.filter(x => x !== id); el.classList.remove('fav'); } else { favs.push(id); el.classList.add('fav'); }
+        let isAdd = false;
+        if (favs.includes(id)) { favs = favs.filter(x => x !== id); el.classList.remove('fav'); } else { favs.push(id); el.classList.add('fav'); isAdd = true; }
         localStorage.setItem('jp_favs', JSON.stringify(favs));
-        showToast(favs.includes(id)?"已收藏":"已取消");
+        showToast(isAdd ? "已收藏" : "取消收藏");
+        if(currentCat==='fav') filterDict('fav',null);
     }
-    function openFullscreen(jp,cn,en) { event.stopPropagation(); document.getElementById('fs-jp').innerText=jp; document.getElementById('fs-cn').innerText=cn; document.getElementById('fs-en').innerText=en; document.getElementById('fullscreen-overlay').style.display='flex'; }
-    function closeFullscreen() { document.getElementById('fullscreen-overlay').style.display='none'; }
-    function showToast(m) { const t=document.getElementById('toast'); t.innerText=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1500); }
-    function renderDialogues() { document.getElementById('dialogue-container').innerHTML = dialogues.map(d=>`<div class="dialogue-card"><div class="dialogue-header"><span>${d.title}</span></div><div class="dialogue-body">${d.msgs.map(m=>`<div class="chat-row ${m.r==='user'?'user-row':'staff-row'}"><div class="avatar">${m.r==='user'?'🧑‍🍼':'👩‍💼'}</div><div class="chat-bubble" onclick="speak('${m.t}')"><span class="bubble-jp">${m.t} 🔊</span><span class="bubble-cn">${m.c}</span></div></div>`).join('')}</div></div>`).join(''); }
-    function speak(txt, cb) { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(txt); u.lang = 'ja-JP'; u.rate = speechRate; if(cb) u.onend=cb; window.speechSynthesis.speak(u); }
-    function toggleSpeed() { speechRate = speechRate===1.0?0.5:1.0; document.getElementById('speed-toggle').innerText = speechRate===1.0?"🐇 正常":"🐢 慢速"; showToast("語速已切換"); }
-    function toggleMask() { isMasked=!isMasked; document.getElementById('mask-switch').classList.toggle('on'); renderPlan(); }
-    function loadMaskState() { isMasked=false; }
-    function handleSearch() { const key=document.getElementById('search-input').value.toLowerCase(); renderDictRaw(phrases.filter(p=>p.jp.includes(key)||p.romaji.toLowerCase().includes(key)||p.cn.includes(key))); }
-    function renderKana(t) { const g=document.getElementById('kana-grid'); g.innerHTML=kanaData[t].map(c=>c?`<div class="kana-cell" onclick="speak('${c}')"><div style="font-size:20px;font-weight:bold;color:white;">${c}</div></div>`:`<div></div>`).join(''); }
+    function handleSearch() {
+        const key = document.getElementById('search-input').value.toLowerCase();
+        renderDictRaw(phrases.filter(p => p.jp.includes(key) || p.romaji.toLowerCase().includes(key) || p.cn.includes(key) || p.en.toLowerCase().includes(key)));
+    }
+
+    function renderDialogues() {
+        document.getElementById('dialogue-container').innerHTML = dialogues.map(d => {
+            const bubbles = d.msgs.map(m => {
+                const rowClass = m.r === 'user' ? 'user-row' : 'staff-row';
+                const avatar = m.r === 'user' ? '🧑‍🍼' : '👩‍💼';
+                return `<div class="chat-row ${rowClass}"><div class="avatar">${avatar}</div><div class="chat-bubble" onclick="speak('${m.t}')"><span class="bubble-jp">${m.t} 🔊</span><span class="bubble-meta">${m.c}<br>${m.e}</span></div></div>`;
+            }).join('');
+            return `<div class="dialogue-card"><div class="dialogue-header"><span>${d.title}</span></div><div class="dialogue-body">${bubbles}</div></div>`;
+        }).join('');
+    }
+
+    // Quiz
+    function setQuizType(type) { quizType = type; document.querySelectorAll('.q-type-btn').forEach(b => b.classList.remove('active')); document.getElementById('q-type-'+type).classList.add('active'); document.getElementById('quiz-title').innerText = type==='word'?"👂 聽音辨義":"👀 五十音認字"; document.getElementById('quiz-speaker').style.display=type==='word'?'flex':'none'; document.getElementById('quiz-txt-display').style.display=type==='word'?'none':'block'; nextQuiz(); }
+    function nextQuiz() {
+        document.getElementById('quiz-feedback').innerText = '';
+        const container = document.getElementById('quiz-options'); container.innerHTML = '';
+        if (quizType === 'word') {
+            const target = phrases[Math.floor(Math.random() * phrases.length)]; currentQuiz = target;
+            let options = [target];
+            while(options.length < 4) { const w = phrases[Math.floor(Math.random()*phrases.length)]; if(!options.includes(w)) options.push(w); }
+            options.sort(() => Math.random() - 0.5);
+            options.forEach(opt => {
+                const btn = document.createElement('div'); btn.className = 'quiz-btn'; btn.innerText = opt.cn;
+                btn.onclick = () => checkAnswer(opt, btn, 'word'); container.appendChild(btn);
+            });
+            setTimeout(() => speak(target.jp), 300);
+        } else {
+            const type = Math.random() > 0.5 ? 'hira' : 'kata';
+            const idx = Math.floor(Math.random() * 46);
+            const char = kanaData[type][idx]; const ans = kanaData.romaji[idx];
+            if (!char) { nextQuiz(); return; }
+            currentQuiz = { jp: char, ans: ans, type: 'kana' };
+            document.getElementById('quiz-txt-display').innerText = char;
+            let options = [ans];
+            while(options.length < 4) { const r = kanaData.romaji[Math.floor(Math.random()*46)]; if(r && !options.includes(r)) options.push(r); }
+            options.sort(() => Math.random() - 0.5);
+            options.forEach(opt => {
+                const btn = document.createElement('div'); btn.className = 'quiz-btn'; btn.innerText = opt;
+                btn.onclick = () => checkAnswer(opt, btn, 'kana'); container.appendChild(btn);
+            });
+        }
+    }
+    function playQuizAudio() { if(quizType === 'word' && currentQuiz) speak(currentQuiz.jp); }
+    function checkAnswer(selected, btn, type) {
+        const isCorrect = (type === 'word' && selected.id === currentQuiz.id) || (type === 'kana' && selected === currentQuiz.ans);
+        if(isCorrect) {
+            btn.classList.add('correct'); document.getElementById('quiz-feedback').innerText = "⭕️ 正確！"; speak("正解", null); setTimeout(nextQuiz, 1500);
+        } else {
+            btn.classList.add('wrong'); document.getElementById('quiz-feedback').innerText = "❌ 已加入弱點";
+            if(type==='word') { let m=JSON.parse(localStorage.getItem('jp_mistakes')||'[]'); if(!m.includes(currentQuiz.id)) { m.push(currentQuiz.id); localStorage.setItem('jp_mistakes',JSON.stringify(m)); showToast("已加入弱點"); } }
+        }
+    }
+
     function toggleAutoPlay(btn, idsStr) {
         const ids = idsStr.split(',');
         if (isPlaying) { stopAllAutoPlay(); return; }
@@ -524,6 +587,19 @@
         isPlaying = false; window.speechSynthesis.cancel();
         document.querySelectorAll('.autoplay-btn').forEach(b => { b.classList.remove('playing'); b.innerHTML = '▶ Play'; });
         document.querySelectorAll('.card').forEach(c => c.classList.remove('active-playing'));
+    }
+
+    function toggleMask() { isMasked = !isMasked; document.getElementById('mask-switch').classList.toggle('on'); renderPlan(); }
+    function loadMaskState() { isMasked = false; }
+    function renderKana(t) { const g=document.getElementById('kana-grid'); g.innerHTML=kanaData[t].map(c=>c?`<div class="kana-cell" onclick="speak('${c}')"><div style="font-size:20px;font-weight:bold;color:white;">${c}</div></div>`:`<div></div>`).join(''); }
+    function openFullscreen(jp, cn, en) { event.stopPropagation(); document.getElementById('fs-jp').innerText=jp; document.getElementById('fs-cn').innerText=cn; document.getElementById('fs-en').innerText=en; document.getElementById('fullscreen-overlay').style.display='flex'; }
+    function closeFullscreen() { document.getElementById('fullscreen-overlay').style.display='none'; }
+    function showToast(m) { const t=document.getElementById('toast'); t.innerText=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1500); }
+    function speak(txt, onEnd=null, lang='ja-JP') {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(txt); u.lang = lang; u.rate = speechRate;
+        if (onEnd) u.onend = onEnd;
+        window.speechSynthesis.speak(u);
     }
 </script>
 </body>
