@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>JapaneseGO V30.0</title>
+<title>JapaneseGO V32.0</title>
 <style>
     :root { --bg:#000; --card:#1c1c1e; --acc:#0A84FF; --txt:#FFF; --sub:#8E8E93; --rom:#FFD60A; --en:#30D158; --err:#FF453A; --ok:#30D158; --safe-t:env(safe-area-inset-top); --safe-b:env(safe-area-inset-bottom); }
     *{ -webkit-tap-highlight-color:transparent; box-sizing:border-box; }
     body{ background:var(--bg); color:var(--txt); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; margin:0; padding:0; padding-bottom:calc(90px + var(--safe-b)); }
     
     /* Header */
-    .sticky-header{ position:sticky; top:0; z-index:1000; background:rgba(0,0,0,0.95); backdrop-filter:blur(20px); border-bottom:1px solid #333; padding-top:var(--safe-t); }
+    .sticky-header{ position:sticky; top:0; z-index:1000; background:rgba(0,0,0,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-bottom:1px solid #333; padding-top:var(--safe-t); }
     .header-top{ display:flex; justify-content:space-between; align-items:center; padding:10px 15px; }
     h1{ margin:0; font-size:20px; font-weight:800; background:linear-gradient(90deg,#fff,#aaa); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
     .speed-btn{ background:#333; border:1px solid #555; color:#fff; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600; cursor:pointer; }
@@ -29,7 +29,7 @@
     .view.active{ display:block; }
     @keyframes fadeIn{ from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 
-    /* Card & Elements */
+    /* Cards & Elements */
     .card{ background:var(--card); border:1px solid #333; border-radius:18px; padding:18px; margin-bottom:14px; position:relative; transition:0.2s; }
     .card.active-playing{ border-color:var(--acc); background:#15202b; transform:scale(1.02); }
     .card-top{ display:flex; justify-content:space-between; align-items:flex-start; }
@@ -39,7 +39,6 @@
     .en{ font-size:13px; color:var(--en); font-weight:500; }
     .masked .romaji, .masked .cn, .masked .en{ opacity:0; filter:blur(6px); }
     .masked:active .romaji, .masked:active .cn, .masked:active .en{ opacity:1; filter:none; }
-    
     .card-actions{ display:flex; gap:15px; align-items:center; margin-left:10px; flex-shrink:0; }
     .check-box{ width:28px; height:28px; border-radius:50%; border:2px solid #555; display:flex; align-items:center; justify-content:center; cursor:pointer; color:transparent; }
     .check-box.checked{ background:var(--ok); border-color:var(--ok); color:white; }
@@ -48,7 +47,14 @@
     .trash-btn{ font-size:26px; color:#666; padding:5px; cursor:pointer; }
     .show-btn{ font-size:22px; color:#666; cursor:pointer; }
 
-    /* Week Header */
+    /* Sections */
+    .sensei-box{ background:linear-gradient(135deg,#1a2a3a,#1c1c1e); border:1px solid #333; border-radius:16px; padding:15px; margin-bottom:20px; display:flex; gap:15px; align-items:center; }
+    .mask-toggle-area{ display:flex; justify-content:space-between; align-items:center; background:#222; padding:10px 15px; border-radius:12px; margin-bottom:20px; border:1px solid #333; }
+    .toggle-switch{ position:relative; width:50px; height:30px; background:#444; border-radius:15px; transition:0.3s; }
+    .toggle-switch.on{ background:var(--ok); }
+    .toggle-knob{ position:absolute; top:2px; left:2px; width:26px; height:26px; background:#fff; border-radius:50%; transition:0.3s; }
+    .toggle-switch.on .toggle-knob{ transform:translateX(20px); }
+    
     .week-header{ margin:30px 0 15px; }
     .week-title-row{ display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
     .week-title{ color:var(--acc); font-size:18px; font-weight:800; margin:0; }
@@ -56,6 +62,32 @@
     .action-btn{ background:#222; border:1px solid #444; color:#ccc; padding:6px 12px; border-radius:15px; font-size:12px; font-weight:600; display:flex; align-items:center; gap:5px; cursor:pointer; }
     .autoplay-btn.playing{ background:var(--acc); color:#fff; border-color:var(--acc); animation:pulse 1.5s infinite; }
     @keyframes pulse{ 0%{opacity:1} 50%{opacity:0.7} 100%{opacity:1} }
+
+    /* Chat Course */
+    .chat-course-card{ background:#1c1c1e; border:1px solid #333; border-radius:16px; margin-bottom:20px; overflow:hidden; }
+    .chat-course-header{ padding:15px; background:#252525; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center; cursor:pointer; }
+    .chat-course-title{ font-size:16px; font-weight:700; color:#fff; display:flex; align-items:center; gap:10px; }
+    .chat-course-body{ display:none; padding:15px; background:#151515; }
+    .chat-course-body.open{ display:block; }
+    .chat-footer{ padding:12px 15px; border-top:1px solid #333; display:flex; justify-content:flex-end; background:#222; }
+    .master-btn{ background:#222; border:1px solid #555; color:#888; padding:8px 16px; border-radius:20px; font-size:13px; font-weight:600; display:flex; align-items:center; gap:6px; cursor:pointer; }
+    .master-btn.mastered{ background:var(--ok); border-color:var(--ok); color:white; }
+    .chat-row{ display:flex; align-items:flex-end; gap:10px; margin-bottom:12px; }
+    .chat-row.user-row{ flex-direction:row-reverse; }
+    .chat-bubble{ max-width:80%; padding:10px 14px; border-radius:16px; font-size:15px; line-height:1.4; cursor:pointer; background:#2c2c2e; color:#eee; }
+    .chat-row.user-row .chat-bubble{ background:var(--acc); color:#fff; }
+    .avatar{ width:36px; height:36px; border-radius:50%; background:#333; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; border:1px solid #444; }
+    .bubble-meta{ font-size:12px; opacity:0.8; margin-top:4px; display:block; }
+
+    /* Toolbox */
+    .toolbox-grid{ display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-top:10px; }
+    .tool-card{ background:var(--card); border:1px solid #333; border-radius:20px; padding:20px; text-align:center; cursor:pointer; height:130px; display:flex; flex-direction:column; justify-content:center; align-items:center; }
+    .medical-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .med-btn{ background:#2c1a1a; border:1px solid #5a2a2a; border-radius:16px; padding:15px; text-align:center; cursor:pointer; }
+    .kids-grid{ display:grid; grid-template-columns:1fr 1fr; gap:15px; padding:10px; }
+    .kid-card{ background:#fff; border-radius:20px; padding:15px; text-align:center; color:#333; cursor:pointer; }
+    .kana-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:6px; }
+    .kana-cell{ background:#222; border-radius:8px; padding:10px 0; text-align:center; cursor:pointer; border:1px solid #333; }
 
     /* Quiz */
     .quiz-container{ text-align:center; margin-top:20px; }
@@ -68,53 +100,30 @@
     .q-type-btn{ padding:5px 15px; border-radius:15px; border:1px solid #555; background:#222; color:#888; font-size:13px; cursor:pointer; }
     .q-type-btn.active{ background:var(--acc); color:#fff; border-color:var(--acc); }
 
-    /* Chat */
-    .chat-course-card{ background:#1c1c1e; border:1px solid #333; border-radius:16px; margin-bottom:20px; overflow:hidden; }
-    .chat-course-header{ padding:15px; background:#252525; border-bottom:1px solid #333; display:flex; justify-content:space-between; align-items:center; cursor:pointer; }
-    .chat-course-title{ font-size:16px; font-weight:700; color:#fff; display:flex; align-items:center; gap:10px; }
-    .chat-course-body{ display:none; padding:15px; background:#151515; }
-    .chat-course-body.open{ display:block; }
-    .chat-footer{ padding:12px 15px; border-top:1px solid #333; display:flex; justify-content:flex-end; background:#222; }
-    .master-btn{ background:#222; border:1px solid #555; color:#888; padding:8px 16px; border-radius:20px; font-size:13px; font-weight:600; display:flex; align-items:center; gap:6px; cursor:pointer; }
-    .master-btn.mastered{ background:var(--ok); border-color:var(--ok); color:white; }
-    .chat-row{ display:flex; align-items:flex-end; gap:10px; margin-bottom:12px; }
-    .chat-row.user-row{ flex-direction:row-reverse; }
-    .avatar{ width:38px; height:38px; border-radius:50%; background:#333; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; border:1px solid #444; }
-    .chat-bubble{ max-width:80%; padding:10px 14px; border-radius:16px; font-size:15px; line-height:1.4; cursor:pointer; background:#2c2c2e; color:#eee; }
-    .chat-row.user-row .chat-bubble{ background:var(--acc); color:#fff; }
-    .bubble-meta{ font-size:12px; opacity:0.8; margin-top:4px; display:block; }
-
-    /* General */
+    /* Overlay & Toast */
     #fullscreen-overlay{ position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:9999; display:none; flex-direction:column; justify-content:center; align-items:center; padding:30px; text-align:center; }
     #fs-jp{ font-size:40px; font-weight:900; margin-bottom:20px; }
     #fs-cn{ font-size:24px; color:#888; margin-bottom:10px; }
     #fs-en{ font-size:18px; color:var(--en); }
     #toast{ position:fixed; bottom:100px; left:50%; transform:translateX(-50%) translateY(20px); background:rgba(30,30,30,0.95); padding:12px 24px; border-radius:30px; font-size:14px; opacity:0; pointer-events:none; transition:0.3s; z-index:9999; border:1px solid #555; display:flex; align-items:center; gap:8px; }
     #toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
-    .bottom-nav{ position:fixed; bottom:0; left:0; right:0; height:85px; background:rgba(15,15,15,0.98); border-top:1px solid #333; display:flex; justify-content:space-around; padding-top:10px; z-index:2000; padding-bottom:var(--safe-b); }
+
+    /* Nav */
+    .bottom-nav{ position:fixed; bottom:0; left:0; right:0; height:85px; background:rgba(15,15,15,0.98); border-top:1px solid #333; display:flex; justify-content:space-around; padding-top:10px; z-index:2000; }
     .nav-btn{ text-align:center; color:#666; font-size:10px; width:20%; cursor:pointer; }
     .nav-btn.active{ color:var(--acc); }
     .nav-icon{ font-size:24px; display:block; margin-bottom:4px; }
-    .sensei-box{ background:linear-gradient(135deg,#1a2a3a,#1c1c1e); border:1px solid #333; border-radius:16px; padding:15px; margin-bottom:20px; display:flex; gap:15px; align-items:center; }
-    .mask-toggle-area{ display:flex; justify-content:space-between; align-items:center; background:#222; padding:10px 15px; border-radius:12px; margin-bottom:20px; border:1px solid #333; }
-    .toggle-switch{ position:relative; width:50px; height:30px; background:#444; border-radius:15px; transition:0.3s; }
-    .toggle-switch.on{ background:var(--ok); }
-    .toggle-knob{ position:absolute; top:2px; left:2px; width:26px; height:26px; background:#fff; border-radius:50%; transition:0.3s; }
-    .toggle-switch.on .toggle-knob{ transform:translateX(20px); }
-    .toolbox-grid{ display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-top:10px; }
-    .tool-card{ background:var(--card); border:1px solid #333; border-radius:20px; padding:20px; text-align:center; cursor:pointer; height:130px; display:flex; flex-direction:column; justify-content:center; align-items:center; }
-    .medical-grid{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-    .med-btn{ background:#2c1a1a; border:1px solid #5a2a2a; border-radius:16px; padding:15px; text-align:center; cursor:pointer; }
-    .kids-grid{ display:grid; grid-template-columns:1fr 1fr; gap:15px; padding:10px; }
-    .kid-card{ background:#fff; border-radius:20px; padding:15px; text-align:center; color:#333; cursor:pointer; }
-    .kana-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:6px; }
-    .kana-cell{ background:#222; border-radius:8px; padding:10px 0; text-align:center; cursor:pointer; border:1px solid #333; }
+    
     .progress-section{ background:#1c1c1e; padding:15px; border-radius:16px; border:1px solid #333; margin-bottom:20px; }
     .prog-bar{ height:8px; background:#333; border-radius:4px; overflow:hidden; margin-top:5px; }
     .prog-fill{ height:100%; background:var(--ok); width:0%; transition:0.5s; }
     .badges-container{ display:flex; justify-content:space-between; background:#222; padding:15px; border-radius:16px; margin:20px 0; border:1px solid #333; }
     .badge-item{ text-align:center; opacity:0.3; filter:grayscale(100%); transition:0.5s; }
     .badge-item.unlocked{ opacity:1; filter:grayscale(0%); transform:scale(1.1); }
+    .badge-icon{ font-size:32px; display:block; margin-bottom:5px; }
+    .badge-text{ font-size:10px; color:#aaa; }
+    
+    /* Review */
     .flashcard-container { perspective: 1000px; width: 100%; height: 300px; margin-top: 20px; }
     .flashcard { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s; border-radius: 20px; background: #222; border: 1px solid #444; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
     .flashcard.flipped { transform: rotateY(180deg); }
@@ -127,7 +136,7 @@
 
 <div class="sticky-header">
     <div class="header-top">
-        <h1>JapaneseGO <span style="font-size:12px; color:#888;">Final V30.0</span></h1>
+        <h1>JapaneseGO <span style="font-size:12px; color:#888;">Final V32.0</span></h1>
         <button id="speed-toggle" class="speed-btn" onclick="toggleSpeed()">🐢 慢速 (0.5x)</button>
     </div>
     <div id="search-bar-container" class="search-box">
@@ -187,10 +196,10 @@
     <div style="text-align:center;margin:10px 0 20px;"><h2 id="quiz-title">👂 聽音辨義</h2><div style="color:#888;font-size:13px;">錯題會自動加入「弱點」字典</div></div>
     <div class="quiz-container">
         <div class="quiz-speaker" onclick="playQuizAudio()">🔊</div>
-        <div id="quiz-txt-display" style="font-size:40px;font-weight:bold;margin-bottom:20px;display:none;color:#FFD60A;font-family:monospace;"></div>
+        <div id="quiz-txt-display" style="font-size:40px;font-weight:bold;margin-bottom:20px;display:none;color:#FFD60A;"></div>
         <div id="quiz-options" style="display:grid;gap:12px;"></div>
         <div id="quiz-feedback" style="margin-top:20px;font-size:18px;font-weight:bold;height:30px;"></div>
-        <button style="margin-top:20px;background:#444;color:white;padding:10px 20px;border-radius:20px;border:none;" onclick="nextQuiz()">Skip / Next</button>
+        <button style="margin-top:20px;background:#444;color:white;padding:10px 20px;border-radius:20px;border:none;" onclick="nextQuiz()">跳過 / 下一題</button>
     </div>
 </div>
 
@@ -234,7 +243,7 @@
 </div>
 
 <script>
-    // --- 完整資料庫 (V30.0 Full) ---
+    // --- 1. 資料庫 (DATA) - 必須放在最前面 ---
     const phrases = [
         { id: "x1", cat: "short", jp: "なるほど", romaji: "Na-ru-ho-do", cn: "原來如此", en: "I see" },
         { id: "x2", cat: "short", jp: "すごい", romaji: "Su-go-i", cn: "好厲害", en: "Amazing" },
@@ -248,64 +257,64 @@
         { id: "x10", cat: "short", jp: "やばい", romaji: "Ya-bai", cn: "糟糕/厲害", en: "OMG" },
         { id: "s1", cat: "survival", jp: "すみません", romaji: "Su-mi-ma-sen", cn: "不好意思", en: "Excuse me" },
         { id: "s2", cat: "survival", jp: "ありがとう", romaji: "A-ri-ga-tou", cn: "謝謝", en: "Thank you" },
-        { id: "s3", cat: "survival", jp: "大丈夫です", romaji: "Dai-jou-bu", cn: "沒關係", en: "It's okay" },
-        { id: "s4", cat: "survival", jp: "トイレはどこですか？", romaji: "To-i-re wa do-ko?", cn: "廁所在哪？", en: "Where is the toilet?" },
-        { id: "s5", cat: "survival", jp: "写真を撮ってください", romaji: "Sha-shin o tot-te", cn: "請幫我拍照", en: "Take a photo please" },
+        { id: "s3", cat: "survival", jp: "大丈夫", romaji: "Dai-jou-bu", cn: "沒關係", en: "It's okay" },
+        { id: "s4", cat: "survival", jp: "トイレ", romaji: "To-i-re", cn: "廁所", en: "Toilet" },
+        { id: "s5", cat: "survival", jp: "写真を撮ってください", romaji: "Sha-shin o tot-te", cn: "請幫我拍照", en: "Take photo" },
         { id: "s6", cat: "survival", jp: "わかりません", romaji: "Wa-ka-ri-ma-sen", cn: "聽不懂", en: "I don't understand" },
-        { id: "s7", cat: "survival", jp: "これ", romaji: "Ko-re", cn: "這個", en: "This one" },
+        { id: "s7", cat: "survival", jp: "これ", romaji: "Ko-re", cn: "這個", en: "This" },
         { id: "s8", cat: "survival", jp: "はい / いいえ", romaji: "Hai / Ii-e", cn: "是 / 不是", en: "Yes / No" },
         { id: "d1", cat: "dining", jp: "これください", romaji: "Ko-re Ku-da-sai", cn: "我要這個", en: "This one please" },
-        { id: "d2", cat: "dining", jp: "お水ください", romaji: "O-mi-zu", cn: "請給我水", en: "Water please" },
-        { id: "d3", cat: "dining", jp: "お会計お願いします", romaji: "O-kai-kei", cn: "麻煩結帳", en: "Check please" },
-        { id: "d4", cat: "dining", jp: "ネギ抜きで", romaji: "Ne-gi nu-ki de", cn: "不要加蔥", en: "No green onions" },
+        { id: "d2", cat: "dining", jp: "お水", romaji: "O-mi-zu", cn: "水", en: "Water" },
+        { id: "d3", cat: "dining", jp: "お会計", romaji: "O-kai-kei", cn: "結帳", en: "Check" },
+        { id: "d4", cat: "dining", jp: "ネギ抜きで", romaji: "Ne-gi nu-ki de", cn: "不要加蔥", en: "No onion" },
         { id: "d5", cat: "dining", jp: "氷なし", romaji: "Koo-ri na-shi", cn: "去冰", en: "No ice" },
         { id: "d6", cat: "dining", jp: "持ち帰りで", romaji: "Mo-chi-ka-e-ri de", cn: "我要外帶", en: "Take out" },
-        { id: "d7", cat: "dining", jp: "別々で", romaji: "Be-tsu be-tsu de", cn: "分開結帳", en: "Separate checks" },
-        { id: "d8", cat: "dining", jp: "おすすめは？", romaji: "O-su-su-me wa?", cn: "有推薦的嗎？", en: "Recommendation?" },
+        { id: "d7", cat: "dining", jp: "別々で", romaji: "Be-tsu be-tsu de", cn: "分開結帳", en: "Separate" },
+        { id: "d8", cat: "dining", jp: "おすすめ", romaji: "O-su-su-me", cn: "推薦", en: "Recommend" },
         { id: "d9", cat: "dining", jp: "メニュー", romaji: "Me-nyuu", cn: "菜單", en: "Menu" },
         { id: "d10", cat: "dining", jp: "豚肉", romaji: "Bu-ta ni-ku", cn: "豬肉", en: "Pork" },
         { id: "d11", cat: "dining", jp: "牛肉", romaji: "Gyuu ni-ku", cn: "牛肉", en: "Beef" },
         { id: "d12", cat: "dining", jp: "鶏肉", romaji: "To-ri ni-ku", cn: "雞肉", en: "Chicken" },
         { id: "d13", cat: "dining", jp: "魚", romaji: "Sa-ka-na", cn: "魚", en: "Fish" },
-        { id: "d14", cat: "dining", jp: "生ビール", romaji: "Na-ma bii-ru", cn: "生啤酒", en: "Draft beer" },
-        { id: "sh1", cat: "shopping", jp: "いくらですか？", romaji: "I-ku-ra?", cn: "多少錢？", en: "How much?" },
-        { id: "sh2", cat: "shopping", jp: "カード使えますか？", romaji: "Kaa-do OK?", cn: "可以刷卡嗎？", en: "Card OK?" },
-        { id: "sh3", cat: "shopping", jp: "免税できますか？", romaji: "Men-zei", cn: "可以退稅嗎？", en: "Tax free?" },
-        { id: "sh4", cat: "shopping", jp: "新しいのありますか？", romaji: "A-ta-ra-shii no", cn: "有新的嗎？", en: "New one?" },
+        { id: "d14", cat: "dining", jp: "生ビール", romaji: "Na-ma bii-ru", cn: "生啤酒", en: "Beer" },
+        { id: "sh1", cat: "shopping", jp: "いくら？", romaji: "I-ku-ra?", cn: "多少錢？", en: "How much?" },
+        { id: "sh2", cat: "shopping", jp: "カードOK？", romaji: "Kaa-do OK?", cn: "可以刷卡嗎？", en: "Card OK?" },
+        { id: "sh3", cat: "shopping", jp: "免税", romaji: "Men-zei", cn: "退稅", en: "Tax free" },
+        { id: "sh4", cat: "shopping", jp: "新しいの", romaji: "A-ta-ra-shii no", cn: "有新的嗎？", en: "New one?" },
         { id: "sh5", cat: "shopping", jp: "袋いりません", romaji: "Fu-ku-ro i-ri-ma-sen", cn: "不用袋子", en: "No bag" },
         { id: "sh6", cat: "shopping", jp: "レシート", romaji: "Re-shii-to", cn: "收據", en: "Receipt" },
-        { id: "sh7", cat: "shopping", jp: "大きいサイズ", romaji: "Oo-kii sa-i-zu", cn: "大尺寸", en: "Bigger size" },
-        { id: "sh8", cat: "shopping", jp: "小さいサイズ", romaji: "Chii-sai sa-i-zu", cn: "小尺寸", en: "Smaller size" },
+        { id: "sh7", cat: "shopping", jp: "大きいサイズ", romaji: "Oo-kii sa-i-zu", cn: "大尺寸", en: "Big size" },
+        { id: "sh8", cat: "shopping", jp: "小さいサイズ", romaji: "Chii-sai sa-i-zu", cn: "小尺寸", en: "Small size" },
         { id: "sh9", cat: "shopping", jp: "プレゼント", romaji: "Pu-re-zen-to", cn: "禮物", en: "Gift" },
         { id: "k1", cat: "kids", jp: "子供椅子", romaji: "Ko-do-mo Isu", cn: "兒童椅", en: "High chair" },
         { id: "k2", cat: "kids", jp: "スプーン", romaji: "Su-puu-n", cn: "湯匙", en: "Spoon" },
-        { id: "k3", cat: "kids", jp: "お湯", romaji: "O-yu", cn: "熱水(泡奶)", en: "Hot water" },
+        { id: "k3", cat: "kids", jp: "お湯", romaji: "O-yu", cn: "熱水", en: "Hot water" },
         { id: "k4", cat: "kids", jp: "かわいい", romaji: "Ka-wai-i", cn: "好可愛", en: "Cute" },
         { id: "k5", cat: "kids", jp: "オムツ", romaji: "O-mu-tsu", cn: "尿布", en: "Diaper" },
         { id: "k6", cat: "kids", jp: "おしりふき", romaji: "O-shi-ri fu-ki", cn: "濕紙巾", en: "Wipes" },
         { id: "k7", cat: "kids", jp: "ベビーカー", romaji: "Be-bii kaa", cn: "嬰兒車", en: "Stroller" },
         { id: "k8", cat: "kids", jp: "ミルク", romaji: "Mi-ru-ku", cn: "牛奶", en: "Milk" },
         { id: "k9", cat: "kids", jp: "授乳室", romaji: "Ju-nyuu shi-tsu", cn: "哺乳室", en: "Nursing room" },
-        { id: "m1", cat: "drug", jp: "風邪薬", romaji: "Ka-ze gu-su-ri", cn: "感冒藥", en: "Cold medicine" },
+        { id: "m1", cat: "drug", jp: "風邪薬", romaji: "Ka-ze gu-su-ri", cn: "感冒藥", en: "Cold med" },
         { id: "m2", cat: "drug", jp: "頭痛薬", romaji: "Zu-tsuu ya-ku", cn: "頭痛藥", en: "Headache med" },
         { id: "m3", cat: "drug", jp: "絆創膏", romaji: "Ban-sou-kou", cn: "OK繃", en: "Band-aid" },
         { id: "m4", cat: "drug", jp: "虫除け", romaji: "Mu-shi yo-ke", cn: "防蚊液", en: "Bug spray" },
         { id: "m5", cat: "drug", jp: "日焼け止め", romaji: "Hi-ya-ke do-me", cn: "防曬乳", en: "Sunscreen" },
-        { id: "m6", cat: "drug", jp: "熱があります", romaji: "Ne-tsu ga a-ri-ma-su", cn: "發燒", en: "Has fever" },
+        { id: "m6", cat: "drug", jp: "熱", romaji: "Ne-tsu", cn: "發燒", en: "Fever" },
         { id: "m7", cat: "drug", jp: "咳", romaji: "Se-ki", cn: "咳嗽", en: "Cough" },
         { id: "m8", cat: "drug", jp: "鼻水", romaji: "Ha-na mi-zu", cn: "流鼻水", en: "Runny nose" },
         { id: "m9", cat: "drug", jp: "薬局", romaji: "Yak-kyo-ku", cn: "藥局", en: "Pharmacy" },
         { id: "m10", cat: "drug", jp: "病院", romaji: "Byou-in", cn: "醫院", en: "Hospital" },
         { id: "dr1", cat: "driving", jp: "満タン", romaji: "Man-tan", cn: "加滿油", en: "Full tank" },
         { id: "dr2", cat: "driving", jp: "駐車場", romaji: "Chuu-sha-jou", cn: "停車場", en: "Parking" },
-        { id: "dr3", cat: "driving", jp: "ナビ設定", romaji: "Na-bi set-tei", cn: "設定導航", en: "GPS setting" },
+        { id: "dr3", cat: "driving", jp: "ナビ設定", romaji: "Na-bi set-tei", cn: "設定導航", en: "GPS" },
         { id: "dr4", cat: "driving", jp: "ここに行きたい", romaji: "Ko-ko ni i-ki-tai", cn: "我想去這裡", en: "Go here" },
         { id: "dr5", cat: "driving", jp: "タクシー", romaji: "Ta-ku-shii", cn: "計程車", en: "Taxi" },
         { id: "dr6", cat: "driving", jp: "バス停", romaji: "Ba-su tei", cn: "公車站", en: "Bus stop" },
         { id: "dr7", cat: "driving", jp: "まっすぐ", romaji: "Mas-su-gu", cn: "直走", en: "Straight" },
         { id: "h1", cat: "hotel", jp: "チェックイン", romaji: "Chek-ku-in", cn: "Check-in", en: "Check-in" },
         { id: "h2", cat: "hotel", jp: "荷物預かり", romaji: "Ni-mo-tsu a-zu-ka-ri", cn: "寄放行李", en: "Keep luggage" },
-        { id: "h3", cat: "hotel", jp: "Wi-Fiパスワード", romaji: "Wi-Fi pa-su-waa-do", cn: "Wi-Fi密碼", en: "WiFi Password" },
+        { id: "h3", cat: "hotel", jp: "Wi-Fiパスワード", romaji: "Wi-Fi pa-su-waa-do", cn: "Wi-Fi密碼", en: "WiFi Pass" },
         { id: "h4", cat: "hotel", jp: "朝食", romaji: "Chou-sho-ku", cn: "早餐", en: "Breakfast" },
         { id: "a1", cat: "airport", jp: "パスポート", romaji: "Pa-su-poo-to", cn: "護照", en: "Passport" },
         { id: "a2", cat: "airport", jp: "レンタカー", romaji: "Ren-ta-kaa", cn: "租車", en: "Rental car" },
@@ -376,16 +385,9 @@
         },
         { 
             id: "c9", title: "🌺 沖繩麵店", icon: "🌺",
-            msgs: [{r:"staff",t:"めんそーれ！",c:"歡迎光臨(沖繩話)",e:"Welcome!"},{r:"user",t:"ソーキそばください。",c:"我要排骨麵",e:"Soki soba please."},{r:"staff",t:"はいよ！",c:"好喔！",e:"Sure!"},{r:"user",t:"にふぇーでーびる！",c:"謝謝(沖繩話)",e:"Thank you!"}]
+            msgs: [{r:"staff",t:"めんそーれ！",c:"歡迎光臨(沖繩話)",e:"Welcome!"},{r:"user",t:"ソーキそばください。",c:"我要排骨麵",e:"Soki soba."},{r:"staff",t:"はいよ！",c:"好喔！",e:"Sure!"},{r:"user",t:"にふぇーでーびる！",c:"謝謝(沖繩話)",e:"Thank you!"}]
         }
     ];
-
-    let currentCat = 'all';
-    let isMasked = false;
-    let isPlaying = false;
-    let speechRate = 1.0;
-    let currentQuiz = null;
-    let quizType = 'word';
 
     const medicalItems = [
         {t:"熱があります",c:"發燒",e:"Fever"}, {t:"お腹が痛い",c:"肚子痛",e:"Stomachache"},
@@ -404,35 +406,50 @@
         romaji: ["a","i","u","e","o","ka","ki","ku","ke","ko","sa","shi","su","se","so","ta","chi","tsu","te","to","na","ni","nu","ne","no","ha","hi","fu","he","ho","ma","mi","mu","me","mo","ya","","yu","","yo","ra","ri","ru","re","ro","wa","","","","wo","n"]
     };
 
-    init();
+    // --- 2. 狀態變數 (STATE) ---
+    let currentCat = 'all';
+    let isMasked = false;
+    let isPlaying = false;
+    let speechRate = 1.0;
+    let currentQuiz = null;
+    let quizType = 'word';
 
+    // --- 3. 初始化函式 (INIT) - 確保在 DOMReady 後執行 ---
     function init() {
         document.getElementById('sensei-msg').innerText = ["加油！💪","每天5分鐘！⏰","奎奎等你帶他玩！👶","沖繩我來了！🌺"][Math.floor(Math.random()*4)];
-        renderPlan(); renderChatCourse(); filterDict('all', null); loadMaskState(); updateAllStats();
         
-        document.getElementById('medical-grid').innerHTML = medicalItems.map(i => 
-            `<div class="med-btn" onclick="speak('${i.t}')"><span style="font-size:24px">🆘</span><div class="med-label" style="font-size:16px;color:#FF453A;font-weight:bold;margin:5px 0;">${i.c}</div><div class="med-en">${i.e}</div></div>`
-        ).join('');
-        document.getElementById('kids-grid').innerHTML = kidsItems.map(i => 
-            `<div class="kid-card" onclick="speak('${i.t}')"><div style="font-size:50px;">${i.i}</div><div style="font-size:20px;font-weight:900;">${i.c}</div></div>`
-        ).join('');
+        renderPlan();
+        renderChatCourse(); // 確保渲染會話
+        filterDict('all', null);
+        loadMaskState();
+        updateAllStats();
+        
+        // 渲染百寶箱 (確保資料已定義)
+        const medGrid = document.getElementById('medical-grid');
+        if(medGrid) medGrid.innerHTML = medicalItems.map(i => `<div class="med-btn" onclick="speak('${i.t}')"><span style="font-size:24px">🆘</span><div class="med-label" style="font-size:16px;color:#FF453A;font-weight:bold;margin:5px 0;">${i.c}</div><div class="med-en">${i.e}</div></div>`).join('');
+        
+        const kidGrid = document.getElementById('kids-grid');
+        if(kidGrid) kidGrid.innerHTML = kidsItems.map(i => `<div class="kid-card" onclick="speak('${i.t}')"><div style="font-size:50px;">${i.i}</div><div style="font-size:20px;font-weight:900;">${i.c}</div></div>`).join('');
+        
         renderKana('hira');
     }
+
+    // --- 4. 事件監聽 (Event Listener) ---
+    document.addEventListener('DOMContentLoaded', init);
+
+    // --- 5. 功能函式 (FUNCTIONS) ---
 
     // 語速切換
     function toggleSpeed() {
         const btn = document.getElementById('speed-toggle');
         if (speechRate === 1.0) {
-            speechRate = 0.5; 
-            btn.innerText = "🐢 慢速 (0.5x)";
-            showToast("已切換為慢速");
+            speechRate = 0.5; btn.innerText = "🐢 慢速 (0.5x)"; showToast("已切換慢速");
         } else {
-            speechRate = 1.0; 
-            btn.innerText = "🐇 正常 (1.0x)";
-            showToast("已切換為正常語速");
+            speechRate = 1.0; btn.innerText = "🐇 正常 (1.0x)"; showToast("已切換正常語速");
         }
     }
 
+    // 頁面切換
     function switchView(name, btn) {
         document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
@@ -453,16 +470,15 @@
         if(name==='quiz') nextQuiz();
         if(name==='review') initReview();
         
-        // 如果切到字典，強制刷新
-        if(isDict && currentCat === 'mistake') filterDict('mistake', document.querySelector('.tab-btn[onclick*="mistake"]'));
-        
         window.scrollTo(0,0);
     }
     function openTool(name) { switchView(name); }
 
+    // 特訓渲染
     function renderPlan() {
         const box = document.getElementById('curriculum-container');
-        const saved = JSON.parse(localStorage.getItem('jp_v30_prog')||'[]');
+        if(!box) return;
+        const saved = JSON.parse(localStorage.getItem('jp_v32_prog')||'[]');
         const maskClass = isMasked ? 'masked' : '';
         box.innerHTML = weeks.map((w, idx) => {
             const idsStr = w.ids.join(',');
@@ -470,39 +486,25 @@
                 const p = phrases.find(x=>x.id===id);
                 if(!p) return '';
                 const chk = saved.includes(id) ? 'checked' : '';
-                return `
-                <div class="card ${maskClass}" id="card-${id}" onclick="speak('${p.jp}')">
-                    <div class="card-top">
-                        <div style="flex:1">
-                            <div class="jp-big">${p.jp} 🔊</div>
-                            <span class="romaji">${p.romaji}</span>
-                            <div class="cn">${p.cn}</div>
-                            <div class="en">${p.en}</div>
-                        </div>
-                        <div class="card-actions">
-                            <div class="show-btn" onclick="openFullscreen('${p.jp}', '${p.cn}', '${p.en}')">🔍</div>
-                            <div class="check-box ${chk}" onclick="event.stopPropagation(); toggleCheck('${id}', this)">✓</div>
-                        </div>
-                    </div>
-                </div>`;
+                return `<div class="card ${maskClass}" id="card-${id}" onclick="speak('${p.jp}')"><div class="card-top"><div style="flex:1"><div class="jp-big">${p.jp} 🔊</div><span class="romaji">${p.romaji}</span><div class="cn">${p.cn}</div><div class="en">${p.en}</div></div><div class="card-actions"><div class="show-btn" onclick="openFullscreen('${p.jp}', '${p.cn}', '${p.en}')">🔍</div><div class="check-box ${chk}" onclick="event.stopPropagation(); toggleCheck('${id}', this)">✓</div></div></div></div>`;
             }).join('');
             return `<div class="week-header"><div class="week-title-row"><h3 class="week-title">${w.t}</h3><div class="week-actions"><div class="action-btn autoplay-btn" onclick="toggleAutoPlay(this, '${idsStr}')">▶ Play</div><div class="action-btn reset-btn" onclick="resetWeek(${idx})">↺</div></div></div></div>${lessons}`;
         }).join('');
     }
 
     function toggleCheck(id, el) {
-        let saved = JSON.parse(localStorage.getItem('jp_v30_prog')||'[]');
+        let saved = JSON.parse(localStorage.getItem('jp_v32_prog')||'[]');
         if (saved.includes(id)) { saved = saved.filter(x => x !== id); el.classList.remove('checked'); } else { saved.push(id); el.classList.add('checked'); }
-        localStorage.setItem('jp_v30_prog', JSON.stringify(saved));
+        localStorage.setItem('jp_v32_prog', JSON.stringify(saved));
         updateAllStats();
     }
 
     function resetWeek(idx) {
-        if(!confirm("重置本週進度？")) return;
-        let saved = JSON.parse(localStorage.getItem('jp_v30_prog')||'[]');
+        if(!confirm("重置本週？")) return;
+        let saved = JSON.parse(localStorage.getItem('jp_v32_prog')||'[]');
         const weekIds = weeks[idx].ids;
         saved = saved.filter(id => !weekIds.includes(id));
-        localStorage.setItem('jp_v30_prog', JSON.stringify(saved));
+        localStorage.setItem('jp_v32_prog', JSON.stringify(saved));
         renderPlan(); updateAllStats();
     }
 
@@ -513,34 +515,37 @@
     }
 
     function updateAllStats() {
-        const saved = JSON.parse(localStorage.getItem('jp_v30_prog')||'[]');
-        const total = weeks.reduce((a,b)=>a+b.ids.length,0);
-        const pct = Math.round(saved.length/total*100);
-        document.getElementById('vocab-prog-text').innerText = pct+'%';
-        document.getElementById('vocab-prog-fill').style.width = pct+'%';
+        const vSaved = JSON.parse(localStorage.getItem('jp_v32_prog')||'[]');
+        const vTotal = weeks.reduce((a,b)=>a+b.ids.length,0);
+        const vPct = Math.round(vSaved.length/vTotal*100);
+        const vText = document.getElementById('vocab-prog-text');
+        const vFill = document.getElementById('vocab-prog-fill');
+        if(vText) vText.innerText = vPct+'%';
+        if(vFill) vFill.style.width = vPct+'%';
         
-        if(pct >= 25) document.getElementById('badge-25').classList.add('unlocked');
-        if(pct >= 50) document.getElementById('badge-50').classList.add('unlocked');
-        if(pct >= 75) document.getElementById('badge-75').classList.add('unlocked');
-        if(pct >= 100) document.getElementById('badge-100').classList.add('unlocked');
+        if(vPct >= 25) document.getElementById('badge-25')?.classList.add('unlocked');
+        if(vPct >= 50) document.getElementById('badge-50')?.classList.add('unlocked');
+        if(vPct >= 75) document.getElementById('badge-75')?.classList.add('unlocked');
+        if(vPct >= 100) document.getElementById('badge-100')?.classList.add('unlocked');
 
-        const cSaved = JSON.parse(localStorage.getItem('jp_v30_chat')||'[]');
+        const cSaved = JSON.parse(localStorage.getItem('jp_v32_chat')||'[]');
         const cTotal = chatCourse.length;
         const cPct = Math.round(cSaved.length/cTotal*100);
-        document.getElementById('chat-prog-text').innerText = cPct+'%';
-        document.getElementById('chat-prog-fill').style.width = cPct+'%';
+        const cText = document.getElementById('chat-prog-text');
+        const cFill = document.getElementById('chat-prog-fill');
+        if(cText) cText.innerText = cPct+'%';
+        if(cFill) cFill.style.width = cPct+'%';
     }
 
+    // 字典
     function filterDict(cat, btn) {
         if(btn) { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
         document.getElementById('search-input').value = '';
         let data = phrases;
-        currentCat = cat;
-        
         if (cat === 'fav') { const favs = JSON.parse(localStorage.getItem('jp_favs')||'[]'); data = phrases.filter(p => favs.includes(p.id)); }
         else if (cat === 'mistake') { const errs = JSON.parse(localStorage.getItem('jp_mistakes')||'[]'); data = phrases.filter(p => errs.includes(p.id)); }
         else if (cat !== 'all') { data = phrases.filter(p => p.cat === cat); }
-        renderDictRaw(data);
+        currentCat = cat; renderDictRaw(data);
     }
 
     function renderDictRaw(data) {
@@ -577,9 +582,12 @@
         renderDictRaw(phrases.filter(p => p.jp.includes(key) || p.romaji.toLowerCase().includes(key) || p.cn.includes(key) || p.en.toLowerCase().includes(key)));
     }
 
-    function renderDialogues() {
-        document.getElementById('dialogue-container').innerHTML = chatCourse.map(course => {
-            const mastered = JSON.parse(localStorage.getItem('jp_v30_chat')||'[]');
+    // 會話
+    function renderChatCourse() {
+        const container = document.getElementById('chat-container');
+        if(!container) return;
+        const mastered = JSON.parse(localStorage.getItem('jp_v32_chat')||'[]');
+        container.innerHTML = chatCourse.map(course => {
             const isMastered = mastered.includes(course.id);
             const masterClass = isMastered ? 'mastered' : '';
             const masterText = isMastered ? '✅ 已學會' : '⭕️ 我學會了';
@@ -593,16 +601,12 @@
     }
 
     function toggleChatMaster(id, btn) {
-        let mastered = JSON.parse(localStorage.getItem('jp_v30_chat')||'[]');
+        let mastered = JSON.parse(localStorage.getItem('jp_v32_chat')||'[]');
         if (mastered.includes(id)) { mastered = mastered.filter(x => x !== id); btn.classList.remove('mastered'); btn.innerText = '⭕️ 我學會了'; } else { mastered.push(id); btn.classList.add('mastered'); btn.innerText = '✅ 已學會'; }
-        localStorage.setItem('jp_v30_chat', JSON.stringify(mastered)); updateAllStats();
+        localStorage.setItem('jp_v32_chat', JSON.stringify(mastered)); updateAllStats();
     }
 
-    function openFullscreen(jp, cn, en) { event.stopPropagation(); document.getElementById('fs-jp').innerText = jp; document.getElementById('fs-cn').innerText = cn; document.getElementById('fs-en').innerText = en; document.getElementById('fullscreen-overlay').style.display = 'flex'; }
-    function closeFullscreen() { document.getElementById('fullscreen-overlay').style.display = 'none'; }
-    function showToast(msg) { const t=document.getElementById('toast'); t.innerText=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 1500); }
-
-    // Quiz
+    // 測驗
     function setQuizType(type) {
         quizType = type;
         document.querySelectorAll('.q-type-btn').forEach(b => b.classList.remove('active'));
@@ -645,7 +649,7 @@
                 const btn = document.createElement('div'); btn.className = 'quiz-btn'; btn.innerText = opt;
                 btn.onclick = () => checkAnswer(opt, btn, 'kana'); container.appendChild(btn);
             });
-            setTimeout(() => speak(currentQuiz.jp), 300); // 发音
+            setTimeout(() => speak(currentQuiz.jp), 300);
         }
     }
     function playQuizAudio() { if(currentQuiz) speak(currentQuiz.jp); } 
@@ -662,53 +666,21 @@
         }
     }
 
-    function toggleAutoPlay(btn, idsStr) {
-        const ids = idsStr.split(',');
-        if (isPlaying) { stopAllAutoPlay(); return; }
-        isPlaying = true; btn.classList.add('playing'); btn.innerHTML = '⏹ Stop';
-        let index = 0;
-        function playNext() {
-            if (!isPlaying || index >= ids.length) { index = 0; }
-            const id = ids[index];
-            const p = phrases.find(x => x.id === id);
-            document.querySelectorAll('.card').forEach(c => c.classList.remove('active-playing'));
-            const card = document.getElementById('card-'+id);
-            if(card) card.classList.add('active-playing');
-            speak(p.jp, () => { setTimeout(() => { speak(p.cn, () => { setTimeout(() => { index++; playNext(); }, 1500); }, 'zh-TW'); }, 800); });
-        }
-        playNext();
-    }
+    // 其他
+    function renderKana(t) { const g=document.getElementById('kana-grid'); if(g) g.innerHTML=kanaData[t].map(c=>c?`<div class="kana-cell" onclick="speak('${c}')"><div style="font-size:20px;font-weight:bold;color:white;">${c}</div></div>`:`<div></div>`).join(''); }
+    function openFullscreen(jp, cn, en) { event.stopPropagation(); document.getElementById('fs-jp').innerText=jp; document.getElementById('fs-cn').innerText=cn; document.getElementById('fs-en').innerText=en; document.getElementById('fullscreen-overlay').style.display='flex'; }
+    function closeFullscreen() { document.getElementById('fullscreen-overlay').style.display='none'; }
+    function showToast(m) { const t=document.getElementById('toast'); t.innerText=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 1500); }
+    function speak(txt, cb, lang='ja-JP') { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(txt); u.lang = lang; u.rate = speechRate; if(cb) u.onend=cb; window.speechSynthesis.speak(u); }
+    function toggleAutoPlay(btn, idsStr) { const ids = idsStr.split(','); if (isPlaying) { stopAllAutoPlay(); return; } isPlaying = true; btn.classList.add('playing'); btn.innerHTML = '⏹ Stop'; let index = 0; function playNext() { if (!isPlaying || index >= ids.length) { index = 0; } const id = ids[index]; const p = phrases.find(x => x.id === id); document.querySelectorAll('.card').forEach(c => c.classList.remove('active-playing')); const card = document.getElementById('card-'+id); if(card) card.classList.add('active-playing'); speak(p.jp, () => { setTimeout(() => { speak(p.cn, () => { setTimeout(() => { index++; playNext(); }, 1500); }, 'zh-TW'); }, 800); }); } playNext(); }
     function stopAllAutoPlay() { isPlaying = false; window.speechSynthesis.cancel(); document.querySelectorAll('.autoplay-btn').forEach(b => { b.classList.remove('playing'); b.innerHTML = '▶ Play'; }); document.querySelectorAll('.card').forEach(c => c.classList.remove('active-playing')); }
-
-    function toggleMask() { isMasked = !isMasked; document.getElementById('mask-switch').classList.toggle('on'); renderPlan(); }
-    function loadMaskState() { isMasked = false; }
-    function renderKana(t) { const g=document.getElementById('kana-grid'); g.innerHTML=kanaData[t].map(c=>c?`<div class="kana-cell" onclick="speak('${c}')"><div style="font-size:20px;font-weight:bold;color:white;">${c}</div></div>`:`<div></div>`).join(''); }
-
-    function speak(txt, onEnd=null, lang='ja-JP') {
-        window.speechSynthesis.cancel();
-        const u = new SpeechSynthesisUtterance(txt);
-        u.lang = lang;
-        u.rate = speechRate;
-        if (onEnd) u.onend = onEnd;
-        window.speechSynthesis.speak(u);
-    }
-    
-    // Init Review
-    function initReview() {
-        const saved = JSON.parse(localStorage.getItem('jp_v30_prog')||'[]');
-        if (saved.length === 0) { document.getElementById('review-area').style.display = 'none'; document.getElementById('empty-review').style.display = 'block'; }
-        else { document.getElementById('review-area').style.display = 'block'; document.getElementById('empty-review').style.display = 'none'; nextCard(); }
-    }
-    function nextCard() {
-        const saved = JSON.parse(localStorage.getItem('jp_v30_prog')||'[]');
-        if(saved.length === 0) return;
-        const randId = saved[Math.floor(Math.random() * saved.length)];
-        currentReviewCard = phrases.find(p => p.id === randId);
-        document.getElementById('flashcard').classList.remove('flipped');
-        setTimeout(() => { document.getElementById('fc-jp').innerText = currentReviewCard.jp; document.getElementById('fc-romaji').innerText = currentReviewCard.romaji; document.getElementById('fc-cn').innerText = currentReviewCard.cn; }, 200);
-    }
+    function toggleMask() { isMasked=!isMasked; document.getElementById('mask-switch').classList.toggle('on'); renderPlan(); }
+    function loadMaskState() { isMasked=false; }
+    function initReview() { const saved = JSON.parse(localStorage.getItem('jp_v32_prog')||'[]'); if (saved.length === 0) { document.getElementById('review-area').style.display = 'none'; document.getElementById('empty-review').style.display = 'block'; } else { document.getElementById('review-area').style.display = 'block'; document.getElementById('empty-review').style.display = 'none'; nextCard(); } }
+    function nextCard() { const saved = JSON.parse(localStorage.getItem('jp_v32_prog')||'[]'); if(saved.length === 0) return; const randId = saved[Math.floor(Math.random() * saved.length)]; currentReviewCard = phrases.find(p => p.id === randId); document.getElementById('flashcard').classList.remove('flipped'); setTimeout(() => { document.getElementById('fc-jp').innerText = currentReviewCard.jp; document.getElementById('fc-romaji').innerText = currentReviewCard.romaji; document.getElementById('fc-cn').innerText = currentReviewCard.cn; }, 200); }
     function flipCard() { document.getElementById('flashcard').classList.toggle('flipped'); if(document.getElementById('flashcard').classList.contains('flipped')) setTimeout(() => speak(currentReviewCard.jp), 300); }
     function speakCurrentCard() { if(currentReviewCard) speak(currentReviewCard.jp); }
+
 </script>
 </body>
 </html>
