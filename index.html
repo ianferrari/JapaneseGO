@@ -3,19 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>JapaneseGO V28.0</title>
+<title>JapaneseGO V30.0</title>
 <style>
     :root { --bg:#000; --card:#1c1c1e; --acc:#0A84FF; --txt:#FFF; --sub:#8E8E93; --rom:#FFD60A; --en:#30D158; --err:#FF453A; --ok:#30D158; --safe-t:env(safe-area-inset-top); --safe-b:env(safe-area-inset-bottom); }
     *{ -webkit-tap-highlight-color:transparent; box-sizing:border-box; }
     body{ background:var(--bg); color:var(--txt); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; margin:0; padding:0; padding-bottom:calc(90px + var(--safe-b)); }
     
     /* Header */
-    .sticky-header{ position:sticky; top:0; z-index:1000; background:rgba(0,0,0,0.95); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); border-bottom:1px solid #333; padding-top:var(--safe-t); }
+    .sticky-header{ position:sticky; top:0; z-index:1000; background:rgba(0,0,0,0.95); backdrop-filter:blur(20px); border-bottom:1px solid #333; padding-top:var(--safe-t); }
     .header-top{ display:flex; justify-content:space-between; align-items:center; padding:10px 15px; }
     h1{ margin:0; font-size:20px; font-weight:800; background:linear-gradient(90deg,#fff,#aaa); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
-    .speed-btn{ background:#333; border:1px solid #555; color:#fff; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600; cursor:pointer; transition:0.2s; }
-    .speed-btn:active{ transform:scale(0.95); }
-
+    .speed-btn{ background:#333; border:1px solid #555; color:#fff; padding:6px 14px; border-radius:20px; font-size:13px; font-weight:600; cursor:pointer; }
+    
     /* Search & Tabs */
     .search-box{ margin:0 15px 10px; display:none; position:relative; }
     .search-input{ width:100%; background:#2c2c2e; border:none; border-radius:10px; padding:10px 10px 10px 35px; color:#fff; font-size:16px; }
@@ -30,7 +29,7 @@
     .view.active{ display:block; }
     @keyframes fadeIn{ from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
 
-    /* Cards */
+    /* Card & Elements */
     .card{ background:var(--card); border:1px solid #333; border-radius:18px; padding:18px; margin-bottom:14px; position:relative; transition:0.2s; }
     .card.active-playing{ border-color:var(--acc); background:#15202b; transform:scale(1.02); }
     .card-top{ display:flex; justify-content:space-between; align-items:flex-start; }
@@ -40,12 +39,13 @@
     .en{ font-size:13px; color:var(--en); font-weight:500; }
     .masked .romaji, .masked .cn, .masked .en{ opacity:0; filter:blur(6px); }
     .masked:active .romaji, .masked:active .cn, .masked:active .en{ opacity:1; filter:none; }
+    
     .card-actions{ display:flex; gap:15px; align-items:center; margin-left:10px; flex-shrink:0; }
     .check-box{ width:28px; height:28px; border-radius:50%; border:2px solid #555; display:flex; align-items:center; justify-content:center; cursor:pointer; color:transparent; }
     .check-box.checked{ background:var(--ok); border-color:var(--ok); color:white; }
     .star-btn{ font-size:26px; color:#444; padding:5px; cursor:pointer; }
     .star-btn.fav{ color:var(--rom); }
-    .trash-btn{ font-size:24px; color:#666; padding:5px; cursor:pointer; }
+    .trash-btn{ font-size:26px; color:#666; padding:5px; cursor:pointer; }
     .show-btn{ font-size:22px; color:#666; cursor:pointer; }
 
     /* Week Header */
@@ -79,19 +79,19 @@
     .master-btn.mastered{ background:var(--ok); border-color:var(--ok); color:white; }
     .chat-row{ display:flex; align-items:flex-end; gap:10px; margin-bottom:12px; }
     .chat-row.user-row{ flex-direction:row-reverse; }
-    .avatar{ width:36px; height:36px; border-radius:50%; background:#333; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; border:1px solid #444; }
+    .avatar{ width:38px; height:38px; border-radius:50%; background:#333; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; border:1px solid #444; }
     .chat-bubble{ max-width:80%; padding:10px 14px; border-radius:16px; font-size:15px; line-height:1.4; cursor:pointer; background:#2c2c2e; color:#eee; }
     .chat-row.user-row .chat-bubble{ background:var(--acc); color:#fff; }
     .bubble-meta{ font-size:12px; opacity:0.8; margin-top:4px; display:block; }
 
-    /* Other Styles */
+    /* General */
     #fullscreen-overlay{ position:fixed; top:0; left:0; width:100%; height:100%; background:#000; z-index:9999; display:none; flex-direction:column; justify-content:center; align-items:center; padding:30px; text-align:center; }
     #fs-jp{ font-size:40px; font-weight:900; margin-bottom:20px; }
     #fs-cn{ font-size:24px; color:#888; margin-bottom:10px; }
     #fs-en{ font-size:18px; color:var(--en); }
     #toast{ position:fixed; bottom:100px; left:50%; transform:translateX(-50%) translateY(20px); background:rgba(30,30,30,0.95); padding:12px 24px; border-radius:30px; font-size:14px; opacity:0; pointer-events:none; transition:0.3s; z-index:9999; border:1px solid #555; display:flex; align-items:center; gap:8px; }
     #toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
-    .bottom-nav{ position:fixed; bottom:0; left:0; right:0; height:85px; background:rgba(15,15,15,0.98); border-top:1px solid #333; display:flex; justify-content:space-around; padding-top:10px; z-index:2000; }
+    .bottom-nav{ position:fixed; bottom:0; left:0; right:0; height:85px; background:rgba(15,15,15,0.98); border-top:1px solid #333; display:flex; justify-content:space-around; padding-top:10px; z-index:2000; padding-bottom:var(--safe-b); }
     .nav-btn{ text-align:center; color:#666; font-size:10px; width:20%; cursor:pointer; }
     .nav-btn.active{ color:var(--acc); }
     .nav-icon{ font-size:24px; display:block; margin-bottom:4px; }
@@ -110,14 +110,11 @@
     .kana-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:6px; }
     .kana-cell{ background:#222; border-radius:8px; padding:10px 0; text-align:center; cursor:pointer; border:1px solid #333; }
     .progress-section{ background:#1c1c1e; padding:15px; border-radius:16px; border:1px solid #333; margin-bottom:20px; }
-    .prog-title{ font-size:14px; color:#aaa; display:flex; justify-content:space-between; margin-bottom:8px; }
-    .prog-bar{ height:8px; background:#333; border-radius:4px; overflow:hidden; }
+    .prog-bar{ height:8px; background:#333; border-radius:4px; overflow:hidden; margin-top:5px; }
     .prog-fill{ height:100%; background:var(--ok); width:0%; transition:0.5s; }
     .badges-container{ display:flex; justify-content:space-between; background:#222; padding:15px; border-radius:16px; margin:20px 0; border:1px solid #333; }
     .badge-item{ text-align:center; opacity:0.3; filter:grayscale(100%); transition:0.5s; }
     .badge-item.unlocked{ opacity:1; filter:grayscale(0%); transform:scale(1.1); }
-    .badge-icon{ font-size:32px; display:block; margin-bottom:5px; }
-    .badge-text{ font-size:10px; color:#aaa; }
     .flashcard-container { perspective: 1000px; width: 100%; height: 300px; margin-top: 20px; }
     .flashcard { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; transition: transform 0.6s; border-radius: 20px; background: #222; border: 1px solid #444; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 20px; }
     .flashcard.flipped { transform: rotateY(180deg); }
@@ -130,7 +127,7 @@
 
 <div class="sticky-header">
     <div class="header-top">
-        <h1>JapaneseGO <span style="font-size:12px; color:#888;">Final V28.0</span></h1>
+        <h1>JapaneseGO <span style="font-size:12px; color:#888;">Final V30.0</span></h1>
         <button id="speed-toggle" class="speed-btn" onclick="toggleSpeed()">🐢 慢速 (0.5x)</button>
     </div>
     <div id="search-bar-container" class="search-box">
@@ -156,7 +153,7 @@
 
 <div id="toast">已收藏 ⭐</div>
 <div id="fullscreen-overlay" onclick="closeFullscreen()">
-    <div id="fs-close">✕</div><div id="fs-jp">JP</div><div id="fs-cn">CN</div><div id="fs-en">EN</div><div style="margin-top:30px;color:#555;">(Tap to close)</div>
+    <div id="fs-close">✕</div><div id="fs-jp">JP</div><div id="fs-cn">CN</div><div id="fs-en">EN</div><div style="margin-top:30px;color:#555;">(點擊關閉)</div>
 </div>
 
 <div id="view-learn" class="view active">
@@ -191,7 +188,7 @@
     <div class="quiz-container">
         <div class="quiz-speaker" onclick="playQuizAudio()">🔊</div>
         <div id="quiz-txt-display" style="font-size:40px;font-weight:bold;margin-bottom:20px;display:none;color:#FFD60A;font-family:monospace;"></div>
-        <div id="quiz-options" class="quiz-options"></div>
+        <div id="quiz-options" style="display:grid;gap:12px;"></div>
         <div id="quiz-feedback" style="margin-top:20px;font-size:18px;font-weight:bold;height:30px;"></div>
         <button style="margin-top:20px;background:#444;color:white;padding:10px 20px;border-radius:20px;border:none;" onclick="nextQuiz()">Skip / Next</button>
     </div>
@@ -209,17 +206,17 @@
 
 <div id="view-tools" class="view">
     <div class="toolbox-grid">
-        <div class="tool-card" onclick="openTool('medical')"><div style="font-size:40px;">🏥</div><div style="font-weight:bold;margin-top:10px;">Medical</div><div style="font-size:12px;color:#888;">急救指指通</div></div>
-        <div class="tool-card" onclick="openTool('kana')"><div style="font-size:40px;">🔤</div><div style="font-weight:bold;margin-top:10px;">Kana Table</div><div style="font-size:12px;color:#888;">五十音表</div></div>
-        <div class="tool-card" onclick="openTool('kids')"><div style="font-size:40px;">👶</div><div style="font-weight:bold;margin-top:10px;">Kids Mode</div><div style="font-size:12px;color:#888;">奎奎專區</div></div>
-        <div class="tool-card" onclick="openTool('review')"><div style="font-size:40px;">🔀</div><div style="font-weight:bold;margin-top:10px;">Review</div><div style="font-size:12px;color:#888;">隨機複習</div></div>
+        <div class="tool-card" onclick="openTool('medical')"><div style="font-size:40px;">🏥</div><div style="font-weight:bold;margin-top:10px;">急救指指通</div><div style="font-size:12px;color:#888;">Medical</div></div>
+        <div class="tool-card" onclick="openTool('kana')"><div style="font-size:40px;">🔤</div><div style="font-weight:bold;margin-top:10px;">五十音表</div><div style="font-size:12px;color:#888;">Kana Table</div></div>
+        <div class="tool-card" onclick="openTool('kids')"><div style="font-size:40px;">👶</div><div style="font-weight:bold;margin-top:10px;">奎奎專區</div><div style="font-size:12px;color:#888;">Kids Mode</div></div>
+        <div class="tool-card" onclick="openTool('review')"><div style="font-size:40px;">🔀</div><div style="font-weight:bold;margin-top:10px;">隨機複習</div><div style="font-size:12px;color:#888;">Review</div></div>
     </div>
 </div>
-<div id="view-medical" class="view"><div style="margin-bottom:20px;cursor:pointer;color:#0A84FF;" onclick="switchView('tools', document.getElementById('nav-tools'))">⬅ Back</div><div class="medical-grid" id="medical-grid"></div></div>
-<div id="view-kana" class="view"><div style="margin-bottom:20px;cursor:pointer;color:#0A84FF;" onclick="switchView('tools', document.getElementById('nav-tools'))">⬅ Back</div><div style="display:flex;justify-content:center;gap:20px;margin-bottom:20px;"><button class="tab-btn active" onclick="renderKana('hira')">平假名</button><button class="tab-btn" onclick="renderKana('kata')">片假名</button></div><div id="kana-grid" class="kana-grid"></div></div>
-<div id="view-kids" class="view" style="background:#f0f8ff;min-height:100vh;"><div style="margin-bottom:20px;cursor:pointer;color:#0A84FF;font-weight:bold;" onclick="switchView('tools', document.getElementById('nav-tools'))">⬅ Back</div><div class="kids-grid" id="kids-grid"></div></div>
+<div id="view-medical" class="view"><div style="margin-bottom:20px;cursor:pointer;color:#0A84FF;" onclick="switchView('tools', document.getElementById('nav-tools'))">⬅ 返回百寶箱</div><div class="medical-grid" id="medical-grid"></div></div>
+<div id="view-kana" class="view"><div style="margin-bottom:20px;cursor:pointer;color:#0A84FF;" onclick="switchView('tools', document.getElementById('nav-tools'))">⬅ 返回百寶箱</div><div style="display:flex;justify-content:center;gap:20px;margin-bottom:20px;"><button class="tab-btn active" onclick="renderKana('hira')">平假名</button><button class="tab-btn" onclick="renderKana('kata')">片假名</button></div><div id="kana-grid" class="kana-grid"></div></div>
+<div id="view-kids" class="view" style="background:#f0f8ff;min-height:100vh;"><div style="margin-bottom:20px;cursor:pointer;color:#0A84FF;font-weight:bold;" onclick="switchView('tools', document.getElementById('nav-tools'))">⬅ 返回百寶箱</div><div class="kids-grid" id="kids-grid"></div></div>
 <div id="view-review" class="view">
-    <div style="margin-bottom:20px;cursor:pointer;color:#0A84FF;" onclick="switchView('tools', document.getElementById('nav-tools'))">⬅ Back</div>
+    <div style="margin-bottom:20px;cursor:pointer;color:#0A84FF;" onclick="switchView('tools', document.getElementById('nav-tools'))">⬅ 返回百寶箱</div>
     <div style="text-align:center;margin:20px 0;"><h2>🔀 隨機抽考</h2><div style="color:#888;">從已學習單字出題</div></div>
     <div id="review-area" style="display:none;">
         <div class="flashcard-container" onclick="flipCard()"><div id="flashcard" class="flashcard"><div class="flashcard-front"><div style="font-size:32px;font-weight:800;margin-bottom:10px;" id="fc-jp"></div><div style="color:#FFD60A;font-family:monospace;" id="fc-romaji"></div><div style="margin-top:20px;color:#666;font-size:12px;">(點擊翻面)</div></div><div class="flashcard-back"><div style="font-size:24px;font-weight:bold;" id="fc-cn"></div><div style="margin-top:20px;font-size:30px;" onclick="event.stopPropagation();speakCurrentCard()">🔊</div></div></div></div>
@@ -237,7 +234,7 @@
 </div>
 
 <script>
-    // --- 完整資料庫 (93句) ---
+    // --- 完整資料庫 (V30.0 Full) ---
     const phrases = [
         { id: "x1", cat: "short", jp: "なるほど", romaji: "Na-ru-ho-do", cn: "原來如此", en: "I see" },
         { id: "x2", cat: "short", jp: "すごい", romaji: "Su-go-i", cn: "好厲害", en: "Amazing" },
@@ -308,7 +305,7 @@
         { id: "dr7", cat: "driving", jp: "まっすぐ", romaji: "Mas-su-gu", cn: "直走", en: "Straight" },
         { id: "h1", cat: "hotel", jp: "チェックイン", romaji: "Chek-ku-in", cn: "Check-in", en: "Check-in" },
         { id: "h2", cat: "hotel", jp: "荷物預かり", romaji: "Ni-mo-tsu a-zu-ka-ri", cn: "寄放行李", en: "Keep luggage" },
-        { id: "h3", cat: "hotel", jp: "Wi-Fiパスワード", romaji: "Wi-Fi pa-su-waa-do", cn: "Wi-Fi密碼", en: "Wi-Fi Password" },
+        { id: "h3", cat: "hotel", jp: "Wi-Fiパスワード", romaji: "Wi-Fi pa-su-waa-do", cn: "Wi-Fi密碼", en: "WiFi Password" },
         { id: "h4", cat: "hotel", jp: "朝食", romaji: "Chou-sho-ku", cn: "早餐", en: "Breakfast" },
         { id: "a1", cat: "airport", jp: "パスポート", romaji: "Pa-su-poo-to", cn: "護照", en: "Passport" },
         { id: "a2", cat: "airport", jp: "レンタカー", romaji: "Ren-ta-kaa", cn: "租車", en: "Rental car" },
@@ -318,7 +315,7 @@
         { id: "o1", cat: "okinawa", jp: "はいさい", romaji: "Hai-sai", cn: "你好", en: "Hello" },
         { id: "o2", cat: "okinawa", jp: "めんそーれ", romaji: "Men-so-re", cn: "歡迎光臨", en: "Welcome" },
         { id: "o3", cat: "okinawa", jp: "にふぇーでーびる", romaji: "Ni-fee-dee-bi-ru", cn: "謝謝", en: "Thank you" },
-        { id: "o4", cat: "okinawa", jp: "なんくるないさ", romaji: "Nan-ku-ru nai-sa", cn: "船到橋頭自然直", en: "It will be fine" },
+        { id: "o4", cat: "okinawa", jp: "なんくるないさ", romaji: "Nan-ku-ru nai-sa", cn: "船到橋頭自然直", en: "It'll be fine" },
         { id: "o5", cat: "okinawa", jp: "ゴーヤ", romaji: "Goo-ya", cn: "苦瓜", en: "Bitter melon" },
         { id: "o6", cat: "okinawa", jp: "オリオンビール", romaji: "O-ri-on Bii-ru", cn: "Orion 啤酒", en: "Orion Beer" },
         { id: "o7", cat: "okinawa", jp: "ソーキそば", romaji: "Soo-ki So-ba", cn: "排骨麵", en: "Soki Soba" },
@@ -379,7 +376,7 @@
         },
         { 
             id: "c9", title: "🌺 沖繩麵店", icon: "🌺",
-            msgs: [{r:"staff",t:"めんそーれ！",c:"歡迎光臨(沖繩話)",e:"Welcome!"},{r:"user",t:"ソーキそばください。",c:"我要排骨麵",e:"Soki soba."},{r:"staff",t:"はいよ！",c:"好喔！",e:"Sure!"},{r:"user",t:"にふぇーでーびる！",c:"謝謝(沖繩話)",e:"Thank you!"}]
+            msgs: [{r:"staff",t:"めんそーれ！",c:"歡迎光臨(沖繩話)",e:"Welcome!"},{r:"user",t:"ソーキそばください。",c:"我要排骨麵",e:"Soki soba please."},{r:"staff",t:"はいよ！",c:"好喔！",e:"Sure!"},{r:"user",t:"にふぇーでーびる！",c:"謝謝(沖繩話)",e:"Thank you!"}]
         }
     ];
 
@@ -390,29 +387,56 @@
     let currentQuiz = null;
     let quizType = 'word';
 
-    const medicalItems = [{t:"熱があります",c:"發燒",e:"Fever"}, {t:"お腹が痛い",c:"肚子痛",e:"Stomachache"},{t:"吐き気がします",c:"想吐",e:"Nausea"}, {t:"怪我をしました",c:"受傷",e:"Injured"},{t:"卵アレルギー",c:"蛋過敏",e:"Egg Allergy"}, {t:"牛乳アレルギー",c:"奶過敏",e:"Milk Allergy"},{t:"救急車を呼んで",c:"叫救護車",e:"Call Ambulance"}, {t:"薬局はどこ",c:"藥局在哪",e:"Pharmacy?"}];
-    const kidsItems = [{t:"きょうりゅう",c:"恐龍",i:"🦖"}, {t:"ぞう",c:"大象",i:"🐘"},{t:"アイス",c:"冰淇淋",i:"🍦"}, {t:"バス",c:"公車",i:"🚌"},{t:"ひこうき",c:"飛機",i:"✈️"}, {t:"バナナ",c:"香蕉",i:"🍌"}];
-    const kanaData = { hira: ["あ","い","う","え","お","か","き","く","け","こ","さ","し","す","せ","そ","た","ち","つ","て","と","な","に","ぬ","ね","の","は","ひ","ふ","へ","ほ","ま","み","む","め","も","や","","ゆ","","よ","ら","り","る","れ","ろ","わ","","","","を","ん"], kata: ["ア","イ","ウ","エ","オ","カ","キ","ク","ケ","コ","サ","シ","ス","セ","ソ","タ","チ","ツ","テ","ト","ナ","ニ","ヌ","ネ","ノ","ハ","ヒ","フ","ヘ","ホ","マ","ミ","ム","メ","モ","ヤ","","ユ","","ヨ","ラ","リ","ル","レ","ロ","ワ","","","","ヲ","ン"], romaji: ["a","i","u","e","o","ka","ki","ku","ke","ko","sa","shi","su","se","so","ta","chi","tsu","te","to","na","ni","nu","ne","no","ha","hi","fu","he","ho","ma","mi","mu","me","mo","ya","","yu","","yo","ra","ri","ru","re","ro","wa","","","","wo","n"] };
+    const medicalItems = [
+        {t:"熱があります",c:"發燒",e:"Fever"}, {t:"お腹が痛い",c:"肚子痛",e:"Stomachache"},
+        {t:"吐き気がします",c:"想吐",e:"Nausea"}, {t:"怪我をしました",c:"受傷",e:"Injured"},
+        {t:"卵アレルギー",c:"蛋過敏",e:"Egg Allergy"}, {t:"牛乳アレルギー",c:"奶過敏",e:"Milk Allergy"},
+        {t:"救急車を呼んで",c:"叫救護車",e:"Call Ambulance"}, {t:"薬局はどこ",c:"藥局在哪",e:"Pharmacy?"}
+    ];
+    const kidsItems = [
+        {t:"きょうりゅう",c:"恐龍",i:"🦖"}, {t:"ぞう",c:"大象",i:"🐘"},
+        {t:"アイス",c:"冰淇淋",i:"🍦"}, {t:"バス",c:"公車",i:"🚌"},
+        {t:"ひこうき",c:"飛機",i:"✈️"}, {t:"バナナ",c:"香蕉",i:"🍌"}
+    ];
+    const kanaData = {
+        hira: ["あ","い","う","え","お","か","き","く","け","こ","さ","し","す","せ","そ","た","ち","つ","て","と","な","に","ぬ","ね","の","は","ひ","ふ","へ","ほ","ま","み","む","め","も","や","","ゆ","","よ","ら","り","る","れ","ろ","わ","","","","を","ん"],
+        kata: ["ア","イ","ウ","エ","オ","カ","キ","ク","ケ","コ","サ","シ","ス","セ","ソ","タ","チ","ツ","テ","ト","ナ","ニ","ヌ","ネ","ノ","ハ","ヒ","フ","ヘ","ホ","マ","ミ","ム","メ","モ","ヤ","","ユ","","ヨ","ラ","リ","ル","レ","ロ","ワ","","","","ヲ","ン"],
+        romaji: ["a","i","u","e","o","ka","ki","ku","ke","ko","sa","shi","su","se","so","ta","chi","tsu","te","to","na","ni","nu","ne","no","ha","hi","fu","he","ho","ma","mi","mu","me","mo","ya","","yu","","yo","ra","ri","ru","re","ro","wa","","","","wo","n"]
+    };
 
     init();
 
     function init() {
         document.getElementById('sensei-msg').innerText = ["加油！💪","每天5分鐘！⏰","奎奎等你帶他玩！👶","沖繩我來了！🌺"][Math.floor(Math.random()*4)];
         renderPlan(); renderChatCourse(); filterDict('all', null); loadMaskState(); updateAllStats();
-        document.getElementById('medical-grid').innerHTML = medicalItems.map(i => `<div class="med-btn" onclick="speak('${i.t}')"><span style="font-size:24px">🆘</span><div class="med-label" style="font-size:16px;color:#FF453A;font-weight:bold;margin:5px 0;">${i.c}</div><div class="med-en">${i.e}</div></div>`).join('');
-        document.getElementById('kids-grid').innerHTML = kidsItems.map(i => `<div class="kid-card" onclick="speak('${i.t}')"><div style="font-size:50px;">${i.i}</div><div style="font-size:20px;font-weight:900;">${i.c}</div></div>`).join('');
+        
+        document.getElementById('medical-grid').innerHTML = medicalItems.map(i => 
+            `<div class="med-btn" onclick="speak('${i.t}')"><span style="font-size:24px">🆘</span><div class="med-label" style="font-size:16px;color:#FF453A;font-weight:bold;margin:5px 0;">${i.c}</div><div class="med-en">${i.e}</div></div>`
+        ).join('');
+        document.getElementById('kids-grid').innerHTML = kidsItems.map(i => 
+            `<div class="kid-card" onclick="speak('${i.t}')"><div style="font-size:50px;">${i.i}</div><div style="font-size:20px;font-weight:900;">${i.c}</div></div>`
+        ).join('');
         renderKana('hira');
     }
 
+    // 語速切換
     function toggleSpeed() {
-        speechRate = (speechRate === 1.0) ? 0.5 : 1.0;
-        document.getElementById('speed-toggle').innerText = (speechRate === 1.0) ? "🐢 慢速 (0.5x)" : "🐇 正常 (1.0x)";
-        showToast(speechRate === 1.0 ? "已切換正常語速" : "已切換慢速");
+        const btn = document.getElementById('speed-toggle');
+        if (speechRate === 1.0) {
+            speechRate = 0.5; 
+            btn.innerText = "🐢 慢速 (0.5x)";
+            showToast("已切換為慢速");
+        } else {
+            speechRate = 1.0; 
+            btn.innerText = "🐇 正常 (1.0x)";
+            showToast("已切換為正常語速");
+        }
     }
 
     function switchView(name, btn) {
         document.querySelectorAll('.view').forEach(e => e.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(e => e.classList.remove('active'));
+        
         if(['medical','kana','kids','review'].includes(name)) {
             document.getElementById('view-'+name).classList.add('active');
             document.getElementById('nav-tools').classList.add('active');
@@ -420,56 +444,105 @@
             document.getElementById('view-'+name).classList.add('active');
             if(btn) btn.classList.add('active');
         }
+
         const isDict = name === 'dict';
         document.getElementById('tabs-bar').style.display = isDict ? 'block' : 'none';
         document.getElementById('search-bar-container').style.display = isDict ? 'block' : 'none';
+        
         stopAllAutoPlay();
         if(name==='quiz') nextQuiz();
         if(name==='review') initReview();
+        
+        // 如果切到字典，強制刷新
+        if(isDict && currentCat === 'mistake') filterDict('mistake', document.querySelector('.tab-btn[onclick*="mistake"]'));
+        
         window.scrollTo(0,0);
     }
     function openTool(name) { switchView(name); }
 
     function renderPlan() {
         const box = document.getElementById('curriculum-container');
-        const saved = JSON.parse(localStorage.getItem('jp_v28_prog')||'[]');
+        const saved = JSON.parse(localStorage.getItem('jp_v30_prog')||'[]');
         const maskClass = isMasked ? 'masked' : '';
         box.innerHTML = weeks.map((w, idx) => {
             const idsStr = w.ids.join(',');
             const lessons = w.ids.map(id => {
-                const p = phrases.find(x=>x.id===id); if(!p) return '';
+                const p = phrases.find(x=>x.id===id);
+                if(!p) return '';
                 const chk = saved.includes(id) ? 'checked' : '';
-                return `<div class="card ${maskClass}" id="card-${id}" onclick="speak('${p.jp}')"><div class="card-top"><div style="flex:1"><div class="jp-big">${p.jp} 🔊</div><span class="romaji">${p.romaji}</span><div class="cn">${p.cn}</div><div class="en">${p.en}</div></div><div class="card-actions"><div class="show-btn" onclick="openFullscreen('${p.jp}', '${p.cn}', '${p.en}')">🔍</div><div class="check-box ${chk}" onclick="event.stopPropagation(); toggleCheck('${id}', this)">✓</div></div></div></div>`;
+                return `
+                <div class="card ${maskClass}" id="card-${id}" onclick="speak('${p.jp}')">
+                    <div class="card-top">
+                        <div style="flex:1">
+                            <div class="jp-big">${p.jp} 🔊</div>
+                            <span class="romaji">${p.romaji}</span>
+                            <div class="cn">${p.cn}</div>
+                            <div class="en">${p.en}</div>
+                        </div>
+                        <div class="card-actions">
+                            <div class="show-btn" onclick="openFullscreen('${p.jp}', '${p.cn}', '${p.en}')">🔍</div>
+                            <div class="check-box ${chk}" onclick="event.stopPropagation(); toggleCheck('${id}', this)">✓</div>
+                        </div>
+                    </div>
+                </div>`;
             }).join('');
             return `<div class="week-header"><div class="week-title-row"><h3 class="week-title">${w.t}</h3><div class="week-actions"><div class="action-btn autoplay-btn" onclick="toggleAutoPlay(this, '${idsStr}')">▶ Play</div><div class="action-btn reset-btn" onclick="resetWeek(${idx})">↺</div></div></div></div>${lessons}`;
         }).join('');
     }
 
     function toggleCheck(id, el) {
-        let saved = JSON.parse(localStorage.getItem('jp_v28_prog')||'[]');
+        let saved = JSON.parse(localStorage.getItem('jp_v30_prog')||'[]');
         if (saved.includes(id)) { saved = saved.filter(x => x !== id); el.classList.remove('checked'); } else { saved.push(id); el.classList.add('checked'); }
-        localStorage.setItem('jp_v28_prog', JSON.stringify(saved));
+        localStorage.setItem('jp_v30_prog', JSON.stringify(saved));
         updateAllStats();
     }
-    function resetWeek(idx) { if(!confirm("重置本週？")) return; let saved = JSON.parse(localStorage.getItem('jp_v28_prog')||'[]'); const weekIds = weeks[idx].ids; saved = saved.filter(id => !weekIds.includes(id)); localStorage.setItem('jp_v28_prog', JSON.stringify(saved)); renderPlan(); updateAllStats(); }
-    function resetAllProgress() { if(confirm("清除？")) { localStorage.clear(); location.reload(); } }
+
+    function resetWeek(idx) {
+        if(!confirm("重置本週進度？")) return;
+        let saved = JSON.parse(localStorage.getItem('jp_v30_prog')||'[]');
+        const weekIds = weeks[idx].ids;
+        saved = saved.filter(id => !weekIds.includes(id));
+        localStorage.setItem('jp_v30_prog', JSON.stringify(saved));
+        renderPlan(); updateAllStats();
+    }
+
+    function resetAllProgress() {
+        if(!confirm("清除所有進度？")) return;
+        localStorage.clear();
+        location.reload();
+    }
+
     function updateAllStats() {
-        const vSaved = JSON.parse(localStorage.getItem('jp_v28_prog')||'[]'); const vTotal = weeks.reduce((a,b)=>a+b.ids.length,0); const vPct = Math.round(vSaved.length/vTotal*100);
-        document.getElementById('vocab-prog-text').innerText = vPct+'%'; document.getElementById('vocab-prog-fill').style.width = vPct+'%';
-        if(vPct >= 25) document.getElementById('badge-25').classList.add('unlocked'); if(vPct >= 50) document.getElementById('badge-50').classList.add('unlocked'); if(vPct >= 75) document.getElementById('badge-75').classList.add('unlocked'); if(vPct >= 100) document.getElementById('badge-100').classList.add('unlocked');
-        const cSaved = JSON.parse(localStorage.getItem('jp_v28_chat')||'[]'); const cTotal = chatCourse.length; const cPct = Math.round(cSaved.length/cTotal*100);
-        document.getElementById('chat-prog-text').innerText = cPct+'%'; document.getElementById('chat-prog-fill').style.width = cPct+'%';
+        const saved = JSON.parse(localStorage.getItem('jp_v30_prog')||'[]');
+        const total = weeks.reduce((a,b)=>a+b.ids.length,0);
+        const pct = Math.round(saved.length/total*100);
+        document.getElementById('vocab-prog-text').innerText = pct+'%';
+        document.getElementById('vocab-prog-fill').style.width = pct+'%';
+        
+        if(pct >= 25) document.getElementById('badge-25').classList.add('unlocked');
+        if(pct >= 50) document.getElementById('badge-50').classList.add('unlocked');
+        if(pct >= 75) document.getElementById('badge-75').classList.add('unlocked');
+        if(pct >= 100) document.getElementById('badge-100').classList.add('unlocked');
+
+        const cSaved = JSON.parse(localStorage.getItem('jp_v30_chat')||'[]');
+        const cTotal = chatCourse.length;
+        const cPct = Math.round(cSaved.length/cTotal*100);
+        document.getElementById('chat-prog-text').innerText = cPct+'%';
+        document.getElementById('chat-prog-fill').style.width = cPct+'%';
     }
 
     function filterDict(cat, btn) {
         if(btn) { document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
         document.getElementById('search-input').value = '';
         let data = phrases;
+        currentCat = cat;
+        
         if (cat === 'fav') { const favs = JSON.parse(localStorage.getItem('jp_favs')||'[]'); data = phrases.filter(p => favs.includes(p.id)); }
         else if (cat === 'mistake') { const errs = JSON.parse(localStorage.getItem('jp_mistakes')||'[]'); data = phrases.filter(p => errs.includes(p.id)); }
         else if (cat !== 'all') { data = phrases.filter(p => p.cat === cat); }
-        currentCat = cat; renderDictRaw(data);
+        renderDictRaw(data);
     }
+
     function renderDictRaw(data) {
         const box = document.getElementById('dict-container');
         const favs = JSON.parse(localStorage.getItem('jp_favs')||'[]');
@@ -481,9 +554,55 @@
             return `<div class="card" onclick="speak('${p.jp}')"><div class="card-top"><div style="flex:1"><div class="jp-big">${p.jp} 🔊</div><span class="romaji">${p.romaji}</span><div class="cn">${p.cn}</div><div class="en">${p.en}</div></div><div class="card-actions"><div class="show-btn" onclick="openFullscreen('${p.jp}', '${p.cn}', '${p.en}')">🔍</div>${actionBtn}</div></div></div>`;
         }).join('');
     }
-    function toggleFav(id, el) { let favs = JSON.parse(localStorage.getItem('jp_favs')||'[]'); let isAdd=false; if (favs.includes(id)) { favs = favs.filter(x => x !== id); el.classList.remove('fav'); } else { favs.push(id); el.classList.add('fav'); isAdd=true; } localStorage.setItem('jp_favs', JSON.stringify(favs)); showToast(isAdd?"已收藏":"取消"); if(currentCat==='fav') filterDict('fav',null); }
-    function removeMistake(id, el) { let errs = JSON.parse(localStorage.getItem('jp_mistakes')||'[]'); errs = errs.filter(x => x !== id); localStorage.setItem('jp_mistakes', JSON.stringify(errs)); filterDict('mistake', null); showToast("已從弱點移除"); }
 
+    function toggleFav(id, el) {
+        let favs = JSON.parse(localStorage.getItem('jp_favs')||'[]');
+        let isAdd = false;
+        if (favs.includes(id)) { favs = favs.filter(x => x !== id); el.classList.remove('fav'); } else { favs.push(id); el.classList.add('fav'); isAdd = true; }
+        localStorage.setItem('jp_favs', JSON.stringify(favs));
+        showToast(isAdd ? "已收藏 ⭐" : "取消收藏");
+        if(currentCat === 'fav') filterDict('fav', null);
+    }
+
+    function removeMistake(id, el) {
+        let errs = JSON.parse(localStorage.getItem('jp_mistakes')||'[]');
+        errs = errs.filter(x => x !== id);
+        localStorage.setItem('jp_mistakes', JSON.stringify(errs));
+        filterDict('mistake', null);
+        showToast("已從弱點移除");
+    }
+
+    function handleSearch() {
+        const key = document.getElementById('search-input').value.toLowerCase();
+        renderDictRaw(phrases.filter(p => p.jp.includes(key) || p.romaji.toLowerCase().includes(key) || p.cn.includes(key) || p.en.toLowerCase().includes(key)));
+    }
+
+    function renderDialogues() {
+        document.getElementById('dialogue-container').innerHTML = chatCourse.map(course => {
+            const mastered = JSON.parse(localStorage.getItem('jp_v30_chat')||'[]');
+            const isMastered = mastered.includes(course.id);
+            const masterClass = isMastered ? 'mastered' : '';
+            const masterText = isMastered ? '✅ 已學會' : '⭕️ 我學會了';
+            const chatRows = course.msgs.map(m => {
+                const rowClass = m.r === 'user' ? 'user-row' : 'staff-row';
+                const avatar = m.r === 'user' ? '🧑‍🍼' : '👩‍💼';
+                return `<div class="chat-row ${rowClass}"><div class="avatar">${avatar}</div><div class="chat-bubble" onclick="speak('${m.t}')"><span class="bubble-jp">${m.t} 🔊</span><span class="bubble-meta">${m.c}<br>${m.e}</span></div></div>`;
+            }).join('');
+            return `<div class="chat-course-card"><div class="chat-course-header" onclick="this.nextElementSibling.classList.toggle('open')"><div class="chat-course-title"><span style="font-size:20px;">${course.icon}</span> ${course.title}</div><div class="chat-toggle-icon">▼</div></div><div class="chat-course-body">${chatRows}<div class="chat-footer"><div class="master-btn ${masterClass}" onclick="toggleChatMaster('${course.id}', this)">${masterText}</div></div></div></div>`;
+        }).join('');
+    }
+
+    function toggleChatMaster(id, btn) {
+        let mastered = JSON.parse(localStorage.getItem('jp_v30_chat')||'[]');
+        if (mastered.includes(id)) { mastered = mastered.filter(x => x !== id); btn.classList.remove('mastered'); btn.innerText = '⭕️ 我學會了'; } else { mastered.push(id); btn.classList.add('mastered'); btn.innerText = '✅ 已學會'; }
+        localStorage.setItem('jp_v30_chat', JSON.stringify(mastered)); updateAllStats();
+    }
+
+    function openFullscreen(jp, cn, en) { event.stopPropagation(); document.getElementById('fs-jp').innerText = jp; document.getElementById('fs-cn').innerText = cn; document.getElementById('fs-en').innerText = en; document.getElementById('fullscreen-overlay').style.display = 'flex'; }
+    function closeFullscreen() { document.getElementById('fullscreen-overlay').style.display = 'none'; }
+    function showToast(msg) { const t=document.getElementById('toast'); t.innerText=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 1500); }
+
+    // Quiz
     function setQuizType(type) {
         quizType = type;
         document.querySelectorAll('.q-type-btn').forEach(b => b.classList.remove('active'));
@@ -513,9 +632,8 @@
             const char = kanaData[type][idx]; const ans = kanaData.romaji[idx];
             if (!char) { nextQuiz(); return; }
             currentQuiz = { jp: char, ans: ans, type: 'kana' };
-            document.getElementById('quiz-txt-display').innerText = ans; // Show Romaji
+            document.getElementById('quiz-txt-display').innerText = ans; // 显示罗馬拼音
             document.getElementById('quiz-txt-display').style.color = "#FFD60A";
-            
             let options = [char];
             while(options.length < 4) {
                 const rIdx = Math.floor(Math.random()*46);
@@ -527,7 +645,7 @@
                 const btn = document.createElement('div'); btn.className = 'quiz-btn'; btn.innerText = opt;
                 btn.onclick = () => checkAnswer(opt, btn, 'kana'); container.appendChild(btn);
             });
-            setTimeout(() => speak(currentQuiz.jp), 300);
+            setTimeout(() => speak(currentQuiz.jp), 300); // 发音
         }
     }
     function playQuizAudio() { if(currentQuiz) speak(currentQuiz.jp); } 
@@ -544,45 +662,45 @@
         }
     }
 
-    function renderChatCourse() {
-        const container = document.getElementById('chat-container');
-        const mastered = JSON.parse(localStorage.getItem('jp_v28_chat')||'[]');
-        container.innerHTML = chatCourse.map(course => {
-            const isMastered = mastered.includes(course.id);
-            const masterClass = isMastered ? 'mastered' : '';
-            const masterText = isMastered ? '✅ 已學會' : '⭕️ 我學會了';
-            const chatRows = course.msgs.map(m => {
-                const isUser = m.r === 'user';
-                const avatar = isUser ? '🧑‍🍼' : '👩‍💼';
-                const rowClass = isUser ? 'user-row' : 'staff-row';
-                return `<div class="chat-row ${rowClass}"><div class="avatar">${avatar}</div><div class="chat-bubble" onclick="speak('${m.t}')"><span class="bubble-jp">${m.t} 🔊</span><span class="bubble-meta">${m.c}<br>${m.e}</span></div></div>`;
-            }).join('');
-            return `<div class="chat-course-card"><div class="chat-course-header" onclick="this.nextElementSibling.classList.toggle('open')"><div class="chat-course-title"><span style="font-size:20px;">${course.icon}</span> ${course.title}</div><div class="chat-toggle-icon">▼</div></div><div class="chat-course-body">${chatRows}<div class="chat-footer"><div class="master-btn ${masterClass}" onclick="toggleChatMaster('${course.id}', this)">${masterText}</div></div></div></div>`;
-        }).join('');
+    function toggleAutoPlay(btn, idsStr) {
+        const ids = idsStr.split(',');
+        if (isPlaying) { stopAllAutoPlay(); return; }
+        isPlaying = true; btn.classList.add('playing'); btn.innerHTML = '⏹ Stop';
+        let index = 0;
+        function playNext() {
+            if (!isPlaying || index >= ids.length) { index = 0; }
+            const id = ids[index];
+            const p = phrases.find(x => x.id === id);
+            document.querySelectorAll('.card').forEach(c => c.classList.remove('active-playing'));
+            const card = document.getElementById('card-'+id);
+            if(card) card.classList.add('active-playing');
+            speak(p.jp, () => { setTimeout(() => { speak(p.cn, () => { setTimeout(() => { index++; playNext(); }, 1500); }, 'zh-TW'); }, 800); });
+        }
+        playNext();
     }
-    function toggleChatMaster(id, btn) {
-        let mastered = JSON.parse(localStorage.getItem('jp_v28_chat')||'[]');
-        if (mastered.includes(id)) { mastered = mastered.filter(x => x !== id); btn.classList.remove('mastered'); btn.innerText = '⭕️ 我學會了'; } else { mastered.push(id); btn.classList.add('mastered'); btn.innerText = '✅ 已學會'; }
-        localStorage.setItem('jp_v28_chat', JSON.stringify(mastered)); updateAllStats();
-    }
-
-    function handleSearch() { const key = document.getElementById('search-input').value.toLowerCase(); renderDictRaw(phrases.filter(p => p.jp.includes(key) || p.romaji.toLowerCase().includes(key) || p.cn.includes(key) || p.en.toLowerCase().includes(key))); }
-    function renderKana(t) { const g=document.getElementById('kana-grid'); g.innerHTML=kanaData[t].map(c=>c?`<div class="kana-cell" onclick="speak('${c}')"><div style="font-size:20px;font-weight:bold;color:white;">${c}</div></div>`:`<div></div>`).join(''); }
-    function openFullscreen(jp,cn,en) { event.stopPropagation(); document.getElementById('fs-jp').innerText=jp; document.getElementById('fs-cn').innerText=cn; document.getElementById('fs-en').innerText=en; document.getElementById('fullscreen-overlay').style.display='flex'; }
-    function closeFullscreen() { document.getElementById('fullscreen-overlay').style.display='none'; }
-    function showToast(m) { const t=document.getElementById('toast'); t.innerText=m; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),1500); }
-    function speak(txt, cb, lang='ja-JP') { window.speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(txt); u.lang = lang; u.rate = speechRate; if(cb) u.onend=cb; window.speechSynthesis.speak(u); }
-    function toggleAutoPlay(btn, idsStr) { const ids = idsStr.split(','); if (isPlaying) { stopAllAutoPlay(); return; } isPlaying = true; btn.classList.add('playing'); btn.innerHTML = '⏹ Stop'; let index = 0; function playNext() { if (!isPlaying || index >= ids.length) { index = 0; } const id = ids[index]; const p = phrases.find(x => x.id === id); document.querySelectorAll('.card').forEach(c => c.classList.remove('active-playing')); const card = document.getElementById('card-'+id); if(card) card.classList.add('active-playing'); speak(p.jp, () => { setTimeout(() => { speak(p.cn, () => { setTimeout(() => { index++; playNext(); }, 1500); }, 'zh-TW'); }, 800); }); } playNext(); }
     function stopAllAutoPlay() { isPlaying = false; window.speechSynthesis.cancel(); document.querySelectorAll('.autoplay-btn').forEach(b => { b.classList.remove('playing'); b.innerHTML = '▶ Play'; }); document.querySelectorAll('.card').forEach(c => c.classList.remove('active-playing')); }
+
+    function toggleMask() { isMasked = !isMasked; document.getElementById('mask-switch').classList.toggle('on'); renderPlan(); }
+    function loadMaskState() { isMasked = false; }
+    function renderKana(t) { const g=document.getElementById('kana-grid'); g.innerHTML=kanaData[t].map(c=>c?`<div class="kana-cell" onclick="speak('${c}')"><div style="font-size:20px;font-weight:bold;color:white;">${c}</div></div>`:`<div></div>`).join(''); }
+
+    function speak(txt, onEnd=null, lang='ja-JP') {
+        window.speechSynthesis.cancel();
+        const u = new SpeechSynthesisUtterance(txt);
+        u.lang = lang;
+        u.rate = speechRate;
+        if (onEnd) u.onend = onEnd;
+        window.speechSynthesis.speak(u);
+    }
     
     // Init Review
     function initReview() {
-        const saved = JSON.parse(localStorage.getItem('jp_v28_prog')||'[]');
+        const saved = JSON.parse(localStorage.getItem('jp_v30_prog')||'[]');
         if (saved.length === 0) { document.getElementById('review-area').style.display = 'none'; document.getElementById('empty-review').style.display = 'block'; }
         else { document.getElementById('review-area').style.display = 'block'; document.getElementById('empty-review').style.display = 'none'; nextCard(); }
     }
     function nextCard() {
-        const saved = JSON.parse(localStorage.getItem('jp_v28_prog')||'[]');
+        const saved = JSON.parse(localStorage.getItem('jp_v30_prog')||'[]');
         if(saved.length === 0) return;
         const randId = saved[Math.floor(Math.random() * saved.length)];
         currentReviewCard = phrases.find(p => p.id === randId);
